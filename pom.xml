@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
-        <exec.mainClass>com.heatmyfloor.heatmyfloor.HeatMyFloor</exec.mainClass>
+        <exec.mainClass>com.heatmyfloor</exec.mainClass>
     </properties>
     
     <build>
@@ -32,7 +32,7 @@
                 </executions>
                 <configuration>
                     <mainClass>
-                        com.heatmyfloor.heatmyfloor.HeatMyFloor
+                        com.heatmyfloor
                     </mainClass>
                 </configuration>
             </plugin>
@@ -43,7 +43,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.heatmyfloor.heatmyfloor.HeatMyFloor</mainClass>
+                            <mainClass>com.heatmyfloor</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
