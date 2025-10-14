@@ -28,7 +28,7 @@ public class BarreOutils extends JPanel {
 
         // --- Projet ---
         addGroup(ribbon, gc, col++, makeGroup("Projet",
-            card("Nouveau",     "/icons/new.png"),
+            card("Nouveau",     "resources/Icons/new.png"),
             card("Ouvrir",      "/icons/open.png"),
             card("Enregistrer", "/icons/save.png"),
             card("Exporter",    "/icons/export.png")
@@ -125,8 +125,8 @@ public class BarreOutils extends JPanel {
         return new ButtonCard(text, loadIcon(resPath));
     }
 
-    private ImageIcon loadIcon(String absPath) {
-        java.io.File f = new java.io.File(absPath);
-    return f.exists() ? new ImageIcon(absPath) : null;
+    private ImageIcon loadIcon(String path) {
+        java.net.URL url = getClass().getResource(path);
+        return (url != null) ? new ImageIcon(url) : null;
     }
 }

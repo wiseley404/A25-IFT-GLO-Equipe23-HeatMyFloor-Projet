@@ -12,6 +12,11 @@
     </properties>
     
     <build>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -43,7 +48,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.heatmyfloor</mainClass>
+                            <mainClass>com.heatmyfloor.HeatMyFloor</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -5,7 +5,6 @@
 package com.heatmyfloor.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -61,13 +60,13 @@ public class MainWindow extends javax.swing.JFrame {
         fileMenu.add(newItem);
         fileMenu.add(openItem);
         fileMenu.add(exportItem);
-        quitMenuItem.setText("Quit");
+        quitMenuItem.setText("Quitter");
         
         fileMenu.add(quitMenuItem);
 
         topMenuBar.add(fileMenu);
 
-        editMenu.setText("Edit");
+        editMenu.setText("Editer");
         topMenuBar.add(editMenu);
         
         //Menu du toolbar
@@ -181,7 +180,7 @@ public class MainWindow extends javax.swing.JFrame {
          */
           quitMenuItem.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
-                    null,
+                    this,
                     "Voulez-vous vraiment quitter l’application ?",
                     "Confirmation",
                     JOptionPane.YES_NO_OPTION
