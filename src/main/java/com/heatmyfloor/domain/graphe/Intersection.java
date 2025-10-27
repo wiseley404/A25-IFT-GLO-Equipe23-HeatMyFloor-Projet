@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.heatmyfloor.model;
+package com.heatmyfloor.domain.graphe;
 
 /**
  *
- * @author Wily
+ * @author petit
  */
-public class Piece {
+public class Intersection {
     
 }
