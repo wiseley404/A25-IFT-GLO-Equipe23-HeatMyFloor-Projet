@@ -4,10 +4,25 @@
  */
 package com.heatmyfloor.domain.piece;
 
+import com.heatmyfloor.domain.Point;
+
 /**
  *
  * @author petit
  */
 public class Mur {
+    public Point debut, fin;
+    public double distance;
+    
+    public Mur(Point _debut, Point _fin){
+        this.fin =fin;
+        this.debut= debut;
+    }
+    
+    public PieceItem positionnerItem(PieceItem item){
+        throw new UnsupportedOperationException("Méthode non implémentée !");
+    }
+    
+
     
 }
