@@ -4,10 +4,19 @@
  */
 package com.heatmyfloor.domain.items;
 
+import com.heatmyfloor.domain.piece.Point;
+import java.util.UUID;
+
 /**
  *
  * @author petit
  */
 public interface DrainReadOnly {
+    
+    double getDiametre();
+    UUID getId();
+    Point getPosition();
+    double getDistanceAvecFil();
+    boolean estSelectionne();
     
 }

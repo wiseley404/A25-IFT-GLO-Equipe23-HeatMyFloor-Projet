@@ -4,10 +4,20 @@
  */
 package com.heatmyfloor.domain.items;
 
+import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.piece.PieceItem;
+
 /**
  *
  * @author petit
  */
-public class Thermostat {
+public class Thermostat extends PieceItem {
+    
+    //Constructeur
+    
+    public Thermostat(double longueur, double larg, Point pos){
+        super(longueur, larg, pos);
+    }
+    
     
 }
