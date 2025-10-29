@@ -1,28 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
-
+import java.util.UUID;
 /**
  *
  * @author petit
  */
 public class Mur {
-    public Point debut, fin;
-    public double distance;
+    private final UUID id;
+    private Point debut, fin;
+    private double distanceAvecFil;
     
-    public Mur(Point _debut, Point _fin){
-        this.fin =fin;
-        this.debut= debut;
+    public Mur(Point debut, Point fin){
+        this.fin = fin;
+        this.debut = debut;
+        this.id = UUID.randomUUID();
+        this.distanceAvecFil = 3;
     }
     
-    public PieceItem positionnerItem(PieceItem item){
+    public void positionnerItem(PieceItem item){
+
+    }
+    
+    public UUID getId(){
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
     
+    public Point getDebut(){
+        throw new UnsupportedOperationException("Méthode non implémentée !");
+    }
+    
+    public Point getFin(){
+        throw new UnsupportedOperationException("Méthode non implémentée !");
+    }
+    
+    public double getDistanceAvecFil(){
+        throw new UnsupportedOperationException("Méthode non implémentée !");
+    }  
 
     
 }
