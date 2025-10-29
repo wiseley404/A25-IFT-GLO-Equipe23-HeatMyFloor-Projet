@@ -14,7 +14,10 @@
     <build>
         <resources>
             <resource>
-                <directory>resources</directory>
+                <directory>src/main/ressources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
             </resource>
         </resources>
         <plugins>

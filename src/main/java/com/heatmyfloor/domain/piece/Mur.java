@@ -23,15 +23,15 @@ public class Mur {
     }
     
     public UUID getId(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.id;
     }
     
     public Point getDebut(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return debut;
     }
     
     public Point getFin(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return fin;
     }
     
     public double getDistanceAvecFil(){

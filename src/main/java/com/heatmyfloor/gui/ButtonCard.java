@@ -27,7 +27,7 @@ public class ButtonCard extends JPanel {
 
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
         iconLabel.setIcon(icon);
-
+        redimensionnerImage(icon,iconLabel);
         textLabel.setText(text);
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -71,5 +71,28 @@ public class ButtonCard extends JPanel {
         g2.setColor(new Color(225, 205, 175));
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
         g2.dispose();
+    }
+
+    private void redimensionnerImage(Icon icon, JLabel iconLabel) {
+        if (icon instanceof ImageIcon) {
+            Image img = ((ImageIcon) icon).getImage();
+            // Taille max autorisée pour l’icône (ex : 48x48)
+            int maxW = 48;
+            int maxH = 48;
+
+            int w = img.getWidth(null);
+            int h = img.getHeight(null);
+
+            // Calcule un facteur d’échelle qui garde les proportions
+            double scale = Math.min((double) maxW / w, (double) maxH / h);
+
+            int newW = (int) (w * scale);
+            int newH = (int) (h * scale);
+
+            Image scaled = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+            iconLabel.setIcon(new ImageIcon(scaled));
+        } else {
+            iconLabel.setIcon(icon);
+        }
     }
 }

@@ -23,16 +23,16 @@ public class PieceRectangulaire extends Piece {
         Rectangle2D pieceContour = new Rectangle2D.Double(
                                     0, 0, longueur, largeur
                                    ).getBounds2D();
-        Point a = new Point(pieceContour.getX(), pieceContour.getY());
-        Point b = new Point(pieceContour.getX()+ largeur, pieceContour.getY());
-        Point c = new Point(pieceContour.getX(), pieceContour.getY() + longueur);
-        Point d = new Point(pieceContour.getX() + largeur, pieceContour.getY() + longueur);
+//        Point a = new Point(pieceContour.getX(), pieceContour.getY());
+//        Point b = new Point(pieceContour.getX()+ largeur, pieceContour.getY());
+//        Point c = new Point(pieceContour.getX(), pieceContour.getY() + longueur);
+//        Point d = new Point(pieceContour.getX() + largeur, pieceContour.getY() + longueur);
         
         return Arrays.asList(
-                new Mur(a, b),
-                new Mur(a, c),
-                new Mur(c, d),
-                new Mur(d, b)
+//                new Mur(a, b),
+//                new Mur(a, c),
+//                new Mur(c, d),
+//                new Mur(d, b)
               );        
     }
     

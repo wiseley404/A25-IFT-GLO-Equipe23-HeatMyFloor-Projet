@@ -1,9 +1,9 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.TypeAvecDrain;
+import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.ports.PieceStockage;
-import com.heatmyfloor.domain.items.MeubleAvecDrain.TypeAvecDrain;
-import com.heatmyfloor.domain.items.MeubleSansDrain.TypeSansDrain;
 import java.nio.file.Path;
 import java.util.List;
 

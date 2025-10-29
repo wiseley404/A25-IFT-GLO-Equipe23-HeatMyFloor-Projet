@@ -4,10 +4,12 @@
  */
 package com.heatmyfloor.domain.ports;
 
+import com.heatmyfloor.domain.piece.Piece;
+
 /**
  *
  * @author petit
  */
 public interface PieceStockage {
-    
+//    Piece ouvrirFichier(ficher: P)
 }
