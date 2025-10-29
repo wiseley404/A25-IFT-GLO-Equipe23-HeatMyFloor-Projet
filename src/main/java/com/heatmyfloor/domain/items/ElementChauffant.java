@@ -4,10 +4,26 @@
  */
 package com.heatmyfloor.domain.items;
 
+import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.piece.PieceItem;
+
 /**
  *
  * @author petit
  */
-public class ElementChauffant {
+public class ElementChauffant extends PieceItem {
     
+    //Constructeur
+    
+    public ElementChauffant(double longueur, double larg, Point pos){
+        super(longueur, larg, pos);
+    }
+    
+    
+    //Méthode
+    
+    public boolean estClique(double x_pouce, double y_pouce){
+        
+        throw new UnsupportedOperationException("estClique non implémentée");
+    }
 }
