@@ -12,7 +12,8 @@ public class BarreOutils extends JPanel {
     public BarreOutils() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 200, 160)));
-        setOpaque(false);
+        setOpaque(true);
+        setBackground(Color.white);
 
         // Ruban plein écran : GridBagLayout -> 100% de la largeur
         JPanel ribbon = new JPanel(new GridBagLayout());

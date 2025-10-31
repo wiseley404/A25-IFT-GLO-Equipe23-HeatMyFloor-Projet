@@ -21,7 +21,7 @@ public class MeubleSansDrain extends PieceItem {
     //Constructeur
     
     public MeubleSansDrain(double longueur, double larg, Point pos, TypeSansDrain type){
-        super(longueur, larg, pos);
+        super(longueur, larg, pos,"Icons/MeubleSansDrain");
         this.distanceAvecFil = 0.0;
         this.type = type;
     }

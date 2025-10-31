@@ -15,7 +15,7 @@ public class Proprietes extends JPanel {
         setPreferredSize(new Dimension(300, 0));
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(230, 230, 230)));
-        setBackground(new Color(250, 250, 250));
+        setBackground(Color.white);
 
         add(buildTitleBar(), BorderLayout.NORTH);
 

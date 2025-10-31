@@ -27,7 +27,7 @@ public class ButtonCard extends JPanel {
 
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
         iconLabel.setIcon(icon);
-        redimensionnerImage(icon,iconLabel);
+        redimensionnerImage(icon, iconLabel);
         textLabel.setText(text);
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -60,9 +60,9 @@ public class ButtonCard extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int arc = 14;
-        Color base = Color.white;
-        Color hoverCol = new Color(255, 232, 200);
-        Color pressCol = new Color(255, 220, 180);
+        Color base = new Color(255, 255, 255, 60);
+        Color hoverCol = new Color(255, 232, 200, 120);
+        Color pressCol = new Color(255, 220, 180, 160);
         Color fill = press ? pressCol : (hover ? hoverCol : base);
 
         g2.setColor(fill);
@@ -76,9 +76,8 @@ public class ButtonCard extends JPanel {
     private void redimensionnerImage(Icon icon, JLabel iconLabel) {
         if (icon instanceof ImageIcon) {
             Image img = ((ImageIcon) icon).getImage();
-            // Taille max autorisée pour l’icône (ex : 48x48)
-            int maxW = 48;
-            int maxH = 48;
+            int maxW = 60;
+            int maxH = 60;
 
             int w = img.getWidth(null);
             int h = img.getHeight(null);
