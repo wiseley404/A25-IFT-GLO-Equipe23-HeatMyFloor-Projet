@@ -92,7 +92,20 @@ public class MainWindow extends javax.swing.JFrame {
         //Menu du toolbar
         mainPanel.add(barreOutils, BorderLayout.NORTH);
         barreOutils.btnNouveau.setOnClick(e -> handleNewProject());
+        
+        //action pour le bouton rectangle//
+        barreOutils.onRectangleClick(()->{
+            Component componaint = tabs.getSelectedComponent();
+             if(componaint instanceof Canvas canvas){
+                 int longueur=400;
+                 int largeur = 300;
+                 canvas.dessinerRectangle(longueur, largeur);
+             }else{
+                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
+                         "Erreur", JOptionPane.ERROR_MESSAGE);
+        }});
 
+        
         JPanel center = new JPanel(new BorderLayout());
         Proprietes props = new Proprietes();
         center.add(props, BorderLayout.WEST);
@@ -150,6 +163,8 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
     }
+    
+    
 
     private void disableButton() {
         if (tabs.getTabCount() == 0) {

@@ -2,8 +2,10 @@ package com.heatmyfloor.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.JLabel;
 
 public class Canvas extends JPanel {
+    private Rectangle rectangle;
     public Canvas() {
         setBackground(Color.white);
         setLayout(null); // absolute positioning for placeholder icons
@@ -18,6 +20,23 @@ public class Canvas extends JPanel {
 //        add(cabinet);
     }
 
+    public void dessinerRectangle(int longueur, int largeur){
+      int x = (getWidth() - longueur) / 2;
+      int y = (getHeight() - largeur) / 2;
+      rectangle = new Rectangle(x,y,longueur,largeur); 
+      repaint();
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(rectangle != null){
+            g.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        }
+    }
+    
+    
+    
     private JLabel createIconLabel(String resPath, int x, int y, int w, int h) {
         JLabel l = new JLabel();
         l.setBounds(x, y, w, h);

@@ -9,5 +9,16 @@ package com.heatmyfloor.domain.graphe;
  * @author petit
  */
 public class Fil {
+    private Intersection depart ;
+    private Intersection arrivee;
+    
+    public Fil(Intersection depart, Intersection arrivee){
+        this.depart=depart;
+        this.arrivee=arrivee;
+    }
+    
+    public double calculerLongeur(){
+        return 0.0;
+    }
     
 }
