@@ -2,18 +2,21 @@ package com.heatmyfloor.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author tatow
  */
 public class BarreOutils extends JPanel {
-    
+
     private BarreOutilsActions actions;          // <— callback vers MainWindow
-    public ButtonCard btnNouveau; 
+    public ButtonCard btnNouveau;
     public ButtonCard btnOuvrir;
     public ButtonCard btnExporter;
     public ButtonCard btnEnregistrer;
+    private ButtonCard btnRectangle;
+    private ButtonCard btnIrregulier;
 
     public BarreOutils() {
         setLayout(new BorderLayout());
@@ -31,19 +34,17 @@ public class BarreOutils extends JPanel {
         gc.insets = new Insets(8, 12, 8, 12);
 
         int col = 0;
-        
+
         //Projet
         btnNouveau = card("Nouveau", "/Icons/NouveauProjet.png");
-         btnOuvrir      = card("Ouvrir", "/Icons/OuvrirProjet.png");
-         btnEnregistrer = card("Enregistrer", "/Icons/save.png");
-         btnExporter    = card("Exporter", "/Icons/exporter.png");
+        btnOuvrir = card("Ouvrir", "/Icons/OuvrirProjet.png");
+        btnEnregistrer = card("Enregistrer", "/Icons/save.png");
+        btnExporter = card("Exporter", "/Icons/exporter.png");
 
         addGroup(ribbon, gc, col++, makeGroup("Projet",
                 btnNouveau, btnOuvrir, btnEnregistrer, btnExporter
         ), 4);
         addSep(ribbon, gc, col++);
-        
-        
 
         // --- Modélisation ---
         addGroup(ribbon, gc, col++, makeGroup("Modélisation",
@@ -54,15 +55,17 @@ public class BarreOutils extends JPanel {
 
         // --- Affichage ---
         addGroup(ribbon, gc, col++, makeGroup("Affichage",
-               // card("Vue 2D", "/icons/view2d.png"),
+                // card("Vue 2D", "/icons/view2d.png"),
                 card("Vue 3D", "/Icons/3d.png")
         ), 2);
         addSep(ribbon, gc, col++);
 
         // --- Formes ---
+        btnRectangle = card("Rectangle", "/Icons/Rectangle.png");
+        btnIrregulier = card("Irregulière", "/Icons/Polygone.png");
         addGroup(ribbon, gc, col++, makeGroup("Formes",
-                card("Rectangle", "/Icons/Rectangle.png"),
-                card("Cercle", "/Icons/cercle.png")
+                btnRectangle,
+                btnIrregulier
         ), 2);
         addSep(ribbon, gc, col++);
 
@@ -80,6 +83,10 @@ public class BarreOutils extends JPanel {
         ), 2);
 
         add(ribbon, BorderLayout.CENTER);
+    }
+
+    public void onRectangleClick(Runnable  r) {
+        btnRectangle.setOnClick(e -> r.run());
     }
 
     /* ---------- Helpers layout ---------- */
@@ -143,6 +150,5 @@ public class BarreOutils extends JPanel {
         }
         return (url != null) ? new ImageIcon(url) : null;
     }
-    
-    
+
 }

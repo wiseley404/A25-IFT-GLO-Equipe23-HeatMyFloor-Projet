@@ -12,4 +12,5 @@ public interface BarreOutilsActions {
     void onNouveauClicked();    
     void onOuvrirClicked();
     void onExporterClicked();
+    void onRectangleClicked();
 }

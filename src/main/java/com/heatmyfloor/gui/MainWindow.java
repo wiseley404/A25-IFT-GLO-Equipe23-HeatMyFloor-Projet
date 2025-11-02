@@ -216,12 +216,12 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO: sauvegarde si besoin
         tabs.removeTabAt(idx);
         disableButton();
-        i = tabs.getTabCount() + 1;  // <= ajuste i pour que le prochain numéro suive
     }
 
     private static class ClosableTabHeader extends JPanel {
 
-        public ClosableTabHeader(JTabbedPane tabs, java.util.function.IntConsumer onCloseIndex,
+        public ClosableTabHeader(JTabbedPane tabs,
+                java.util.function.IntConsumer onCloseIndex,
                 java.util.function.IntConsumer onRenameIndex) {
             setOpaque(false);
             setLayout(new FlowLayout(FlowLayout.LEFT, 6, 3));
@@ -234,7 +234,20 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             };
 
-            // Double-clic sur le titre -> renommer
+            // --- Sélectionner l’onglet sur simple clic dans le header ---
+            java.awt.event.MouseAdapter selectOnClick = new java.awt.event.MouseAdapter() {
+                @Override
+                public void mousePressed(java.awt.event.MouseEvent e) {
+                    int i = tabs.indexOfTabComponent(ClosableTabHeader.this);
+                    if (i >= 0) {
+                        tabs.setSelectedIndex(i);
+                    }
+                }
+            };
+            addMouseListener(selectOnClick);
+            title.addMouseListener(selectOnClick);
+
+            // Double-clic -> renommer
             title.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -259,7 +272,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             });
 
-            // Menu contextuel (Right-click)
+            // Menu contextuel
             JPopupMenu menu = new JPopupMenu();
             JMenuItem rename = new JMenuItem("Renommer…");
             JMenuItem closeIt = new JMenuItem("Fermer");
@@ -278,7 +291,6 @@ public class MainWindow extends javax.swing.JFrame {
             menu.add(rename);
             menu.add(closeIt);
 
-            // Ouvrir le menu contextuel
             java.awt.event.MouseAdapter showMenu = new java.awt.event.MouseAdapter() {
                 private void maybe(java.awt.event.MouseEvent e) {
                     if (e.isPopupTrigger()) {
@@ -304,4 +316,5 @@ public class MainWindow extends javax.swing.JFrame {
             add(close);
         }
     }
+
 }
