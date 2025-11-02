@@ -36,6 +36,46 @@ public class ButtonCard extends JPanel {
 
         addMouseListener(new java.awt.event.MouseAdapter() {
             /* ... inchangé ... */ });
+        
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                if (!isEnabled()) return;
+                hover = true;
+                repaint();
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                hover = false;
+                press = false;
+                repaint();
+            }
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                if (!isEnabled() || !SwingUtilities.isLeftMouseButton(e)) return;
+                press = true;
+                repaint();
+            }
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                if (!isEnabled()) return;
+                press = false;
+                repaint();
+            }
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (!isEnabled() || !SwingUtilities.isLeftMouseButton(e)) return;
+                if (onClick != null) {
+                    onClick.actionPerformed(
+                        new java.awt.event.ActionEvent(
+                            ButtonCard.this,
+                            java.awt.event.ActionEvent.ACTION_PERFORMED,
+                            textLabel.getText()   // actionCommand
+                        )
+                    );
+                }
+            }
+        });
     }
 
     public void setOnClick(ActionListener l) {
@@ -94,4 +134,6 @@ public class ButtonCard extends JPanel {
             iconLabel.setIcon(icon);
         }
     }
+    
+    
 }

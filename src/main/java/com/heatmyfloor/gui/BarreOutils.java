@@ -8,6 +8,12 @@ import java.awt.*;
  * @author tatow
  */
 public class BarreOutils extends JPanel {
+    
+    private BarreOutilsActions actions;          // <— callback vers MainWindow
+    public ButtonCard btnNouveau; 
+    public ButtonCard btnOuvrir;
+    public ButtonCard btnExporter;
+    public ButtonCard btnEnregistrer;
 
     public BarreOutils() {
         setLayout(new BorderLayout());
@@ -25,15 +31,19 @@ public class BarreOutils extends JPanel {
         gc.insets = new Insets(8, 12, 8, 12);
 
         int col = 0;
+        
+        //Projet
+        btnNouveau = card("Nouveau", "/Icons/NouveauProjet.png");
+         btnOuvrir      = card("Ouvrir", "/Icons/OuvrirProjet.png");
+         btnEnregistrer = card("Enregistrer", "/Icons/save.png");
+         btnExporter    = card("Exporter", "/Icons/exporter.png");
 
-        // --- Projet ---
         addGroup(ribbon, gc, col++, makeGroup("Projet",
-                card("Nouveau", "/Icons/NouveauProjet.png"),
-                card("Ouvrir", "/Icons/OuvrirProjet.png"),
-                card("Enregistrer", "/Icons/save.png"),
-                card("Exporter", "/Icons/exporter.png")
-        ), /*weightx=*/ 4); // poids proportionnel au nb de cards
+                btnNouveau, btnOuvrir, btnEnregistrer, btnExporter
+        ), 4);
         addSep(ribbon, gc, col++);
+        
+        
 
         // --- Modélisation ---
         addGroup(ribbon, gc, col++, makeGroup("Modélisation",
@@ -133,4 +143,6 @@ public class BarreOutils extends JPanel {
         }
         return (url != null) ? new ImageIcon(url) : null;
     }
+    
+    
 }
