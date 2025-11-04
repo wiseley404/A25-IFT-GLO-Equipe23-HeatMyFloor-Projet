@@ -201,6 +201,8 @@ public class PieceItem implements PieceItemReadOnly{
     
     @Override
     public boolean estSelectionne(){
-        return this.estSelectionne;
+        //throw new UnsupportedOperationException("Méthode non implémentée !");
+        return estSelectionne;
     }
 }
+

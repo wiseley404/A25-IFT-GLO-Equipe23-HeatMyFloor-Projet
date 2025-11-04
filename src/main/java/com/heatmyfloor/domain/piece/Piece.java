@@ -120,6 +120,17 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public void supprimerItemSelectionne(){
+        if (itemsList.isEmpty())
+            return ;
+        
+        for (var it = itemsList.iterator(); it.hasNext();){
+            PieceItem item = it.next();
+            
+            if (item.estSelectionne()){
+                it.remove();
+                return;
+            }
+        }
         
     }
     
