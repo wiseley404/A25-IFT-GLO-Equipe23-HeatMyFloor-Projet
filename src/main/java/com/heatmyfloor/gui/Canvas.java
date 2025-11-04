@@ -27,6 +27,7 @@ public class Canvas extends JPanel {
       repaint();
     }
     
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

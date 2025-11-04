@@ -232,6 +232,14 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.removeTabAt(idx);
         disableButton();
     }
+    
+    public Canvas getSelectedCanvas(){
+        Component comp=tabs.getSelectedComponent();
+        if(comp instanceof Canvas){
+            return (Canvas) comp;
+        }
+        return  null;
+    }
 
     private static class ClosableTabHeader extends JPanel {
 

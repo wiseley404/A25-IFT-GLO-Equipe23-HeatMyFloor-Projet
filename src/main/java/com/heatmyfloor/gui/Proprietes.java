@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
+import com.heatmyfloor.gui.Canvas;
 
 /**
  *
@@ -70,14 +71,41 @@ public class Proprietes extends JPanel {
         bar.add(gear, BorderLayout.EAST);
         return bar;
     }
+    
+    private JSpinner Longueur;
+    private JSpinner Largeur;
 
     private JComponent sectionPiece() {
         SectionPanel s = new SectionPanel("Pièce");
-        s.addRow("Longueur :", text(""));
-        s.addRow("Largeur  :", text(""));
+        Longueur = number(300.0, 2.0, 1000.0, 1.0);
+        Largeur = number(250.0,2.0,750.0,1.0);
+        s.addRow("Longueur :", Longueur);
+        s.addRow("Largeur  :", Largeur);
+        
+        Longueur.addChangeListener(e -> modifierRectangle());
+        Longueur.addChangeListener(e -> modifierRectangle());
+        
         return s;
     }
-
+    
+    private void modifierRectangle(){
+      java.awt.Window window = SwingUtilities.getWindowAncestor(this); 
+       if (window instanceof MainWindow) {
+           MainWindow main = (MainWindow) window;
+           Component comp = main.getSelectedCanvas();
+            if (comp instanceof Canvas) {
+                Canvas canvas = (Canvas) comp;
+                int longueur = ((Double) Longueur.getValue()).intValue();
+                int largeur = ((Double) Largeur.getValue()).intValue();
+                
+                canvas.dessinerRectangle(longueur,largeur);
+            }
+            
+           
+       
+            
+       }
+    }
     private JComponent sectionMembrane() {
         SectionPanel s = new SectionPanel("Membrane");
         s.addRow("Intersections :", text(""));
