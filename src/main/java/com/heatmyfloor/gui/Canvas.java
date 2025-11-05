@@ -21,6 +21,7 @@ public class Canvas extends JPanel {
     }
 
     public void dessinerRectangle(int longueur, int largeur){
+      
       int x = (getWidth() - longueur) / 2;
       int y = (getHeight() - largeur) / 2;
       rectangle = new Rectangle(x,y,longueur,largeur); 
@@ -30,9 +31,10 @@ public class Canvas extends JPanel {
     
     @Override
     protected void paintComponent(Graphics g) {
+        g.setColor(new Color(255, 232, 200, 120));
         super.paintComponent(g);
         if(rectangle != null){
-            g.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+            g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
         }
     }
     
