@@ -10,7 +10,11 @@ import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.MeubleSansDrain;
 import java.nio.file.Path;
 import java.util.List;
+
 import java.util.stream.Collectors;
+
+import java.util.UUID; //ajout
+
 
 /**
  *
@@ -23,6 +27,7 @@ public class Controller {
     private Projet _projet;
     
     private List<Projet> _projets;
+    private UUID selectionId; //ajout
     
     public Controller(PieceStockage stockage){
         this.stockage = stockage;
@@ -98,6 +103,15 @@ public class Controller {
     
     public void deplacerItemSelectionne(Point nouvPosition){
         
+        if(selectionId == null || nouvPosition == null) return;
+        
+        for(PieceItem element : piece.getItemsList()){
+            if(element.getID().equals(selectionId)){
+                element.setPosition(nouvPosition);
+                return;
+            }
+        }
+        
     }
     
     
@@ -107,6 +121,15 @@ public class Controller {
     
     
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHaut){
+        
+        if(selectionId == null) return;
+        
+        for(PieceItem element : piece.getItemsList()){
+            if(element.getID().equals(selectionId)){
+                element.setDimension(nouvLarg, nouvHaut);
+                return;
+            }
+        }
         
     }
     
@@ -127,6 +150,12 @@ public class Controller {
     
     public PieceReadOnly getPiece(){
         return this.piece;
+    }
+    
+    
+    public UUID getSelectionId(){  //ajout memorise l'id de l'item selectionne
+        return selectionId;
+
     }
     
     
@@ -206,8 +235,11 @@ public class Controller {
         return this.piece.trouverItemSelectionne();
     }
     
+
     public PieceItemReadOnly determinerElementDeClic(double xPouce, double yPouce){
         return this.piece.trouverCible(xPouce, yPouce);
+        
+
     }
     
     

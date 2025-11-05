@@ -119,6 +119,14 @@ public abstract class Piece implements PieceReadOnly{
     
     public void deplacerItemSelectionne(Point nouvPosition){
         
+        if(nouvPosition == null) return;
+        for(PieceItem it : itemsList){
+            if(it.estSelectionne()){
+                it.setPosition(nouvPosition);
+                break;
+            }
+        }
+        
     }
     
     
@@ -128,6 +136,13 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHauteur){
+        
+        for(PieceItem it : itemsList){
+            if(it.estSelectionne()){
+                it.setDimension(nouvLarg, nouvHauteur);
+                break;
+            }
+        }
         
     }
     
@@ -141,6 +156,7 @@ public abstract class Piece implements PieceReadOnly{
         
     }
     
+
     public PieceItem trouverItemSelectionne(){
         for(PieceItem item : itemsList){
             if(item.estSelectionne()){
@@ -148,16 +164,22 @@ public abstract class Piece implements PieceReadOnly{
             }
         }
         return null;
-    }
+    }    
+                
+
     
     public PieceItem trouverCible(double xPouce, double yPouce){
-        for(PieceItem item : itemsList){
-            if(item.contientLePoint(new Point(xPouce, yPouce))){
-                return item;
+        
+        for(PieceItem element : itemsList){
+            if(element.contientLePoint(new Point(xPouce, yPouce))){
+                return element;
+
             }
         }
         return null;
     }
+    
+
     
     @Override
     public double getLargeur(){
@@ -187,7 +209,10 @@ public abstract class Piece implements PieceReadOnly{
     }
     
     public List<PieceItem> getItemsList(){
+
         return this.itemsList;
+
+
     }
     
     public Graphe getGraphe(){
