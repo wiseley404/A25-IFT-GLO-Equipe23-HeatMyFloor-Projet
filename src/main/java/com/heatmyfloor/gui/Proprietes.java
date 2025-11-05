@@ -83,7 +83,7 @@ public class Proprietes extends JPanel {
         s.addRow("Largeur  :", Largeur);
         
         Longueur.addChangeListener(e -> modifierRectangle());
-        Longueur.addChangeListener(e -> modifierRectangle());
+        Largeur.addChangeListener(e -> modifierRectangle());
         
         return s;
     }
