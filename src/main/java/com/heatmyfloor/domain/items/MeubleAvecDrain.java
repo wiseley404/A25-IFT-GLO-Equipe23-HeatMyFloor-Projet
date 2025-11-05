@@ -26,7 +26,7 @@ public class MeubleAvecDrain extends PieceItem {
     //Constructeur
     
     public MeubleAvecDrain(double longueur, double larg, Point pos, TypeAvecDrain type){
-        super(longueur, larg, pos);
+        super(longueur, larg, pos,"Icons/MeubleAvecDrain");
         this.drainList = new ArrayList<>();
         this.distanceAvecFil = 0.0;
         this.type = type;

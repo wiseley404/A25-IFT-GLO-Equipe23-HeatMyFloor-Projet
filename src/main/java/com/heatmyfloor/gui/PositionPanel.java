@@ -12,6 +12,7 @@ public class PositionPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(1,0,0,0, new Color(230,230,230)));
         setPreferredSize(new Dimension(800, 120));
+        setBackground(Color.white);
         JPanel inner = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
         inner.setOpaque(false);
 

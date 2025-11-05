@@ -5,6 +5,7 @@ import com.heatmyfloor.domain.items.TypeAvecDrain;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.ports.PieceStockage;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,23 +13,56 @@ import java.util.List;
  * @author petit
  */
 public class Controller {
-    private Piece piece;
+    private Piece _piece;
     private PieceHistorique historique;
     private PieceStockage stockage;
+    private Projet _projet;
+    
+    private List<Projet> _projets;
     
     public Controller(PieceStockage stockage){
         this.stockage = stockage;
-        this.piece = new PieceRectangulaire(25, 15);
         this.historique = new PieceHistorique();
     }
     
     
     public Controller(Piece piece, PieceStockage stockage){
-        this.piece = piece;
+        this._piece = piece;
         this.historique = new PieceHistorique();
         this.stockage = stockage;
     }
     
+    public Controller(){
+        //_projets = new ArrayList<>();
+    }
+    
+    public Projet creerProjet(){
+        _projet =new Projet();
+        this._piece = _projet.getPiece();
+                
+        return _projet;
+    }
+    
+    public Projet getProjet(){
+        return _projet;
+    }
+    
+    public Piece getProjetPiece(){
+        return _projet.getPiece();
+    }
+    
+    
+    public void setProjetPiece(Piece piece){
+        _projet.setPiece(piece);
+    }
+    
+    public String getProjetNon(){
+        return _projet.getNom();
+    }
+    
+    public void setProjetNom(String nom){
+        _projet.setNom(nom);
+    }
     
     public void ajouterMeubleAvecDrain(Point sourisPosition, TypeAvecDrain type){
         
@@ -143,5 +177,7 @@ public class Controller {
     public void determinerElementDeClic(double xPouce, double yPouce){
         
     }
+    
+    
     
 }
