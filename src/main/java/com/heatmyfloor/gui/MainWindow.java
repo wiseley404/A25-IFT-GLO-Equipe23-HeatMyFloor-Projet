@@ -4,6 +4,9 @@
  */
 package com.heatmyfloor.gui;
 
+import com.heatmyfloor.domain.piece.Controller;
+import com.heatmyfloor.domain.piece.PieceRectangulaire;
+import com.heatmyfloor.domain.piece.Projet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -18,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicButtonUI;
 //import javax.swing.ImageIcon;
 
@@ -29,12 +33,14 @@ public class MainWindow extends javax.swing.JFrame {
 
     private BarreOutils barreOutils;
     private JTabbedPane tabs;
+    private Controller controller;
     private int i = 1;
 
     public MainWindow() {
         barreOutils = new BarreOutils();
         tabs = new JTabbedPane();
         initComponents();
+        controller = new Controller();
 
     }
 
@@ -92,20 +98,20 @@ public class MainWindow extends javax.swing.JFrame {
         //Menu du toolbar
         mainPanel.add(barreOutils, BorderLayout.NORTH);
         barreOutils.btnNouveau.setOnClick(e -> handleNewProject());
-        
-        //action pour le bouton rectangle//
-        barreOutils.onRectangleClick(()->{
-            Component componaint = tabs.getSelectedComponent();
-             if(componaint instanceof Canvas canvas){
-                 int longueur=400;
-                 int largeur = 300;
-                 canvas.dessinerRectangle(longueur, largeur);
-             }else{
-                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
-                         "Erreur", JOptionPane.ERROR_MESSAGE);
-        }});
 
-        
+        //action pour le bouton rectangle//
+        barreOutils.onRectangleClick(() -> {
+            Component componaint = tabs.getSelectedComponent();
+            if (componaint instanceof Canvas canvas) {
+                int longueur = 400;
+                int largeur = 300;
+                canvas.dessinerRectangle(longueur, largeur);
+            } else {
+                JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
+                        "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         JPanel center = new JPanel(new BorderLayout());
         Proprietes props = new Proprietes();
         center.add(props, BorderLayout.WEST);
@@ -154,17 +160,23 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addNewTab() {
-        String title = "Projet " + i++;
-        Canvas canvas = new Canvas(); // TODO: canvas.setPiece(...) si besoin
+    private void addNewProjet() {
+        Projet projet = controller.creerProjet();
+        PieceRectangulaire pr = (PieceRectangulaire) controller.getProjetPiece();
+        String title = projet.getNom() + i++;
+        Canvas canvas = new Canvas();
+        
         tabs.addTab(title, canvas);
         tabs.setSelectedComponent(canvas);
         int idx = tabs.indexOfComponent(canvas);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
+        SwingUtilities.invokeLater(() -> {
+        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
+    });
+//        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
+
     }
-    
-    
 
     private void disableButton() {
         if (tabs.getTabCount() == 0) {
@@ -192,8 +204,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuBar topMenuBar;
 
     private void handleNewProject() {
-        addNewTab();
+        addNewProjet();
         UiUtils.setEnabledRecursively(barreOutils, true);
+        UiUtils.setEnabledRecursively(barreOutils.btnRectangle, true);
     }
 
     /**
@@ -232,13 +245,13 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.removeTabAt(idx);
         disableButton();
     }
-    
-    public Canvas getSelectedCanvas(){
-        Component comp=tabs.getSelectedComponent();
-        if(comp instanceof Canvas){
+
+    public Canvas getSelectedCanvas() {
+        Component comp = tabs.getSelectedComponent();
+        if (comp instanceof Canvas) {
             return (Canvas) comp;
         }
-        return  null;
+        return null;
     }
 
     private static class ClosableTabHeader extends JPanel {

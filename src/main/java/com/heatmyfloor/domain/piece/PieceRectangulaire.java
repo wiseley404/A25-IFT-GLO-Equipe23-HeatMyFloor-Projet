@@ -37,12 +37,12 @@ public class PieceRectangulaire extends Piece {
     }
     
     
-    public double getLongueur(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+    public int getLongueur(){
+        return (int)this.longueur;
     }
     
     
-    public double getLargeur(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+    public int getLargeur(){
+        return (int)this.largeur;
     } 
 }

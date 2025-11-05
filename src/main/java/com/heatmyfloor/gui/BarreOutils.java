@@ -15,7 +15,7 @@ public class BarreOutils extends JPanel {
     public ButtonCard btnOuvrir;
     public ButtonCard btnExporter;
     public ButtonCard btnEnregistrer;
-    private ButtonCard btnRectangle;
+    public ButtonCard btnRectangle;
     private ButtonCard btnIrregulier;
 
     public BarreOutils() {
