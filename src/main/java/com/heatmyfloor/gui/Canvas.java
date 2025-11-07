@@ -8,8 +8,10 @@ import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 
 public class Canvas extends JPanel implements Serializable{
+
     private Rectangle rectangle;
     private MainWindow mainWindow;
+    private FormeIrregulierPanel dessinPanel;
     private PieceItemReadOnly itemSurvole;
     public PieceDrawer dessinateurPiece;
     
@@ -17,7 +19,7 @@ public class Canvas extends JPanel implements Serializable{
         this.mainWindow = mainWindow;
         setBackground(Color.white);
         setLayout(null); // absolute positioning for placeholder icons
-        setBorder(BorderFactory.createLineBorder(new Color(140,140,140), 2));
+        setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2));
 //        JLabel tub = createIconLabel("/icons/tub.svg", 30, 20, 60, 160);
 //        add(tub);
 //        JLabel sink = createIconLabel("/icons/sink.svg", 200, 20, 80, 40);
@@ -28,20 +30,24 @@ public class Canvas extends JPanel implements Serializable{
 //        add(cabinet);
     }
 
-    public void dessinerRectangle(int longueur, int largeur){
-      
-      int x = (getWidth() - longueur) / 2;
-      int y = (getHeight() - largeur) / 2;
-      rectangle = new Rectangle(x,y,longueur,largeur); 
-      repaint();
+    public void dessinerRectangle(int longueur, int largeur) {
+
+        if (dessinPanel != null) {
+            remove(dessinPanel);
+            dessinPanel.effacer();
+        }
+
+        int x = (getWidth() - longueur) / 2;
+        int y = (getHeight() - largeur) / 2;
+        rectangle = new Rectangle(x, y, longueur, largeur);
+        repaint();
     }
-    
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(255, 232, 200, 120));
         super.paintComponent(g);
-        if(rectangle != null){
+        if (rectangle != null) {
             g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
         }
     }
@@ -59,8 +65,29 @@ public class Canvas extends JPanel implements Serializable{
         l.setBounds(x, y, w, h);
         try {
             l.setIcon(new ImageIcon(getClass().getResource(resPath)));
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
         l.setBorder(BorderFactory.createDashedBorder(Color.GRAY));
         return l;
+    }
+
+    void dessinerFormeIrreguliere() {
+        rectangle = null;
+        if (dessinPanel != null) {
+            remove(dessinPanel);
+        }
+
+        dessinPanel = new FormeIrregulierPanel();
+        dessinPanel.setOpaque(false);
+        dessinPanel.setBounds(0, 0, getWidth(), getHeight());
+        dessinPanel.activerModeDessin(true);
+
+        add(dessinPanel);
+        revalidate();
+        repaint();
+
+        JOptionPane.showMessageDialog(this,
+                "Cliquez pour placer des points.\nDouble-cliquez pour fermer la forme.",
+                "Mode dessin", JOptionPane.INFORMATION_MESSAGE);
     }
 }
