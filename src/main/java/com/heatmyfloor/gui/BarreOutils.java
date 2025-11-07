@@ -17,6 +17,7 @@ public class BarreOutils extends JPanel {
     public ButtonCard btnEnregistrer;
     public ButtonCard btnRectangle;
     private ButtonCard btnIrregulier;
+    private FormeIrregulierPanel dessinPanel;
 
     public BarreOutils() {
         setLayout(new BorderLayout());
@@ -24,7 +25,72 @@ public class BarreOutils extends JPanel {
         setOpaque(true);
         setBackground(Color.white);
 
-        // Ruban plein écran : GridBagLayout -> 100% de la largeur
+        addButton();
+
+    }
+
+    public void onRectangleClick(Runnable r) {
+        btnRectangle.setOnClick(e -> r.run());
+    }
+
+    public void onIrregularButtonClick(Runnable r) {
+        btnIrregulier.setOnClick(e -> r.run());
+    }
+
+    private void addGroup(JPanel parent, GridBagConstraints base, int gridx, JComponent group, double weightx) {
+        GridBagConstraints gc = (GridBagConstraints) base.clone();
+        gc.gridx = gridx;
+        gc.weightx = weightx;
+        parent.add(group, gc);
+    }
+
+    private void addSep(JPanel parent, GridBagConstraints base, int gridx) {
+        GridBagConstraints gc = (GridBagConstraints) base.clone();
+        gc.gridx = gridx;
+        gc.weightx = 0;
+        gc.insets = new Insets(8, 0, 8, 0);
+        parent.add(vSep(), gc);
+    }
+
+    private JComponent makeGroup(String title, ButtonCard... cards) {
+        JPanel col = new JPanel();
+        col.setOpaque(false);
+        col.setLayout(new BoxLayout(col, BoxLayout.Y_AXIS));
+
+        JPanel row = new JPanel(new GridLayout(1, cards.length, 12, 0));
+        row.setOpaque(false);
+        for (ButtonCard c : cards) {
+            row.add(c);
+        }
+
+        JLabel lbl = new JLabel(title, SwingConstants.CENTER);
+        lbl.setAlignmentX(0.5f);
+        lbl.setForeground(new Color(70, 70, 70));
+        lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN, 13f));
+
+        col.add(row);
+        col.add(Box.createVerticalStrut(6));
+        col.add(lbl);
+        return col;
+    }
+
+    private JComponent vSep() {
+        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
+        s.setForeground(new Color(210, 190, 160));
+        s.setPreferredSize(new Dimension(1, 64));
+        return s;
+    }
+
+    private ButtonCard card(String text, String resPath) {
+        return new ButtonCard(text, loadIcon(resPath));
+    }
+
+    private ImageIcon loadIcon(String path) {
+        java.net.URL url = getClass().getResource(path);
+        return (url != null) ? new ImageIcon(url) : null;
+    }
+
+    private void addButton() {
         JPanel ribbon = new JPanel(new GridBagLayout());
         ribbon.setOpaque(false);
 
@@ -83,72 +149,6 @@ public class BarreOutils extends JPanel {
         ), 2);
 
         add(ribbon, BorderLayout.CENTER);
-    }
-
-    public void onRectangleClick(Runnable  r) {
-        btnRectangle.setOnClick(e -> r.run());
-    }
-
-    /* ---------- Helpers layout ---------- */
-    // Ajoute un "groupe" dans la grille avec un weightx donné (il s'étire)
-    private void addGroup(JPanel parent, GridBagConstraints base, int gridx, JComponent group, double weightx) {
-        GridBagConstraints gc = (GridBagConstraints) base.clone();
-        gc.gridx = gridx;
-        gc.weightx = weightx;                  // <= clé : s'étire pour remplir 100%
-        parent.add(group, gc);
-    }
-
-    // Ajoute un séparateur vertical à largeur fixe (ne s'étire pas)
-    private void addSep(JPanel parent, GridBagConstraints base, int gridx) {
-        GridBagConstraints gc = (GridBagConstraints) base.clone();
-        gc.gridx = gridx;
-        gc.weightx = 0;                        // <= pas d'étirement
-        gc.insets = new Insets(8, 0, 8, 0);
-        parent.add(vSep(), gc);
-    }
-
-    // Groupe = ligne de cards étirables + titre centré dessous
-    private JComponent makeGroup(String title, ButtonCard... cards) {
-        JPanel col = new JPanel();
-        col.setOpaque(false);
-        col.setLayout(new BoxLayout(col, BoxLayout.Y_AXIS));
-
-        // Étirement horizontal égal des cards
-        JPanel row = new JPanel(new GridLayout(1, cards.length, 12, 0));
-        row.setOpaque(false);
-        for (ButtonCard c : cards) {
-            row.add(c);
-        }
-
-        JLabel lbl = new JLabel(title, SwingConstants.CENTER);
-        lbl.setAlignmentX(0.5f);
-        lbl.setForeground(new Color(70, 70, 70));
-        lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN, 13f));
-
-        col.add(row);
-        col.add(Box.createVerticalStrut(6));
-        col.add(lbl);
-        return col;
-    }
-
-    private JComponent vSep() {
-        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
-        s.setForeground(new Color(210, 190, 160));
-        s.setPreferredSize(new Dimension(1, 64));
-        return s;
-    }
-
-    // Fabrique une ButtonCard (sans action par défaut)
-    private ButtonCard card(String text, String resPath) {
-        return new ButtonCard(text, loadIcon(resPath));
-    }
-
-    private ImageIcon loadIcon(String path) {
-        java.net.URL url = getClass().getResource(path);
-        if (url == null) {
-            System.err.println("⚠️ Image non trouvée : " + path);
-        }
-        return (url != null) ? new ImageIcon(url) : null;
     }
 
 }
