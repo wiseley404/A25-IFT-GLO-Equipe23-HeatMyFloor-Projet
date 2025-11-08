@@ -7,6 +7,7 @@ import com.heatmyfloor.domain.ports.PieceStockage;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,6 +18,7 @@ public class Controller {
     private PieceHistorique historique;
     private PieceStockage stockage;
     private Projet _projet;
+    private PieceRectangulaire pieceRectangulaire;
     
     private List<Projet> _projets;
     
@@ -62,6 +64,23 @@ public class Controller {
     
     public void setProjetNom(String nom){
         _projet.setNom(nom);
+    }
+    public void creerPieceRectangulaire(double longueur,double largeur){
+        
+        if(_projet == null){
+            JOptionPane.showMessageDialog(null,"Aucun projet ouvert","Erreur",JOptionPane.ERROR_MESSAGE);
+        }
+        pieceRectangulaire = new PieceRectangulaire(longueur, largeur);
+        _projet.setPiece(pieceRectangulaire);
+        
+        
+    }
+    public double getLongeurPieceRectangulaire(){
+        return pieceRectangulaire.getLongueur();
+    }
+    
+    public double getLargeurPieceRectangulaire(){
+        return pieceRectangulaire.getLargeur();
     }
     
     public void ajouterMeubleAvecDrain(Point sourisPosition, TypeAvecDrain type){

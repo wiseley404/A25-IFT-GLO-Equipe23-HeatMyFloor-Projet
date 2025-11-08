@@ -78,7 +78,7 @@ public class Proprietes extends JPanel {
     private JComponent sectionPiece() {
         SectionPanel s = new SectionPanel("Pièce");
         Longueur = number(300.0, 2.0, 1000.0, 1.0);
-        Largeur = number(250.0,2.0,750.0,1.0);
+        Largeur = number(250.0,2.0,450.0,1.0);
         s.addRow("Longueur :", Longueur);
         s.addRow("Largeur  :", Largeur);
         

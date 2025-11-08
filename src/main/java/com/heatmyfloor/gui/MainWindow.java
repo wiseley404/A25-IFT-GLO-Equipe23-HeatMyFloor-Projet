@@ -61,8 +61,9 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.onRectangleClick(() -> {
             Component componaint = tabs.getSelectedComponent();
             if (componaint instanceof Canvas canvas) {
-                int longueur = 400;
-                int largeur = 300;
+                controller.creerPieceRectangulaire(900.0, 400.0);
+                int longueur = (int)controller.getLongeurPieceRectangulaire();
+                int largeur = (int)controller.getLargeurPieceRectangulaire();
                 canvas.dessinerRectangle(longueur, largeur);
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
@@ -199,7 +200,7 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.removeTabAt(idx);
         disableButton();
     }
-
+    
     public Canvas getSelectedCanvas() {
         Component comp = tabs.getSelectedComponent();
         if (comp instanceof Canvas) {
