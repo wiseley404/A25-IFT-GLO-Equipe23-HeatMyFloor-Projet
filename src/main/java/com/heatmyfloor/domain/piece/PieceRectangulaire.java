@@ -10,39 +10,47 @@ import java.util.List;
  * @author petit
  */
 public class PieceRectangulaire extends Piece {
-    private double longueur;
-    private double largeur;
-    
-    public PieceRectangulaire(double longueur, double largeur){   
-        super(creerMurs(longueur, largeur));
-        this.longueur = longueur;
-        this.largeur = largeur;
+
+    public PieceRectangulaire(double largeur, double hauteur){   
+        super(largeur, hauteur, creerMurs(largeur, hauteur));
     }
     
-    public static List<Mur> creerMurs(double longueur, double largeur){
+    public static List<Mur> creerMurs(double largeur, double hauteur){
         Rectangle2D pieceContour = new Rectangle2D.Double(
-                                    0, 0, longueur, largeur
+                                    0, 0, largeur, hauteur
                                    ).getBounds2D();
-//        Point a = new Point(pieceContour.getX(), pieceContour.getY());
-//        Point b = new Point(pieceContour.getX()+ largeur, pieceContour.getY());
-//        Point c = new Point(pieceContour.getX(), pieceContour.getY() + longueur);
-//        Point d = new Point(pieceContour.getX() + largeur, pieceContour.getY() + longueur);
+        Point a = new Point(pieceContour.getX(), pieceContour.getY());
+        Point b = new Point(pieceContour.getX()+ largeur, pieceContour.getY());
+        Point c = new Point(pieceContour.getX(), pieceContour.getY() + hauteur);
+        Point d = new Point(pieceContour.getX() + largeur, pieceContour.getY() + hauteur);
         
         return Arrays.asList(
-//                new Mur(a, b),
-//                new Mur(a, c),
-//                new Mur(c, d),
-//                new Mur(d, b)
+                new Mur(a, b),
+                new Mur(a, c),
+                new Mur(c, d),
+                new Mur(d, b)
               );        
     }
     
-    
-    public int getLongueur(){
-        return (int)this.longueur;
+    public Rectangle2D getForme(){
+        Rectangle2D pieceForme = new Rectangle2D.Double(
+                                    this.getPosition().getX(),
+                                    this.getPosition().getY(),
+                                    this.getLargeur(),
+                                    this.getHauteur());
+        return pieceForme;
     }
     
+    @Override
+    public Point getCentre(){
+        double x = getForme().getCenterX();
+        double y = getForme().getCenterY();
+        return new Point(x, y);
+    }
     
-    public int getLargeur(){
-        return (int)this.largeur;
-    } 
+    @Override
+    public boolean contientLePoint(Point position){
+        return getForme().contains(position.getX(), position.getY());
+    }
+
 }

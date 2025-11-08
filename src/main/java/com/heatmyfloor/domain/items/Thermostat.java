@@ -15,8 +15,8 @@ public class Thermostat extends PieceItem {
     
     //Constructeur
     
-    public Thermostat(double longueur, double larg, Point pos){
-        super(longueur, larg, pos,"Icons/Thermostat.png");
+    public Thermostat(double largeur, double hauteur, Point pos){
+        super(largeur, hauteur, pos,"/images/thermostat.png");
     }
     
     

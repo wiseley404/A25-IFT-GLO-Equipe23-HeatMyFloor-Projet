@@ -15,13 +15,13 @@ public class MeubleSansDrain extends PieceItem {
     
     //Attributs
     
-    private double distanceAvecFil;
+    private final double distanceAvecFil;
     private TypeSansDrain type;
     
     //Constructeur
     
-    public MeubleSansDrain(double longueur, double larg, Point pos, TypeSansDrain type){
-        super(longueur, larg, pos,"Icons/MeubleSansDrain");
+    public MeubleSansDrain(double largeur, double hauteur, Point pos, TypeSansDrain type){
+        super(largeur, hauteur, pos, type.getImage());
         this.distanceAvecFil = 0.0;
         this.type = type;
     }
@@ -29,11 +29,13 @@ public class MeubleSansDrain extends PieceItem {
     
     //Méthode
     
-    public boolean estClique(double x_pouce, double y_pouce){
-        
-        throw new UnsupportedOperationException("estClique non implémentée");
+    public double getDistanceAvecFil(){
+        return this.distanceAvecFil;
     }
     
+    public TypeSansDrain getType(){
+        return this.type;
+    }
     
     
 }

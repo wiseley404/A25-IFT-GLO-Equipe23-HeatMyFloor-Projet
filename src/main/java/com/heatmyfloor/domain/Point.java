@@ -9,5 +9,11 @@ package com.heatmyfloor.domain;
  * @author petit
  */
 public class Point {
+    public Point(){}
     
+    public Point(double x, double y){}
+    
+    public double getX(){ return 0.0;}
+    
+    public double getY(){ return 0.0;}
 }

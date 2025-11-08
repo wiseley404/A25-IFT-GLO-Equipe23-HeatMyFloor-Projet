@@ -12,9 +12,18 @@ package com.heatmyfloor.domain.items;
  */
 public enum TypeAvecDrain {
     
-    TOILETTE,
-    DOUCHE,
-    VANITE,
-    BAIN
+    TOILETTE("/images/toilette.png"),
+    DOUCHE("/images/douche.png"),
+    VANITE("/images/vanite.png"),
+    BAIN("/images/bain.png");
     
+    private final String image;
+    
+    TypeAvecDrain(String image){
+        this.image = image;
+    }
+    
+    public String getImage(){
+        return this.image;
+    }
 }

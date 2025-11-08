@@ -6,6 +6,7 @@ package com.heatmyfloor.domain.items;
 
 import com.heatmyfloor.domain.Point;
 import java.util.UUID;
+import java.awt.geom.Ellipse2D;
 
 /**
  *
@@ -18,5 +19,7 @@ public interface DrainReadOnly {
     Point getPosition();
     double getDistanceAvecFil();
     boolean estSelectionne();
+    Ellipse2D getForme();
+    boolean contientLePoint(Point pos);
     
 }

@@ -4,16 +4,20 @@ import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.ports.PieceStockage;
+import com.heatmyfloor.domain.items.ElementChauffant;
+import com.heatmyfloor.domain.items.Thermostat;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
+import com.heatmyfloor.domain.items.MeubleSansDrain;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author petit
  */
 public class Controller {
-    private Piece _piece;
+    private Piece piece;
     private PieceHistorique historique;
     private PieceStockage stockage;
     private Projet _projet;
@@ -27,7 +31,7 @@ public class Controller {
     
     
     public Controller(Piece piece, PieceStockage stockage){
-        this._piece = piece;
+        this.piece = piece;
         this.historique = new PieceHistorique();
         this.stockage = stockage;
     }
@@ -38,7 +42,7 @@ public class Controller {
     
     public Projet creerProjet(){
         _projet =new Projet();
-        this._piece = _projet.getPiece();
+        this.piece = _projet.getPiece();
                 
         return _projet;
     }
@@ -56,7 +60,7 @@ public class Controller {
         _projet.setPiece(piece);
     }
     
-    public String getProjetNon(){
+    public String getProjetNom(){
         return _projet.getNom();
     }
     
@@ -64,25 +68,28 @@ public class Controller {
         _projet.setNom(nom);
     }
     
-    public void ajouterMeubleAvecDrain(Point sourisPosition, TypeAvecDrain type){
-        
+    public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type){
+        this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));
     }
     
     
-    public void ajouterMeubleSansDrain(Point sourisPosition, TypeSansDrain type){
-        
+    public void ajouterMeubleSansDrain(Point position, TypeSansDrain type){
+        this.piece.ajouterItem(new MeubleSansDrain(120, 70, position, type));
     }
     
     
-    public void ajouterElementChauffant(Point sourisPosition){
-        
+    public void ajouterElementChauffant(Point position){
+        this.piece.ajouterItem(new ElementChauffant(120, 70, position));
     }
     
     
-    public void ajouterThermostat(Point sourisPosition){
-        
+    public void ajouterThermostat(Point position){
+        this.piece.ajouterItem(new Thermostat(70, 50, position));
     }
     
+    public void repositionnerPiece(Point position){
+        this.piece.setPosition(position);
+    }
     
     public void supprimerItemSelectionne(){
         
@@ -94,18 +101,32 @@ public class Controller {
     }
     
     
-    public void redimensionnerPiece(double nouvLong, double nouvLarg){
+    public void redimensionnerPiece(double nouvLarg, double nouvHaut){
         
     }
     
     
-    public void redimensionnerItemSelectionne(double nouvLong, double nouvLarg){
+    public void redimensionnerItemSelectionne(double nouvLarg, double nouvHaut){
         
     }
     
+    public void redimensionnerItemSelectionne(Point delta){
+        
+    }
+    
+    public void changerStatutSelection(Point pos){
+        this.piece.changerStatutSelectionItem(pos);
+    }
     
     public List<PieceItemReadOnly> getItemsList(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.piece.getItemsList()
+                .stream()
+                .map(pieceItem -> (PieceItemReadOnly) pieceItem)
+                .collect(Collectors.toList());
+    }
+    
+    public PieceReadOnly getPiece(){
+        return this.piece;
     }
     
     
@@ -119,17 +140,25 @@ public class Controller {
     }
     
     
-    public void ajouterDrain(Point sourisPosition){
+    public void ajouterDrain(Point position){
         
     }
     
     
-    public void deplacerDrainSelectionne(Point nouvPosition){
+    public void repositionnerDrainSelectionne(Point nouvPosition){
+        
+    }
+    
+    public void deplacerDrainSelectionne(Point delta){
         
     }
     
     
     public void redimensionnerDrainSelectionne(double nouvDiametre){
+        
+    }
+    
+    public void redimensionnerDrainSelectionne(Point delta){
         
     }
     
@@ -173,9 +202,12 @@ public class Controller {
         
     }
     
+    public PieceItemReadOnly trouverItemSelectionne(){
+        return this.piece.trouverItemSelectionne();
+    }
     
-    public void determinerElementDeClic(double xPouce, double yPouce){
-        
+    public PieceItemReadOnly determinerElementDeClic(double xPouce, double yPouce){
+        return this.piece.trouverCible(xPouce, yPouce);
     }
     
     

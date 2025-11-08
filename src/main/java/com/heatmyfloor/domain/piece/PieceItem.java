@@ -1,6 +1,7 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 
 /**
@@ -9,18 +10,18 @@ import java.util.UUID;
  */
 public class PieceItem implements PieceItemReadOnly{
     private final UUID id;
-    private double longueur;
     private double largeur;
+    private double hauteur;
     private Point position;
     private int angle;
     private final String image;
     private boolean estSelectionne;
     
     
-    public PieceItem(double longueur, double larg, Point pos, String img){
+    public PieceItem(double largeur, double hauteur, Point pos, String img){
         this.id = UUID.randomUUID();
-        this.longueur = longueur;
-        this.largeur = larg;
+        this.largeur = largeur;
+        this.hauteur = hauteur;
         this.position = pos;
         this.angle = 0;
         this.image = img;
@@ -56,15 +57,20 @@ public class PieceItem implements PieceItemReadOnly{
     public void redimensionner(Point delta){
 
     }
+    public Rectangle2D getItemForme(){
+        Rectangle2D itemForme = new Rectangle2D.Double(
+                        this.getPosition().getX(), this.getPosition().getY(),
+                        this.getLargeur(), this.getHauteur());
+        return itemForme;
+    }
     
-    
-    public boolean contientLePoint(Point pos){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+    public boolean contientLePoint(Point position){
+        return this.getItemForme().contains(position.getX(), position.getY());
     }
     
     
     public void setEstSelectionne(boolean statutSelection){
-
+        this.estSelectionne = statutSelection;
     }
     
     public void positionnerAGauche(){
@@ -93,11 +99,12 @@ public class PieceItem implements PieceItemReadOnly{
     
     
     public void setAngle(int angle){
-
+        angle = angle % 360;
+        this.angle = angle;
     }
     
     public void pivoter(){
-
+        setAngle(this.angle + 90);
     }
     
     
@@ -105,40 +112,40 @@ public class PieceItem implements PieceItemReadOnly{
     public UUID getID(){
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
-
-    
-    @Override
-    public double getLongueur(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
-    }
     
     
     @Override
     public double getLargeur(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.largeur;
+    }
+    
+    
+    @Override
+    public double getHauteur(){
+        return this.hauteur;
     }
     
     
     @Override
     public Point getPosition(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.position;
     }
     
     
     @Override
     public int getAngle(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.angle;
     }
     
     
     @Override
     public String getImage(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.image;
     }
     
     
     @Override
     public boolean estSelectionne(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.estSelectionne;
     }
 }

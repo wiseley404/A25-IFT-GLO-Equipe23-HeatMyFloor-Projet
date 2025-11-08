@@ -2,6 +2,7 @@ package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
 import java.util.UUID;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -9,9 +10,11 @@ import java.util.UUID;
  */
 public interface PieceItemReadOnly {
     UUID getID();
-    double getLongueur();
+    double getHauteur();
     double getLargeur();
     Point getPosition();
+    Rectangle2D getItemForme();
+    boolean contientLePoint(Point position);
     int getAngle();
     String getImage();
     boolean estSelectionne();

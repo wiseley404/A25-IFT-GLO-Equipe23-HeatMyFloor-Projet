@@ -23,7 +23,7 @@ public class TableauErreur extends JPanel {
         JLabel warn = new JLabel("⚠");
         warn.setFont(warn.getFont().deriveFont(20f));
         msg.add(warn);
-        msg.add(new JLabel("Vous ne pouvez pas déplacer ce meuble à cette position."));
+        msg.add(new JLabel(""));
         add(msg, BorderLayout.CENTER);
     }
 }

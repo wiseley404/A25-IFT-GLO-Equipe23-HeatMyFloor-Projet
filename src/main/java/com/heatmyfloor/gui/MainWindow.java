@@ -5,6 +5,8 @@
 package com.heatmyfloor.gui;
 
 import com.heatmyfloor.domain.piece.Controller;
+import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.domain.piece.Projet;
 import java.awt.BorderLayout;
@@ -12,6 +14,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -33,11 +39,16 @@ public class MainWindow extends javax.swing.JFrame {
 
     private BarreOutils barreOutils;
     private JTabbedPane tabs;
-    private Controller controller;
+    public Controller controller;
     private int i = 1;
+    
+    public Canvas currentCanvas;
+    public Proprietes props;
+    public PositionPanel panelPosition;
+    public Point positionSouris = new Point();
 
     public MainWindow() {
-        barreOutils = new BarreOutils();
+        barreOutils = new BarreOutils(this);
         tabs = new JTabbedPane();
         initComponents();
         controller = new Controller();
@@ -111,9 +122,12 @@ public class MainWindow extends javax.swing.JFrame {
                         "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
+        
+        barreOutils.onSansDrainClicked();
+        barreOutils.onAvecDrainClicked();
 
         JPanel center = new JPanel(new BorderLayout());
-        Proprietes props = new Proprietes();
+        props = new Proprietes(this);
         center.add(props, BorderLayout.WEST);
 
         center.add(tabs, BorderLayout.CENTER);
@@ -121,7 +135,8 @@ public class MainWindow extends javax.swing.JFrame {
         mainPanel.add(center, BorderLayout.CENTER);
 
         JPanel bottom = new JPanel(new BorderLayout());
-        bottom.add(new PositionPanel(), BorderLayout.CENTER);
+        panelPosition = new PositionPanel(this);
+        bottom.add(panelPosition, BorderLayout.CENTER);
         bottom.add(new TableauErreur(), BorderLayout.EAST);
         mainPanel.add(bottom, BorderLayout.SOUTH);
 
@@ -156,7 +171,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
 
         disableButton();
-
+        
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -164,7 +179,7 @@ public class MainWindow extends javax.swing.JFrame {
         Projet projet = controller.creerProjet();
         PieceRectangulaire pr = (PieceRectangulaire) controller.getProjetPiece();
         String title = projet.getNom() + i++;
-        Canvas canvas = new Canvas();
+        Canvas canvas = new Canvas(this);
         
         tabs.addTab(title, canvas);
         tabs.setSelectedComponent(canvas);
@@ -172,11 +187,53 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
         SwingUtilities.invokeLater(() -> {
-        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
+        canvas.dessinerRectangle((int)pr.getLargeur(), (int)pr.getHauteur());
     });
 //        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
-
+        //sourisListener();
+        //suppressionListener(); *ALIYA
+        
+       
+        canvas.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e){
+                Point cliqueSouris = new Point(e.getX(), e.getY());
+                controller.changerStatutSelection(cliqueSouris);
+                props.afficherProprietesItemSelectionne();
+                panelPosition.afficherCoordItemSelectionne();
+                panelPosition.afficherAngleItemSelectionne();
+                canvas.repaint();
+                
+            }
+        });
+        
+        canvas.addMouseMotionListener(new MouseMotionAdapter(){
+            @Override
+            public void mouseMoved(MouseEvent e){
+                positionSouris = new Point(e.getX(), e.getY());
+                List<PieceItemReadOnly> items = controller.getItemsList();
+                
+                PieceItemReadOnly ancienItemSurvole = canvas.getItemSurvole();
+                PieceItemReadOnly itemSurvole = null;
+                
+                for(int i = items.size() - 1; i >= 0; i--){
+                    PieceItemReadOnly item = items.get(i);
+                    if(item.contientLePoint(positionSouris)){
+                        itemSurvole = item;
+                        break;
+                    }
+                }
+                
+                if(ancienItemSurvole != itemSurvole){
+                    canvas.setItemSurvole(itemSurvole);
+                    canvas.repaint();
+                }
+            }
+        });
+    
     }
+    
+
 
     private void disableButton() {
         if (tabs.getTabCount() == 0) {

@@ -3,10 +3,18 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.JLabel;
+import java.io.Serializable;
+import com.heatmyfloor.domain.piece.PieceItemReadOnly;
+import com.heatmyfloor.gui.drawer.PieceDrawer;
 
-public class Canvas extends JPanel {
+public class Canvas extends JPanel implements Serializable{
     private Rectangle rectangle;
-    public Canvas() {
+    private MainWindow mainWindow;
+    private PieceItemReadOnly itemSurvole;
+    public PieceDrawer dessinateurPiece;
+    
+    public Canvas(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
         setBackground(Color.white);
         setLayout(null); // absolute positioning for placeholder icons
         setBorder(BorderFactory.createLineBorder(new Color(140,140,140), 2));
@@ -38,7 +46,13 @@ public class Canvas extends JPanel {
         }
     }
     
+    public PieceItemReadOnly getItemSurvole(){
+        return this.itemSurvole;
+    }
     
+    public void setItemSurvole(PieceItemReadOnly item){
+        this.itemSurvole = item;
+    }
     
     private JLabel createIconLabel(String resPath, int x, int y, int w, int h) {
         JLabel l = new JLabel();

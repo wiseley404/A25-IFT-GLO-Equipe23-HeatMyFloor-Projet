@@ -3,13 +3,16 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import com.heatmyfloor.domain.items.TypeSansDrain;
+import com.heatmyfloor.domain.items.TypeAvecDrain;
 
 /**
  *
  * @author tatow
  */
 public class BarreOutils extends JPanel {
-
+    
+    private MainWindow mainWindow;
     private BarreOutilsActions actions;          // <— callback vers MainWindow
     public ButtonCard btnNouveau;
     public ButtonCard btnOuvrir;
@@ -17,8 +20,12 @@ public class BarreOutils extends JPanel {
     public ButtonCard btnEnregistrer;
     public ButtonCard btnRectangle;
     private ButtonCard btnIrregulier;
+    private ButtonCard btnMenuSansDrain;
+    private ButtonCard btnMenuAvecDrain;
+    
 
-    public BarreOutils() {
+    public BarreOutils(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 200, 160)));
         setOpaque(true);
@@ -70,9 +77,11 @@ public class BarreOutils extends JPanel {
         addSep(ribbon, gc, col++);
 
         // --- Meubles ---
+        btnMenuSansDrain  = card("Sans drain", "/icons/MeubleSansDrain.png");
+        btnMenuAvecDrain = card("Avec drain", "/icons/MeubleAvecDrain.png");
         addGroup(ribbon, gc, col++, makeGroup("Meubles",
-                card("Sans drain", "/icons/MeubleSansDrain.png"),
-                card("Avec drain", "/icons/MeubleAvecDrain.png")
+                btnMenuSansDrain,
+                btnMenuAvecDrain
         ), 2);
         addSep(ribbon, gc, col++);
 
@@ -88,7 +97,68 @@ public class BarreOutils extends JPanel {
     public void onRectangleClick(Runnable  r) {
         btnRectangle.setOnClick(e -> r.run());
     }
+    
+        public void onSansDrainClicked(){
+        btnMenuSansDrain.setOnClick(e -> {
+            JPopupMenu menuItemSansDrain = new JPopupMenu();
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.setPreferredSize(new Dimension(130, 200));
+            ButtonCard card1 = card("Armoire", "/images/armoire.png");
+            ButtonCard card2 = card("Placard", "/images/placard.png");
+            card1.setMinimumSize(new Dimension(120,100));
+            card2.setMinimumSize(new Dimension(120,100));
+            panel.add(card1);
+            panel.add(card2);
+            menuItemSansDrain.add(panel);
+            menuItemSansDrain.show(btnMenuSansDrain, btnMenuSansDrain.getWidth()-5, btnMenuSansDrain.getHeight()-5);
+            
+            ButtonCard[] cards = {card1, card2};
+            for (ButtonCard c: cards){
+                c.setOnClick(event -> {
+                    String nom = event.getActionCommand().toUpperCase();
+                    mainWindow.controller.ajouterMeubleSansDrain(mainWindow.controller.getPiece().getCentre(), TypeSansDrain.valueOf(nom));
+                    mainWindow.currentCanvas.repaint();
+                });
+            }
+        });
 
+    }
+        
+        
+    public void onAvecDrainClicked(){
+        btnMenuAvecDrain.setOnClick(e -> {
+            JPopupMenu menuItemAvecDrain = new JPopupMenu();
+            JPanel panel = new JPanel(new GridLayout(2,2));
+            panel.setPreferredSize(new Dimension(260, 200));
+            
+            ButtonCard card1 = card("Bain", "/images/bain.png");
+            ButtonCard card2 = card("Douche", "/images/douche.png");
+            ButtonCard card3 = card("Toilette", "/images/toilette.png");
+            ButtonCard card4 = card("Vanité", "/images/vanite.png");
+            
+            card1.setMinimumSize(new Dimension(120,100));
+            card2.setMinimumSize(new Dimension(120,100));
+            
+            panel.add(card1);
+            panel.add(card2);
+            panel.add(card3);
+            panel.add(card4);
+            menuItemAvecDrain.add(panel);
+            menuItemAvecDrain.show(btnMenuAvecDrain, btnMenuAvecDrain.getWidth()-5, btnMenuAvecDrain.getHeight()-5);
+            
+            ButtonCard[] cards = {card1, card2, card3, card4};
+            for (ButtonCard c: cards){
+                c.setOnClick(event -> {
+                    String nom = event.getActionCommand().toUpperCase();
+                    mainWindow.controller.ajouterMeubleAvecDrain(new com.heatmyfloor.domain.Point(100, 100), TypeAvecDrain.valueOf(nom));
+                    mainWindow.currentCanvas.repaint();
+                });
+            }
+        });
+    }
+
+    
     /* ---------- Helpers layout ---------- */
     // Ajoute un "groupe" dans la grille avec un weightx donné (il s'étire)
     private void addGroup(JPanel parent, GridBagConstraints base, int gridx, JComponent group, double weightx) {

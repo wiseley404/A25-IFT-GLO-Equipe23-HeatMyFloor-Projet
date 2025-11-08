@@ -14,13 +14,8 @@ import com.heatmyfloor.domain.piece.PieceItem;
 public class ElementChauffant extends PieceItem {
 
     //Constructeur
-    public ElementChauffant(double longueur, double larg, Point pos) {
-        super(longueur, larg, pos,"Icons/ElementChauffant.png");
+    public ElementChauffant(double largeur, double hauteur, Point pos) {
+        super(largeur, hauteur, pos,"/images/elementChauffant.png");
     }
 
-    //Méthode
-    public boolean estClique(double x_pouce, double y_pouce) {
-
-        throw new UnsupportedOperationException("estClique non implémentée");
-    }
 }

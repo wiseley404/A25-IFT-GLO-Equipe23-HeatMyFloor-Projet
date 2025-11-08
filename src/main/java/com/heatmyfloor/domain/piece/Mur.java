@@ -9,7 +9,7 @@ import java.util.UUID;
 public class Mur {
     private final UUID id;
     private Point debut, fin;
-    private double distanceAvecFil;
+    private final double distanceAvecFil;
     
     public Mur(Point debut, Point fin){
         this.fin = fin;
@@ -35,8 +35,8 @@ public class Mur {
     }
     
     public double getDistanceAvecFil(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
-    }  
+        return this.distanceAvecFil;
+    }
 
     
 }

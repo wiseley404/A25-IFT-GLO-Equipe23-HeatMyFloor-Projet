@@ -1,5 +1,6 @@
 package com.heatmyfloor.gui;
 
+import com.heatmyfloor.domain.piece.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -11,8 +12,17 @@ import com.heatmyfloor.gui.Canvas;
  * @author tatow
  */
 public class Proprietes extends JPanel {
-
-    public Proprietes() {
+    private JTextField largeurPiece;
+    private JTextField hauteurPiece;
+    private JTextField distanceIntersections;
+    private JTextField largeurItem;
+    private JTextField hauteurItem;
+    private JTextField distanceFils;
+    private JTextField longueurFil;
+    private MainWindow mainWindow;
+    
+    public Proprietes(MainWindow mainWIndow) {
+        this.mainWindow = mainWindow;
         setPreferredSize(new Dimension(300, 0));
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(230, 230, 230)));
@@ -48,6 +58,8 @@ public class Proprietes extends JPanel {
         sp.setBorder(null);
         sp.getViewport().setOpaque(false);
         add(sp, BorderLayout.CENTER);
+        
+        //dimensionsListener(); *KEMILA
     }
 
     // ===================== UI =====================
@@ -108,7 +120,8 @@ public class Proprietes extends JPanel {
     }
     private JComponent sectionMembrane() {
         SectionPanel s = new SectionPanel("Membrane");
-        s.addRow("Intersections :", text(""));
+        distanceIntersections = text("");
+        s.addRow("Intersections :", distanceIntersections);
         s.addSpacer(8);
         s.addFull(button("Générer un Graphe"));
         return s;
@@ -116,15 +129,31 @@ public class Proprietes extends JPanel {
 
     private JComponent sectionMeuble() {
         SectionPanel s = new SectionPanel("Meuble");
-        s.addRow("Longueur :", text("200\""));
-        s.addRow("Largeur  :", text("50\""));
+        largeurItem = text("");
+        hauteurItem = text("");
+        s.addRow("Largeur :", largeurItem);
+        s.addRow("Hauteur  :", hauteurItem);
         return s;
     }
+    
+    public void afficherProprietesItemSelectionne() {
+        if(mainWindow.controller.trouverItemSelectionne() != null){
+            largeurItem.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getLargeur()));
+            hauteurItem.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getHauteur()));  
+        }else{
+            largeurItem.setText("");
+            hauteurItem.setText("");
+        }
+        
+    }
+
 
     private JComponent sectionFil() {
         SectionPanel s = new SectionPanel("Fil");
-        s.addRow("Distance Fils :", text(""));
-        s.addRow("Longueur      :", text(""));
+        distanceFils = text("");
+        longueurFil = text("");
+        s.addRow("Distance Fils :", distanceFils);
+        s.addRow("Longueur      :", longueurFil);
         s.addSpacer(8);
         s.addFull(button("Générer un chemin"));
         return s;

@@ -6,6 +6,7 @@ package com.heatmyfloor.domain.items;
 
 import java.util.UUID;
 import com.heatmyfloor.domain.Point;
+import java.awt.geom.Ellipse2D;
 /**
  *
  * @author petit
@@ -17,7 +18,7 @@ public class Drain implements DrainReadOnly {
     private UUID id;
     private double diametre;
     private Point position;
-    private double distanceAvecFil;
+    private final double distanceAvecFil;
     private boolean estSelectionne;
     
     
@@ -34,46 +35,73 @@ public class Drain implements DrainReadOnly {
     
     //Méthodes
     
-    public void deplacer(Point nouvPos){}
+    public void translater(Point delta){}
     
-    public void redimensionner(double nouvDiam){}
-    
-    public boolean estSelectionne(){
+    public void translater(double facteurX, double facteurY){
         
-        throw new UnsupportedOperationException("estSelectionne non implémentée");
+    }
+     
+    public void redimensionner(Point delta){}
+    
+    public void redimensionner(double facteur){
+        
     }
     
+    @Override
+    public Ellipse2D getForme(){
+       Ellipse2D drainForme = new Ellipse2D.Double(
+               this.getPosition().getX(), this.getPosition().getY(),
+               this.diametre, this.diametre);
+       return drainForme;
+    }
+    
+    @Override
     public boolean contientLePoint(Point pos){
-        
-        throw new UnsupportedOperationException("contientLePoint non implémentée");
+        return getForme().contains(pos.getX(), pos.getY());
     }
     
     public void changerStatutSelection(){}
 
     @Override
     public double getDiametre() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return this.diametre;
     }
 
     @Override
     public UUID getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-//    @Override
-//    public Object getPosition() {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-//    }
-
-    @Override
-    public double getDistanceAvecFil() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return this.id;
     }
 
     @Override
     public Point getPosition() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return this.position;
     }
+
+    @Override
+    public double getDistanceAvecFil() {
+        return this.distanceAvecFil;
+    }
+    
+    @Override
+    public boolean estSelectionne(){
+        return this.estSelectionne;
+    }
+    
+    public void setDiametre(double nouvDiametre){
+        
+    }
+    
+    public void setPosition(Point nouvPosition){
+        
+    }
+    
+    public void setEstSelectionne(boolean StatutSelection){
+        
+    }
+    
+    
+
+
     
     
     
