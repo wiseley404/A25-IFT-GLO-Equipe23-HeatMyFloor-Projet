@@ -22,8 +22,8 @@ public class BarreOutils extends JPanel {
     private ButtonCard btnIrregulier;
     private ButtonCard btnMenuSansDrain;
     private ButtonCard btnMenuAvecDrain;
-
     private FormeIrregulierPanel dessinPanel;
+
 
     public BarreOutils(MainWindow mainWindow) {
         this.mainWindow = mainWindow;

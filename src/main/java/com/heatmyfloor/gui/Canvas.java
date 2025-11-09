@@ -9,6 +9,7 @@ import com.heatmyfloor.gui.drawer.PieceDrawer;
 
 public class Canvas extends JPanel implements Serializable{
 
+
     private Rectangle rectangle;
     private MainWindow mainWindow;
     private FormeIrregulierPanel dessinPanel;

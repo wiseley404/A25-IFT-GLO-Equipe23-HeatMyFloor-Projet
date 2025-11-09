@@ -83,11 +83,21 @@ public class Controller {
         return pieceRectangulaire.getHauteur();
     }
     
-    public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type){
-        this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));}
     public double getLargeurPieceRectangulaire(){
         return pieceRectangulaire.getLargeur();
     }
+    
+    public void ajouterMeubleAvecDrain(Point sourisPosition, TypeAvecDrain type){
+        
+        if(_projet == null){
+            JOptionPane.showMessageDialog(null,"Aucun projet ouvert","Erreur",JOptionPane.ERROR_MESSAGE);
+        }
+        //pieceRectangulaire = new PieceRectangulaire(longueur, largeur);
+        _projet.setPiece(pieceRectangulaire);
+        
+        
+    }
+
     
     public void ajouterMeubleSansDrain(Point position, TypeSansDrain type){
         this.piece.ajouterItem(new MeubleSansDrain(120, 70, position, type));
