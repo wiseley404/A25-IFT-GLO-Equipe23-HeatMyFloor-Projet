@@ -9,28 +9,20 @@ import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.domain.piece.Projet;
+import javax.swing.*;
+import java.awt.*;
 import com.heatmyfloor.domain.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Insets;
+>>>>>>> src/main/java/com/heatmyfloor/gui/MainWindow.java
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.plaf.basic.BasicButtonUI;
-//import javax.swing.ImageIcon;
+
 
 
 
@@ -39,6 +31,22 @@ import javax.swing.plaf.basic.BasicButtonUI;
  * @author tatow
  */
 public class MainWindow extends javax.swing.JFrame {
+
+    private javax.swing.JToggleButton additionButton;
+    private javax.swing.JPanel buttonTopPanel;
+    private javax.swing.ButtonGroup createFruitButtonGroup;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JComboBox itemTypeBox;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JPanel mainPanel;
+    private javax.swing.JScrollPane mainScrollPane;
+    private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem quitMenuItem;
+    private javax.swing.JToggleButton selectionButton;
+    private javax.swing.JMenuBar topMenuBar;
 
     private BarreOutils barreOutils;
     private JTabbedPane tabs;
@@ -59,66 +67,24 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        createFruitButtonGroup = new javax.swing.ButtonGroup();
+        initialiserComponent();
 
-        mainPanel = new javax.swing.JPanel();
-        mainPanel.setOpaque(true);
-        mainPanel.setBackground(Color.WHITE);
-        buttonTopPanel = new javax.swing.JPanel(new FlowLayout(FlowLayout.LEFT));
-        selectionButton = new javax.swing.JToggleButton();
-        additionButton = new javax.swing.JToggleButton();
-        itemTypeBox = new javax.swing.JComboBox();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        mainScrollPane = new javax.swing.JScrollPane();
-        //drawingPanel = new ca.ulaval.glo2004.gui.DrawingPanel(this);
-
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        topMenuBar = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu("Fichier");
-        JMenuItem newItem = new JMenuItem("Nouveau");
-        JMenuItem openItem = new JMenuItem("Ouvrir");
-        JMenuItem exportItem = new JMenuItem("Exporter");
-        openMenuItem = new javax.swing.JMenuItem();
-        quitMenuItem = new javax.swing.JMenuItem();
-        editMenu = new javax.swing.JMenu();
-        JToolBar toolBar = new JToolBar();
-
-        createFruitButtonGroup.add(selectionButton);
-        createFruitButtonGroup.add(additionButton);
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("HeatMyfloor");
-
-        mainPanel.setLayout(new java.awt.BorderLayout());
-
-        //Menu du bouton fichier
-        fileMenu.add(newItem);
-        newItem.addActionListener(e -> handleNewProject());
-        fileMenu.add(openItem);
-        fileMenu.add(exportItem);
-        quitMenuItem.setText("Quitter");
-
-        fileMenu.add(quitMenuItem);
-
-        topMenuBar.add(fileMenu);
-
-        editMenu.setText("Editer");
-        topMenuBar.add(editMenu);
+        addButton();
 
         //Menu du toolbar
         mainPanel.add(barreOutils, BorderLayout.NORTH);
         barreOutils.btnNouveau.setOnClick(e -> handleNewProject());
 
+        //
         //action pour le bouton rectangle//
         barreOutils.onRectangleClick(() -> {
             Component componaint = tabs.getSelectedComponent();
             if (componaint instanceof Canvas canvas) {
-                int longueur = 400;
-                int largeur = 300;
+                controller.creerPieceRectangulaire(900.0, 400.0);
+                int longueur = (int)controller.getLongeurPieceRectangulaire();
+                int largeur = (int)controller.getLargeurPieceRectangulaire();
                 canvas.dessinerRectangle(longueur, largeur);
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
@@ -128,6 +94,19 @@ public class MainWindow extends javax.swing.JFrame {
         
         barreOutils.onSansDrainClicked();
         barreOutils.onAvecDrainClicked();
+
+        barreOutils.onIrregularButtonClick(() -> {
+
+            Component componaint = tabs.getSelectedComponent();
+            if (componaint instanceof Canvas canvas) {
+                
+                canvas.dessinerFormeIrreguliere();
+            } else {
+                JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
+                        "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
 
         JPanel center = new JPanel(new BorderLayout());
         props = new Proprietes(this);
@@ -176,14 +155,14 @@ public class MainWindow extends javax.swing.JFrame {
         disableButton();
         
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     private void addNewProjet() {
         Projet projet = controller.creerProjet();
         PieceRectangulaire pr = (PieceRectangulaire) controller.getProjetPiece();
         String title = projet.getNom() + i++;
-        Canvas canvas = new Canvas(this);
-        
+        Canvas canvas = new Canvas();
+
         tabs.addTab(title, canvas);
         tabs.setSelectedComponent(canvas);
         int idx = tabs.indexOfComponent(canvas);
@@ -191,7 +170,7 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.setSelectedIndex(idx);
         SwingUtilities.invokeLater(() -> {
         canvas.dessinerRectangle((int)pr.getLargeur(), (int)pr.getHauteur());
-    });
+        });
 //        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
         //sourisListener();
         //suppressionListener(); *ALIYA
@@ -246,23 +225,6 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    private javax.swing.JToggleButton additionButton;
-    private javax.swing.JPanel buttonTopPanel;
-    private javax.swing.ButtonGroup createFruitButtonGroup;
-    //private ca.ulaval.glo2004.gui.DrawingPanel drawingPanel;
-    private javax.swing.JMenu editMenu;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JComboBox itemTypeBox;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JPanel mainPanel;
-    private javax.swing.JScrollPane mainScrollPane;
-    private javax.swing.JMenuItem openMenuItem;
-    private javax.swing.JMenuItem quitMenuItem;
-    private javax.swing.JToggleButton selectionButton;
-    private javax.swing.JMenuBar topMenuBar;
-
     private void handleNewProject() {
         addNewProjet();
         UiUtils.setEnabledRecursively(barreOutils, true);
@@ -305,7 +267,7 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.removeTabAt(idx);
         disableButton();
     }
-
+    
     public Canvas getSelectedCanvas() {
         Component comp = tabs.getSelectedComponent();
         if (comp instanceof Canvas) {
@@ -323,6 +285,61 @@ public class MainWindow extends javax.swing.JFrame {
   
     
     
+
+    private void initialiserComponent() {
+
+        createFruitButtonGroup = new javax.swing.ButtonGroup();
+
+        mainPanel = new javax.swing.JPanel();
+        mainPanel.setOpaque(true);
+        mainPanel.setBackground(Color.WHITE);
+        buttonTopPanel = new javax.swing.JPanel(new FlowLayout(FlowLayout.LEFT));
+        selectionButton = new javax.swing.JToggleButton();
+        additionButton = new javax.swing.JToggleButton();
+        itemTypeBox = new javax.swing.JComboBox();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        mainScrollPane = new javax.swing.JScrollPane();
+        //drawingPanel = new ca.ulaval.glo2004.gui.DrawingPanel(this);
+
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        topMenuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu("Fichier");
+        openMenuItem = new javax.swing.JMenuItem();
+        quitMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+
+    }
+
+    private void addButton() {
+
+        JToolBar toolBar = new JToolBar();
+        JMenuItem newItem = new JMenuItem("Nouveau");
+        JMenuItem openItem = new JMenuItem("Ouvrir");
+        JMenuItem exportItem = new JMenuItem("Exporter");
+
+        createFruitButtonGroup.add(selectionButton);
+        createFruitButtonGroup.add(additionButton);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("HeatMyfloor");
+
+        mainPanel.setLayout(new java.awt.BorderLayout());
+
+        //Menu du bouton fichier
+        fileMenu.add(newItem);
+        newItem.addActionListener(e -> handleNewProject());
+        fileMenu.add(openItem);
+        fileMenu.add(exportItem);
+        quitMenuItem.setText("Quitter");
+
+        fileMenu.add(quitMenuItem);
+
+        topMenuBar.add(fileMenu);
+
+        editMenu.setText("Editer");
+        topMenuBar.add(editMenu);
+    }
 
     private static class ClosableTabHeader extends JPanel {
 
