@@ -3,23 +3,15 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.JLabel;
-<<<<<<< HEAD
 import java.io.Serializable;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 
 public class Canvas extends JPanel implements Serializable{
 
-=======
-//import java.awt.event.KeyAdapter;
-//import java.awt.event.KeyEvent;
-//import java.awt.event.MouseAdapter;
-//import java.awt.event.MouseEvent;
-//import com.heatmyfloor.domain.piece.Controller;
->>>>>>> 6b83ba3 (modifications)
+
 
     private Rectangle rectangle;
-<<<<<<< HEAD
     private MainWindow mainWindow;
     private FormeIrregulierPanel dessinPanel;
     private PieceItemReadOnly itemSurvole;
@@ -29,10 +21,8 @@ public class Canvas extends JPanel implements Serializable{
     public Canvas(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
-=======
     //private final Controller controller;
 
->>>>>>> 6b83ba3 (modifications)
     public Canvas() {
         //this.controller = controller;
         setBackground(Color.white);
@@ -46,7 +36,6 @@ public class Canvas extends JPanel implements Serializable{
 //        add(toilet);
 //        JLabel cabinet = createIconLabel("/icons/cabinet.svg", 1020, 120, 60, 220);
 //        add(cabinet);
-<<<<<<< HEAD
               
     }
     
@@ -83,7 +72,7 @@ public class Canvas extends JPanel implements Serializable{
         int y = (getHeight() - largeur) / 2;
         rectangle = new Rectangle(x, y, longueur, largeur);
         repaint();
-=======
+
         //setFocusable(true);
         //ajouterListener();
         
@@ -103,14 +92,6 @@ public class Canvas extends JPanel implements Serializable{
    // });
 //}
     
-    public void dessinerRectangle(int longueur, int largeur){
-      
-      int x = (getWidth() - longueur) / 2;
-      int y = (getHeight() - largeur) / 2;
-      rectangle = new Rectangle(x,y,longueur,largeur); 
-      repaint();
->>>>>>> 6b83ba3 (modifications)
-    }
     
    /* public Dimension getTailleRectangle() {
     if (rectangle == null) return getSize();
