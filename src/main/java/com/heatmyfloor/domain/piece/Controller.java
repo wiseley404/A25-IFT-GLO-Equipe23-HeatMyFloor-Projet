@@ -123,7 +123,7 @@ public class Controller {
     }
     
     public void supprimerItemSelectionne(){
-        
+        piece.supprimerItemSelectionne();
     }
     
     

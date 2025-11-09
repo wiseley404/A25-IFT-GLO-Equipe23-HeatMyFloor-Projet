@@ -23,6 +23,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.SwingUtilities;
 
 
 
@@ -174,7 +177,34 @@ public class MainWindow extends javax.swing.JFrame {
         });
 //        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
         //sourisListener();
-        //suppressionListener(); *ALIYA
+        
+            
+
+        canvas.addKeyListener(new KeyAdapter() {
+
+        @Override
+
+        public void keyPressed(KeyEvent e) {
+
+            if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+
+                controller.supprimerItemSelectionne();
+
+                props.afficherProprietesItemSelectionne();
+
+                panelPosition.afficherCoordItemSelectionne();
+
+                panelPosition.afficherAngleItemSelectionne();
+
+                canvas.repaint();
+
+            }
+
+        }
+
+       });
+
+ 
         
        
         canvas.addMouseListener(new MouseAdapter(){

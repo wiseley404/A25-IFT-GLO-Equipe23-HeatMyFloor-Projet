@@ -73,24 +73,10 @@ public class Canvas extends JPanel implements Serializable{
         rectangle = new Rectangle(x, y, longueur, largeur);
         repaint();
 
-        //setFocusable(true);
-        //ajouterListener();
         
     }
     
 
-    //private void ajouterListener() {
-
-    //addKeyListener(new KeyAdapter() {
-     //   @Override
-      //  public void keyPressed(KeyEvent e) {
-           // if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
-        //        controller.supprimerItemSelectionne();
-             //   repaint();
-         //   }
-       // }
-   // });
-//}
     
     
    /* public Dimension getTailleRectangle() {
