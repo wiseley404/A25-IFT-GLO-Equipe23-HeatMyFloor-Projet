@@ -30,33 +30,70 @@ public class PieceItem implements PieceItemReadOnly{
     
     
     public void setPosition(Point nouvPosition){
+        
+        if (nouvPosition == null) throw new IllegalArgumentException("Position nulle");
+        this.position = nouvPosition;
 
     }
     
     
     public void translater(Point delta){
-
+        
+        if (delta == null) throw new IllegalArgumentException("Delta nul");
+        this.position = new Point(
+            this.position.getX() + delta.getX(),
+            this.position.getY() + delta.getY()
+        );
+        
     }
     
     
     public void translater(double facteurX, double facteurY){
-
+        
+        if(facteurX <= 0 || facteurY <= 0) throw new IllegalArgumentException("Facteurs invalides");
+        this.position = new Point(
+            this.position.getX() * facteurX,
+            this.position.getY() * facteurY
+        );
     }
     
     
-    public void setDimension(double nouvLong, double nouvLarg){
-
+    public void setDimension(double nouvLarg, double nouvHaut){
+        
+        if(nouvLarg <= 0 || nouvHaut <= 0)
+            throw new IllegalArgumentException("Dimensions invalides");
+        
+        this.largeur = nouvLarg;
+        this.hauteur = nouvHaut;
     }
     
     
     public void redimensionner(double facteurX, double facteurY){
-
+        
+        if(facteurX <= 0 || facteurY <= 0)
+            throw new IllegalArgumentException("Facteurs invalides");
+        
+        this.largeur *= facteurX;
+        this.hauteur *= facteurY;
     }
     
     
     public void redimensionner(Point delta){
+        
+        if(delta == null) throw new IllegalArgumentException("Delta nul");
+        double nouvLong = this.largeur + delta.getX();
+        double nouvLarg = this.hauteur + delta.getY();
+        
+        if(nouvLong <= 0 || nouvLarg <= 0)
+            throw new IllegalArgumentException("Dimension invalides");
+        
+        this.largeur = nouvLong;
+        this.hauteur = nouvLarg;
 
     }
+    
+    
+    @Override
     public Rectangle2D getItemForme(){
         Rectangle2D itemForme = new Rectangle2D.Double(
                         this.getPosition().getX(), this.getPosition().getY(),
@@ -64,13 +101,20 @@ public class PieceItem implements PieceItemReadOnly{
         return itemForme;
     }
     
+    
+    @Override
     public boolean contientLePoint(Point position){
         return this.getItemForme().contains(position.getX(), position.getY());
-    }
+
     
+    }    
     
     public void setEstSelectionne(boolean statutSelection){
+
+
         this.estSelectionne = statutSelection;
+
+
     }
     
     public void positionnerAGauche(){
@@ -99,30 +143,41 @@ public class PieceItem implements PieceItemReadOnly{
     
     
     public void setAngle(int angle){
+
         angle = angle % 360;
         this.angle = angle;
     }
     
     public void pivoter(){
         setAngle(this.angle + 90);
+
+    
+
     }
+    
+ 
     
     
     @Override
     public UUID getID(){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.id;
     }
+
+
+    
     
     
     @Override
     public double getLargeur(){
         return this.largeur;
+
     }
     
     
     @Override
     public double getHauteur(){
         return this.hauteur;
+
     }
     
     

@@ -11,10 +11,19 @@ import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.domain.piece.Projet;
 import javax.swing.*;
 import java.awt.*;
+import com.heatmyfloor.domain.Point;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+>>>>>>> src/main/java/com/heatmyfloor/gui/MainWindow.java
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
+
+
 
 
 /**
@@ -266,6 +275,16 @@ public class MainWindow extends javax.swing.JFrame {
         }
         return null;
     }
+    
+    
+    
+  
+    
+
+    
+  
+    
+    
 
     private void initialiserComponent() {
 

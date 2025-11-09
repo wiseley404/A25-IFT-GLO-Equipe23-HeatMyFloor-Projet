@@ -10,8 +10,12 @@ import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.MeubleSansDrain;
 import java.nio.file.Path;
 import java.util.List;
+
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
+
+import java.util.UUID; //ajout
+
 
 /**
  *
@@ -25,6 +29,7 @@ public class Controller {
     private PieceRectangulaire pieceRectangulaire;
     
     private List<Projet> _projets;
+    private UUID selectionId; //ajout
     
     public Controller(PieceStockage stockage){
         this.stockage = stockage;
@@ -124,6 +129,10 @@ public class Controller {
     
     public void deplacerItemSelectionne(Point nouvPosition){
         
+
+        piece.deplacerItemSelectionne(nouvPosition);
+
+        
     }
     
     
@@ -134,6 +143,7 @@ public class Controller {
     
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHaut){
         
+        piece.redimensionnerItemSelectionne(nouvLarg, nouvHaut);
     }
     
     public void redimensionnerItemSelectionne(Point delta){
@@ -153,6 +163,12 @@ public class Controller {
     
     public PieceReadOnly getPiece(){
         return this.piece;
+    }
+    
+    
+    public UUID getSelectionId(){  //ajout memorise l'id de l'item selectionne
+        return selectionId;
+
     }
     
     
@@ -232,8 +248,11 @@ public class Controller {
         return this.piece.trouverItemSelectionne();
     }
     
+
     public PieceItemReadOnly determinerElementDeClic(double xPouce, double yPouce){
         return this.piece.trouverCible(xPouce, yPouce);
+        
+
     }
     
     
