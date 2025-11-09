@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import com.heatmyfloor.gui.Canvas;
+import java.awt.event.*;
+import java.util.function.*;
 
 /**
  *
@@ -59,7 +61,7 @@ public class Proprietes extends JPanel {
         sp.getViewport().setOpaque(false);
         add(sp, BorderLayout.CENTER);
         
-        //dimensionsListener(); *KEMILA
+        dimensionListener();
     }
 
     // ===================== UI =====================
@@ -129,6 +131,7 @@ public class Proprietes extends JPanel {
 
     private JComponent sectionMeuble() {
         SectionPanel s = new SectionPanel("Meuble");
+
         largeurItem = text("");
         hauteurItem = text("");
         s.addRow("Largeur :", largeurItem);
@@ -146,6 +149,62 @@ public class Proprietes extends JPanel {
         }
         
     }
+
+
+     
+        
+        
+        
+        // Détecte quand l'utilisateur valide ou qitte le champ /enter
+        public void dimensionListener() { 
+                ActionListener apply = (e  -> {
+            
+            if ( largeurItem == null || hauteurItem == null) return;
+            Double largeur = parseNumber(largeurItem.getText());
+            Double hauteur  = parseNumber(hauteurItem.getText());
+            
+    
+
+            //déplace et redimensionne l'item selectionné
+            resizeSelected(largeur, hauteur);  
+            mainWindow.currentCanvas.repaint();                     //maj l'affichage  
+        });
+      
+       
+        
+        // appuie sur Enter = applique
+        largeurItem.addActionListener(apply);
+        hauteurItem.addActionListener(apply);
+        }
+    
+       
+        
+        
+        
+        
+        public void resizeSelected(double L, double H) {   
+        if (L <= 0 || H <= 0) return;//Modifier les dimensions (longueur, largeur) de l’item actuellement sélectionné.
+        mainWindow.controller.redimensionnerItemSelectionne(L, H);
+        }
+    
+   
+    
+    
+    //ajout
+    private Double parseNumber(String s) {
+    try {
+        // enlève tout sauf chiffres et point
+        return Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+    } catch (NumberFormatException e) {
+        return null;
+    }
+}
+
+    
+    
+    
+    
+    
 
 
     private JComponent sectionFil() {

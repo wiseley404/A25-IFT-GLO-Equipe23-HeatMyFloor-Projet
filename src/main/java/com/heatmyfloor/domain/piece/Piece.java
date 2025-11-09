@@ -98,7 +98,14 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public boolean estPositionItemValide(Point itemPosition){
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        
+        boolean valide = false;
+        if(contientLePoint(itemPosition)){
+            
+            valide = true;
+        }
+        return valide;   
+        
     }
     
     
@@ -120,13 +127,17 @@ public abstract class Piece implements PieceReadOnly{
     public void deplacerItemSelectionne(Point nouvPosition){
         
         if(nouvPosition == null) return;
-        for(PieceItem it : itemsList){
+        
+        for (PieceItem it : itemsList){
             if(it.estSelectionne()){
-                it.setPosition(nouvPosition);
+                
+                //valide la position
+                if(estPositionItemValide(nouvPosition)){
+                    it.setPosition(nouvPosition);
+                }
                 break;
             }
-        }
-        
+        }        
     }
     
     
@@ -137,12 +148,8 @@ public abstract class Piece implements PieceReadOnly{
     
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHauteur){
         
-        for(PieceItem it : itemsList){
-            if(it.estSelectionne()){
-                it.setDimension(nouvLarg, nouvHauteur);
-                break;
-            }
-        }
+         PieceItem itemSelectionne = trouverItemSelectionne();
+         itemSelectionne.setDimension(nouvLarg, nouvHauteur);
         
     }
     
@@ -170,8 +177,10 @@ public abstract class Piece implements PieceReadOnly{
     
     public PieceItem trouverCible(double xPouce, double yPouce){
         
+        Point p = new Point(xPouce, yPouce);
         for(PieceItem element : itemsList){
-            if(element.contientLePoint(new Point(xPouce, yPouce))){
+            if(element.contientLePoint(p)){
+                
                 return element;
 
             }

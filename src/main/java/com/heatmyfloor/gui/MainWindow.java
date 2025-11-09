@@ -9,6 +9,7 @@ import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.domain.piece.Projet;
+import com.heatmyfloor.domain.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -30,6 +31,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicButtonUI;
 //import javax.swing.ImageIcon;
+
+
 
 /**
  *
@@ -310,6 +313,16 @@ public class MainWindow extends javax.swing.JFrame {
         }
         return null;
     }
+    
+    
+    
+  
+    
+
+    
+  
+    
+    
 
     private static class ClosableTabHeader extends JPanel {
 

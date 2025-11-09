@@ -3,12 +3,15 @@ package com.heatmyfloor.gui;
 import com.heatmyfloor.domain.piece.Controller;
 import javax.swing.*;
 import java.awt.*;
+import com.heatmyfloor.domain.Point;
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author tatow
  */
 public class PositionPanel extends JPanel {
+
     private JTextField xPosition;
     private JTextField yPosition;
     private JTextField degRotation;
@@ -17,6 +20,9 @@ public class PositionPanel extends JPanel {
     public PositionPanel(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         
+
+ 
+
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(1,0,0,0, new Color(230,230,230)));
         setPreferredSize(new Dimension(800, 120));
@@ -43,7 +49,9 @@ public class PositionPanel extends JPanel {
         trans.setBorder(BorderFactory.createTitledBorder("Translation"));
         for (int i=0;i<6;i++) trans.add(new JButton(""));
         inner.add(trans);
-
+        
+        
+     
         JPanel rot = new JPanel();
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
         rot.add(new JLabel("Rotation"));
@@ -52,7 +60,7 @@ public class PositionPanel extends JPanel {
 
         add(inner, BorderLayout.CENTER);
         
-        //positionListener(); *KEMILA
+        positionListener();
     }
         public void afficherCoordItemSelectionne(){
         if(mainWindow.controller.trouverItemSelectionne() != null){
@@ -72,4 +80,50 @@ public class PositionPanel extends JPanel {
 
         }
     }
+    
+    
+    
+            public void positionListener() { 
+                ActionListener apply = (e  -> {
+            
+            if ( xPosition == null || yPosition == null) return;
+            Double x = parseNumber(xPosition.getText());
+            Double y  = parseNumber(yPosition.getText());
+            
+    
+
+            //déplace et redimensionne l'item selectionné
+            moveSelectedTo(x, y);  
+            mainWindow.currentCanvas.repaint();                     //maj l'affichage  
+        });
+      
+       
+        
+        // appuie sur Enter = applique
+        xPosition.addActionListener(apply);
+        yPosition.addActionListener(apply);
+        }
+    
+        //ajout de ces methodes
+    public void moveSelectedTo(double x, double y) {     //place l'item aux coordonées exact
+    mainWindow.controller.deplacerItemSelectionne(new Point(x, y));
+    }
+    
+    
+    
+    private Double parseNumber(String s) {
+        try {
+            // enlève tout sauf chiffres et point
+            return Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+        } catch (NumberFormatException e) {
+            return null;
+    }
+}
+    
+    
+    
+    
+    
+    
+    
 }

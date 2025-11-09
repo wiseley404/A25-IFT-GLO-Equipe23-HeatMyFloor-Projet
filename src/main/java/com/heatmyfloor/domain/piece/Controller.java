@@ -103,14 +103,9 @@ public class Controller {
     
     public void deplacerItemSelectionne(Point nouvPosition){
         
-        if(selectionId == null || nouvPosition == null) return;
-        
-        for(PieceItem element : piece.getItemsList()){
-            if(element.getID().equals(selectionId)){
-                element.setPosition(nouvPosition);
-                return;
-            }
-        }
+
+        piece.deplacerItemSelectionne(nouvPosition);
+
         
     }
     
@@ -122,15 +117,7 @@ public class Controller {
     
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHaut){
         
-        if(selectionId == null) return;
-        
-        for(PieceItem element : piece.getItemsList()){
-            if(element.getID().equals(selectionId)){
-                element.setDimension(nouvLarg, nouvHaut);
-                return;
-            }
-        }
-        
+        piece.redimensionnerItemSelectionne(nouvLarg, nouvHaut);
     }
     
     public void redimensionnerItemSelectionne(Point delta){
