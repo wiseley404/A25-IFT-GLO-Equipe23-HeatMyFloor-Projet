@@ -11,6 +11,7 @@ import com.heatmyfloor.domain.items.MeubleSansDrain;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -21,6 +22,7 @@ public class Controller {
     private PieceHistorique historique;
     private PieceStockage stockage;
     private Projet _projet;
+    private PieceRectangulaire pieceRectangulaire;
     
     private List<Projet> _projets;
     
@@ -67,11 +69,25 @@ public class Controller {
     public void setProjetNom(String nom){
         _projet.setNom(nom);
     }
-    
-    public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type){
-        this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));
+    public void creerPieceRectangulaire(double longueur,double largeur){
+        
+        if(_projet == null){
+            JOptionPane.showMessageDialog(null,"Aucun projet ouvert","Erreur",JOptionPane.ERROR_MESSAGE);
+        }
+        pieceRectangulaire = new PieceRectangulaire(longueur, largeur);
+        _projet.setPiece(pieceRectangulaire);
+        
+        
+    }
+    public double getLongeurPieceRectangulaire(){
+        return pieceRectangulaire.getHauteur();
     }
     
+    public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type){
+        this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));}
+    public double getLargeurPieceRectangulaire(){
+        return pieceRectangulaire.getLargeur();
+    }
     
     public void ajouterMeubleSansDrain(Point position, TypeSansDrain type){
         this.piece.ajouterItem(new MeubleSansDrain(120, 70, position, type));

@@ -14,9 +14,12 @@ public class Canvas extends JPanel implements Serializable{
     private FormeIrregulierPanel dessinPanel;
     private PieceItemReadOnly itemSurvole;
     public PieceDrawer dessinateurPiece;
-    
+      private int longueur;
+    private int largeur;
     public Canvas(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+    }
+    public Canvas() {
         setBackground(Color.white);
         setLayout(null); // absolute positioning for placeholder icons
         setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2));
@@ -28,7 +31,30 @@ public class Canvas extends JPanel implements Serializable{
 //        add(toilet);
 //        JLabel cabinet = createIconLabel("/icons/cabinet.svg", 1020, 120, 60, 220);
 //        add(cabinet);
+              
     }
+    
+   /* public void ajusterRectangle(int longueur, int largeur) {
+    // Sauvegarde des dimensions
+    this.longueur = longueur;
+    this.largeur = largeur;
+
+    if (rectangle == null) {
+        rectangle = new Rectangle(0, 0, longueur, largeur);
+    } else {
+        rectangle.setSize(longueur, largeur);
+    }*/
+
+    // Ajuste la taille du canvas
+    /*Dimension taille = new Dimension(
+        Math.max(longueur + 100, getWidth()),
+        Math.max(largeur + 100, getHeight())
+    );
+    setPreferredSize(taille);
+    revalidate();
+
+    repaint();
+}*/
 
     public void dessinerRectangle(int longueur, int largeur) {
 
@@ -42,6 +68,15 @@ public class Canvas extends JPanel implements Serializable{
         rectangle = new Rectangle(x, y, longueur, largeur);
         repaint();
     }
+    
+   /* public Dimension getTailleRectangle() {
+    if (rectangle == null) return getSize();
+    int largeur = rectangle.x + rectangle.width;
+    int hauteur = rectangle.y + rectangle.height;
+    return new Dimension(largeur, hauteur);
+   
+}*/
+    
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -70,7 +105,7 @@ public class Canvas extends JPanel implements Serializable{
         l.setBorder(BorderFactory.createDashedBorder(Color.GRAY));
         return l;
     }
-
+           
     void dessinerFormeIrreguliere() {
         rectangle = null;
         if (dessinPanel != null) {
