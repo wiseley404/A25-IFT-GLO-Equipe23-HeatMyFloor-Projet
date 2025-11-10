@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 
-
-
-
 /**
  *
  * @author tatow
@@ -46,13 +43,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane mainScrollPane;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem quitMenuItem;
+    private javax.swing.JMenuItem HelpMenuItem;
     private javax.swing.JToggleButton selectionButton;
     private javax.swing.JMenuBar topMenuBar;
 
     private BarreOutils barreOutils;
     private JTabbedPane tabs;
     private int i = 1;
-    
+
     public Map<Canvas, Controller> controllers = new HashMap<>();
     public Controller controllerActif;
     public Canvas currentCanvas;
@@ -70,7 +68,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     @SuppressWarnings("unchecked")
     private void initComponents() {
-        
+
         initialiserComponent();
         addButton();
 
@@ -94,7 +92,7 @@ public class MainWindow extends javax.swing.JFrame {
                         "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
+
         barreOutils.onSansDrainClicked();
         barreOutils.onAvecDrainClicked();
 
@@ -128,7 +126,6 @@ public class MainWindow extends javax.swing.JFrame {
         bottom.add(new TableauErreur(), BorderLayout.EAST);
         mainPanel.add(bottom, BorderLayout.SOUTH);
 
-
         quitMenuItem.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
@@ -139,6 +136,34 @@ public class MainWindow extends javax.swing.JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0); // quitte proprement le programme
             }
+        });
+
+        HelpMenuItem.addActionListener(e -> {
+            String message
+                    = "Aide - Gestion de la pièce\n\n"
+                    + "1) Ajouter un nouveau projet :\n"
+                    + "   - Menu Fichier > Nouveau projet.\n"
+                    + "   - Vous pouvez ensuite ajuster les dimensions de la pièce dans la section « Pièce » des propriétés.\n\n"
+                    + "2) Modifier la forme de la pièce :\n"
+                    + "   - Cliquez sur « Irrégulière » dans la barre d’outils.\n"
+                    + "   - Placer les sommets du polygone et double-cliquez sur le canevas pour définir la forme.\n\n"
+                    + "3) Ajouter un meuble :\n"
+                    + "   - Sélectionnez l’outil meuble (avec ou sans drain).\n"
+                    + "   - Cliquez sur le meuble désiré et il s'afficheras dans la pièce.\n\n"
+                    + "4) Déplacer un meuble :\n"
+                    + "   - Cliquez sur un meuble pour le sélectionner.\n"
+                    + "   - Dans la section Position, entrez de nouvelles valeurs pour X et Y.\n"
+                    + "   - Un message d’erreur s’affichera si les positions choisies sont en dehors de la pièce.\n\n"
+                    + "5) Supprimer un meuble :\n"
+                    + "   - Sélectionnez le meuble à supprimer.\n"
+                    + "   - Appuyez sur la touche Suppr du clavier.\n";
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    message,
+                    "Aide",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
         });
 
         setJMenuBar(topMenuBar);
@@ -164,16 +189,16 @@ public class MainWindow extends javax.swing.JFrame {
         Canvas canvas = new Canvas();
         canvas.setMainWindow(this);
         currentCanvas = canvas;
-        
+
         controllerActif = new Controller(new PieceRectangulaire(900, 400));
         controllers.put(currentCanvas, controllerActif);
-        
+
         tabs.addTab(title, currentCanvas);
         tabs.setSelectedComponent(currentCanvas);
         int idx = tabs.indexOfComponent(currentCanvas);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
-        
+
         SwingUtilities.invokeLater(() -> {
             currentCanvas.repaint();
         });
@@ -181,74 +206,70 @@ public class MainWindow extends javax.swing.JFrame {
         sourisListener();
         suppressionListener();
     }
-        
-            
-    public void suppressionListener(){
-        
-        currentCanvas.addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
 
-                controllerActif.supprimerItemSelectionne();
+    public void suppressionListener() {
+
+        currentCanvas.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+
+                    controllerActif.supprimerItemSelectionne();
+                    props.afficherProprietesItemSelectionne();
+                    panelPosition.afficherCoordItemSelectionne();
+                    panelPosition.afficherAngleItemSelectionne();
+                    currentCanvas.repaint();
+                }
+            }
+        });
+    }
+
+    public void sourisListener() {
+
+        currentCanvas.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Point cliqueSouris = new Point(e.getX(), e.getY());
+                controllerActif.changerStatutSelection(cliqueSouris);
                 props.afficherProprietesItemSelectionne();
                 panelPosition.afficherCoordItemSelectionne();
                 panelPosition.afficherAngleItemSelectionne();
                 currentCanvas.repaint();
+
             }
-        }
+        });
+
+        currentCanvas.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                positionSouris = new Point(e.getX(), e.getY());
+                List<PieceItemReadOnly> items = controllerActif.getItemsList();
+
+                PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
+                PieceItemReadOnly itemSurvole = null;
+
+                for (int i = items.size() - 1; i >= 0; i--) {
+                    PieceItemReadOnly item = items.get(i);
+                    if (item.contientLePoint(positionSouris)) {
+                        itemSurvole = item;
+                        break;
+                    }
+                }
+
+                if (ancienItemSurvole != itemSurvole) {
+                    currentCanvas.setItemSurvole(itemSurvole);
+                    currentCanvas.repaint();
+                }
+            }
         });
     }
 
- 
-    public void sourisListener(){
-        
-        currentCanvas.addMouseListener(new MouseAdapter(){
-        @Override
-        public void mousePressed(MouseEvent e){
-            Point cliqueSouris = new Point(e.getX(), e.getY());
-            controllerActif.changerStatutSelection(cliqueSouris);
-            props.afficherProprietesItemSelectionne();
-            panelPosition.afficherCoordItemSelectionne();
-            panelPosition.afficherAngleItemSelectionne();
-            currentCanvas.repaint();
-
-        }
-        });
-        
-        currentCanvas.addMouseMotionListener(new MouseMotionAdapter(){
-        @Override
-        public void mouseMoved(MouseEvent e){
-            positionSouris = new Point(e.getX(), e.getY());
-            List<PieceItemReadOnly> items = controllerActif.getItemsList();
-
-            PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
-            PieceItemReadOnly itemSurvole = null;
-
-            for(int i = items.size() - 1; i >= 0; i--){
-                PieceItemReadOnly item = items.get(i);
-                if(item.contientLePoint(positionSouris)){
-                    itemSurvole = item;
-                    break;
-                }
-            }
-
-            if(ancienItemSurvole != itemSurvole){
-                currentCanvas.setItemSurvole(itemSurvole);
-                currentCanvas.repaint();
-            }
-        }
-        });
-    }   
-    
-    
-    private void tabListener(){
+    private void tabListener() {
         tabs.addChangeListener(e -> {
             Component component = tabs.getSelectedComponent();
-            if(component instanceof Canvas canvas){
+            if (component instanceof Canvas canvas) {
                 currentCanvas = canvas;
                 this.controllerActif = controllers.get(canvas);
-
 
                 SwingUtilities.invokeLater(() -> {
                     props.afficherProprietesPiece();
@@ -256,11 +277,10 @@ public class MainWindow extends javax.swing.JFrame {
                     panelPosition.afficherAngleItemSelectionne();
                     panelPosition.afficherCoordItemSelectionne();
                 });
-            } 
+            }
         });
     }
 
-    
     private void disableButton() {
         if (tabs.getTabCount() == 0) {
             UiUtils.setEnabledRecursively(barreOutils, false);
@@ -274,7 +294,6 @@ public class MainWindow extends javax.swing.JFrame {
         UiUtils.setEnabledRecursively(barreOutils, true);
         UiUtils.setEnabledRecursively(barreOutils.btnRectangle, true);
     }
-
 
     private void renameTabAt(int idx) {
         String current = tabs.getTitleAt(idx);
@@ -302,12 +321,11 @@ public class MainWindow extends javax.swing.JFrame {
         tabs.setTitleAt(idx, name);
     }
 
-    
     private void closeTabAt(int idx) {
         tabs.removeTabAt(idx);
         disableButton();
     }
-    
+
     public Canvas getSelectedCanvas() {
         Component comp = tabs.getSelectedComponent();
         if (comp instanceof Canvas) {
@@ -315,8 +333,6 @@ public class MainWindow extends javax.swing.JFrame {
         }
         return null;
     }
-    
- 
 
     private void initialiserComponent() {
 
@@ -338,6 +354,7 @@ public class MainWindow extends javax.swing.JFrame {
         fileMenu = new javax.swing.JMenu("Fichier");
         openMenuItem = new javax.swing.JMenuItem();
         quitMenuItem = new javax.swing.JMenuItem();
+        HelpMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
 
     }
@@ -358,10 +375,13 @@ public class MainWindow extends javax.swing.JFrame {
         mainPanel.setLayout(new java.awt.BorderLayout());
 
         //Menu du bouton fichier
+        newItem.setText("nouveau projet");
         fileMenu.add(newItem);
         newItem.addActionListener(e -> handleNewProject());
         fileMenu.add(openItem);
         fileMenu.add(exportItem);
+        HelpMenuItem.setText("Aide");
+        fileMenu.add(HelpMenuItem);
         quitMenuItem.setText("Quitter");
 
         fileMenu.add(quitMenuItem);
