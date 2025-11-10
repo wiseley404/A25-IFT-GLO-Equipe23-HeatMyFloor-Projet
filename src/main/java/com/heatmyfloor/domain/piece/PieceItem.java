@@ -110,11 +110,7 @@ public class PieceItem implements PieceItemReadOnly{
     }    
     
     public void setEstSelectionne(boolean statutSelection){
-
-
         this.estSelectionne = statutSelection;
-
-
     }
     
     public void positionnerAGauche(){
@@ -143,49 +139,33 @@ public class PieceItem implements PieceItemReadOnly{
     
     
     public void setAngle(int angle){
-
         angle = angle % 360;
         this.angle = angle;
     }
     
     public void pivoter(){
         setAngle(this.angle + 90);
-
-    
-
     }
-    
- 
-    
-    
+     
     @Override
     public UUID getID(){
         return this.id;
     }
 
-
-    
-    
-    
     @Override
     public double getLargeur(){
         return this.largeur;
-
     }
-    
     
     @Override
     public double getHauteur(){
         return this.hauteur;
-
     }
-    
-    
+ 
     @Override
     public Point getPosition(){
         return this.position;
     }
-    
     
     @Override
     public int getAngle(){
@@ -197,11 +177,9 @@ public class PieceItem implements PieceItemReadOnly{
     public String getImage(){
         return this.image;
     }
-    
-    
+
     @Override
     public boolean estSelectionne(){
-        //throw new UnsupportedOperationException("Méthode non implémentée !");
         return estSelectionne;
     }
 }

@@ -2,7 +2,6 @@ package com.heatmyfloor.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
 
@@ -13,7 +12,7 @@ import com.heatmyfloor.domain.items.TypeAvecDrain;
 public class BarreOutils extends JPanel {
 
     private MainWindow mainWindow;
-    private BarreOutilsActions actions;          // <— callback vers MainWindow
+    private BarreOutilsActions actions; 
     public ButtonCard btnNouveau;
     public ButtonCard btnOuvrir;
     public ButtonCard btnExporter;
@@ -119,21 +118,21 @@ public class BarreOutils extends JPanel {
         ), 4);
         addSep(ribbon, gc, col++);
 
-        // --- Modélisation ---
+        //Modélisation
         addGroup(ribbon, gc, col++, makeGroup("Modélisation",
                 card("Pièce", "/Icons/piece.png"),
                 card("Fil", "/Icons/Fil.png")
         ), 2);
         addSep(ribbon, gc, col++);
 
-        // --- Affichage ---
+        //Affichage
         addGroup(ribbon, gc, col++, makeGroup("Affichage",
                 // card("Vue 2D", "/icons/view2d.png"),
                 card("Vue 3D", "/Icons/3d.png")
         ), 2);
         addSep(ribbon, gc, col++);
 
-        // --- Formes ---
+        //Formes
         btnRectangle = card("Rectangle", "/Icons/Rectangle.png");
         btnIrregulier = card("Irregulière", "/Icons/Polygone.png");
         addGroup(ribbon, gc, col++, makeGroup("Formes",
@@ -142,7 +141,7 @@ public class BarreOutils extends JPanel {
         ), 2);
         addSep(ribbon, gc, col++);
 
-        // --- Meubles ---
+        //Meubles
         btnMenuSansDrain = card("Sans drain", "/icons/MeubleSansDrain.png");
         btnMenuAvecDrain = card("Avec drain", "/icons/MeubleAvecDrain.png");
         addGroup(ribbon, gc, col++, makeGroup("Meubles",
@@ -151,7 +150,7 @@ public class BarreOutils extends JPanel {
         ), 2);
         addSep(ribbon, gc, col++);
 
-        // --- Autres ---
+        //Autres
         addGroup(ribbon, gc, col++, makeGroup("Autres",
                 card("Thermostat", "/icons/thermostat.png"),
                 card("Zones", "/icons/zone.png")
@@ -179,7 +178,7 @@ public class BarreOutils extends JPanel {
             for (ButtonCard c : cards) {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
-                    mainWindow.controller.ajouterMeubleSansDrain(mainWindow.controller.getPiece().getCentre(), TypeSansDrain.valueOf(nom));
+                    mainWindow.controllerActif.ajouterMeubleSansDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeSansDrain.valueOf(nom));
                     mainWindow.currentCanvas.repaint();
                 });
             }
@@ -200,6 +199,8 @@ public class BarreOutils extends JPanel {
 
             card1.setMinimumSize(new Dimension(120, 100));
             card2.setMinimumSize(new Dimension(120, 100));
+            card3.setMinimumSize(new Dimension(120, 100));
+            card4.setMinimumSize(new Dimension(120, 100));
 
             panel.add(card1);
             panel.add(card2);
@@ -212,7 +213,7 @@ public class BarreOutils extends JPanel {
             for (ButtonCard c : cards) {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
-                    mainWindow.controller.ajouterMeubleAvecDrain(new com.heatmyfloor.domain.Point(100, 100), TypeAvecDrain.valueOf(nom));
+                    mainWindow.controllerActif.ajouterMeubleAvecDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeAvecDrain.valueOf(nom));
                     mainWindow.currentCanvas.repaint();
                 });
             }

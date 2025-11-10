@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 public class HeatMyFloor {
 
     public static void main(String[] args) {
-        //System.out.println("Hello World!");
+  
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.setExtendedState(mainWindow.getExtendedState() | JFrame.MAXIMIZED_BOTH);

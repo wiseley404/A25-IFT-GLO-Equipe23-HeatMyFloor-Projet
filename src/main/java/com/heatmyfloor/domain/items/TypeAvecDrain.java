@@ -14,7 +14,7 @@ public enum TypeAvecDrain {
     
     TOILETTE("/images/toilette.png"),
     DOUCHE("/images/douche.png"),
-    VANITE("/images/vanite.png"),
+    VANITÉ("/images/vanite.png"),
     BAIN("/images/bain.png");
     
     private final String image;

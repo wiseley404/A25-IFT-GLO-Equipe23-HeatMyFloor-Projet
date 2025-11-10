@@ -70,13 +70,6 @@ public class MeubleAvecDrain extends PieceItem {
     public void redimensionnerDrain(double facteur){}
     
     public void supprimerDrainSelectionne(){}
-    
-    
-    @Override
-    public boolean contientLePoint(Point pos){
-        
-        throw new UnsupportedOperationException("contientLePoint non implémentée");
-    }
 
     
     public List<Drain> getDrainList(){

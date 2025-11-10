@@ -5,11 +5,14 @@
 package com.heatmyfloor.domain.ports;
 
 import com.heatmyfloor.domain.piece.Piece;
+import java.nio.file.Path;
 
 /**
  *
  * @author petit
  */
 public interface PieceStockage {
-//    Piece ouvrirFichier(ficher: P)
+    Piece ouvrirFichier(Path cheminFichier);
+    void saveFichier(Piece p, Path cheminSauvegarde);
+    void exporterFichierPng(Piece p, Path cheminExport);
 }

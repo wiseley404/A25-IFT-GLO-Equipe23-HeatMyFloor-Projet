@@ -106,32 +106,4 @@ public class FormeIrregulierPanel extends JPanel {
 
         g2.dispose();
     }
-
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//
-//        Graphics2D g2 = (Graphics2D) g;
-//
-//        g2.setStroke(new BasicStroke(2));
-//
-//        g2.setColor(Color.BLUE);
-//        for (int i = 1; i < points.size(); i++) {
-//            Point p1 = points.get(i - 1);
-//            Point p2 = points.get(i);
-//            g2.drawLine(p1.x, p1.y, p2.x, p2.y);
-//        }
-//
-//        if (modeDessin && pointActuel != null && !points.isEmpty()) {
-//            Point dernier = points.get(points.size() - 1);
-//            g2.setColor(Color.GRAY);
-//            g2.drawLine(dernier.x, dernier.y, pointActuel.x, pointActuel.y);
-//        }
-//
-//        g2.setColor(Color.RED);
-//        for (Point p : points) {
-//            g2.fillOval(p.x - 3, p.y - 3, 6, 6);
-//        }
-//        g.setColor(new Color(255, 232, 200, 120));
-//    }
 }

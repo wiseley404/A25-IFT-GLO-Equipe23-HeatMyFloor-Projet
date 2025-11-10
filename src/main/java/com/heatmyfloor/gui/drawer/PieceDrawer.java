@@ -8,9 +8,10 @@ import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.Controller;
 import com.heatmyfloor.gui.MainWindow;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
+import com.heatmyfloor.domain.piece.PieceReadOnly;
+import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.gui.PositionPanel;
 import com.heatmyfloor.gui.Canvas;
-import com.heatmyfloor.gui.TableauErreur;
 import com.heatmyfloor.gui.Proprietes;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,6 +24,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
+import javax.swing.SwingUtilities;
 
 
 /**
@@ -37,7 +39,7 @@ public class PieceDrawer {
     private Canvas currentCanvas;
     
     public PieceDrawer(MainWindow mainWindow){
-        this.controller = mainWindow.controller;
+        this.controller = mainWindow.controllerActif;
         this.canvasDimension = new Dimension(mainWindow.currentCanvas.getWidth(), mainWindow.currentCanvas.getHeight());
         this.props = mainWindow.props;
         this.panelPosition = mainWindow.panelPosition;
@@ -46,8 +48,14 @@ public class PieceDrawer {
     
     
     public void dessiner(Graphics g){
-        dessinerPieceRectangulaire(g);
-        dessinerPieceItems(g);
+        PieceReadOnly piece = controller.getPiece();
+        if(piece instanceof PieceRectangulaire){
+            dessinerPieceRectangulaire(g);
+            dessinerPieceItems(g);
+        } 
+        SwingUtilities.invokeLater(() -> {
+            currentCanvas.requestFocusInWindow();
+        });
     }
     
 
@@ -61,53 +69,32 @@ public class PieceDrawer {
       
       Rectangle2D pieceRectangulaire = new Rectangle2D.Double(x, y, largeur, hauteur);
 
-      g2.setColor(new Color(220, 220, 220));
+      g2.setColor(new Color(255, 232, 200, 120));
       g2.fill(pieceRectangulaire);
-      g2.setColor(Color.BLACK);
+      g2.setColor(Color.ORANGE);
       g2.setStroke(new BasicStroke(1.5f));
       g2.draw(pieceRectangulaire);
     }
     
-    
-    
+       
     public void dessinerPieceItems(Graphics g){
         Graphics2D g2 = (Graphics2D) g;
         
         List<PieceItemReadOnly> items = this.controller.getItemsList();
         for(PieceItemReadOnly item : items){
+            double padding = 7.5;
+            Rectangle2D contourSelection = item.getItemForme().getBounds2D();
+            Rectangle2D contourAvecPadding  = new Rectangle2D.Double(contourSelection.getX() - padding,
+                                                          contourSelection.getY() - padding,
+                                                          contourSelection.getWidth() + 2*padding,
+                                                          contourSelection.getHeight() + 2*padding);
             if(item.estSelectionne()){
-                g2.setColor(Color.BLUE);
-                Rectangle2D contourSelection = item.getItemForme().getBounds2D();
-                g2.draw(contourSelection);
-                
-                int ovalCoinSize = 15;
-                g2.setColor(Color.WHITE);
-                g2.fillOval(
-                        (int)contourSelection.getX() - ovalCoinSize/2,
-                        (int)contourSelection.getY() - ovalCoinSize/2,
-                        ovalCoinSize, ovalCoinSize
-                );
-                g2.fillOval(
-                        (int)(contourSelection.getX() + contourSelection.getWidth()) - ovalCoinSize/2,
-                        (int)contourSelection.getY() - ovalCoinSize/2,
-                        ovalCoinSize, ovalCoinSize
-                );
-                g2.fillOval(
-                        (int)contourSelection.getX() - ovalCoinSize/2,
-                        (int)(contourSelection.getY() + contourSelection.getHeight()) - ovalCoinSize/2,
-                        ovalCoinSize, ovalCoinSize
-                );
-                g2.fillOval(
-                        (int)(contourSelection.getX()+ contourSelection.getWidth()) - ovalCoinSize/2,
-                        (int)(contourSelection.getY() + contourSelection.getHeight()) - ovalCoinSize/2,
-                        ovalCoinSize, ovalCoinSize
-                );   
+                dessinerContourSelection(g2, contourAvecPadding);
             }
-            
-            
+                        
             if (currentCanvas.getItemSurvole() == item && !item.estSelectionne()){
                 g2.setColor(Color.BLUE);
-                g2.draw(item.getItemForme().getBounds2D());
+                g2.draw(contourAvecPadding);
             }
             
             BufferedImage itemImage = null;
@@ -121,18 +108,48 @@ public class PieceDrawer {
             }
             
             if(itemImage != null){
-                g2.drawImage(itemImage, 
-                        (int)120, 
-                        (int)120, 
-                        null);
-            }
-            
+                g2.drawImage(itemImage, (int) item.getPosition().getX(), 
+                                        (int)item.getPosition().getY(),
+                                        (int) item.getLargeur(),
+                                        (int) item.getHauteur(),
+                                         null);
+            }  
         }
+        
         if(controller.trouverItemSelectionne() != null){
             props.afficherProprietesItemSelectionne();
             panelPosition.afficherCoordItemSelectionne();
             panelPosition.afficherAngleItemSelectionne();
         }
         
+    }
+    
+    
+    private void dessinerContourSelection(Graphics2D g2, Rectangle2D contourAvecPadding){
+        g2.setColor(Color.BLUE);
+        g2.draw(contourAvecPadding);
+
+        int ovalCoinSize = 15;
+        g2.setColor(Color.WHITE);
+        g2.fillOval(
+                (int)contourAvecPadding.getX() - ovalCoinSize/2,
+                (int)contourAvecPadding.getY() - ovalCoinSize/2,
+                ovalCoinSize, ovalCoinSize
+        );
+        g2.fillOval(
+                (int)(contourAvecPadding.getX() + contourAvecPadding.getWidth()) - ovalCoinSize/2,
+                (int)contourAvecPadding.getY() - ovalCoinSize/2,
+                ovalCoinSize, ovalCoinSize
+        );
+        g2.fillOval(
+                (int)contourAvecPadding.getX() - ovalCoinSize/2,
+                (int)(contourAvecPadding.getY() + contourAvecPadding.getHeight()) - ovalCoinSize/2,
+                ovalCoinSize, ovalCoinSize
+        );
+        g2.fillOval(
+                (int)(contourAvecPadding.getX()+ contourAvecPadding.getWidth()) - ovalCoinSize/2,
+                (int)(contourAvecPadding.getY() + contourAvecPadding.getHeight()) - ovalCoinSize/2,
+                ovalCoinSize, ovalCoinSize
+        );   
     }
 }

@@ -8,14 +8,10 @@ import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.Thermostat;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.MeubleSansDrain;
+import com.heatmyfloor.infrastructure.file.PieceFichierStockage;
 import java.nio.file.Path;
 import java.util.List;
-
 import java.util.stream.Collectors;
-import javax.swing.JOptionPane;
-
-import java.util.UUID; //ajout
-
 
 /**
  *
@@ -25,82 +21,25 @@ public class Controller {
     private Piece piece;
     private PieceHistorique historique;
     private PieceStockage stockage;
-    private Projet _projet;
-    private PieceRectangulaire pieceRectangulaire;
-    
-    private List<Projet> _projets;
-    private UUID selectionId; //ajout
-    
-    public Controller(PieceStockage stockage){
-        this.stockage = stockage;
-        this.historique = new PieceHistorique();
-    }
-    
-    
-    public Controller(Piece piece, PieceStockage stockage){
-        this.piece = piece;
-        this.historique = new PieceHistorique();
-        this.stockage = stockage;
-    }
+
     
     public Controller(){
-        //_projets = new ArrayList<>();
-    }
-    
-    public Projet creerProjet(){
-        _projet =new Projet();
-        this.piece = _projet.getPiece();
-                
-        return _projet;
-    }
-    
-    public Projet getProjet(){
-        return _projet;
-    }
-    
-    public Piece getProjetPiece(){
-        return _projet.getPiece();
+        this.piece = new PieceRectangulaire(500, 300);
+        this.stockage = new PieceFichierStockage();
+        this.historique = new PieceHistorique();
     }
     
     
-    public void setProjetPiece(Piece piece){
-        _projet.setPiece(piece);
+    public Controller(Piece piece){
+        this.piece = piece;
+        this.historique = new PieceHistorique();
+        this.stockage = new PieceFichierStockage();
     }
     
-    public String getProjetNom(){
-        return _projet.getNom();
-    }
-    
-    public void setProjetNom(String nom){
-        _projet.setNom(nom);
-    }
-    public void creerPieceRectangulaire(double longueur,double largeur){
-        
-        if(_projet == null){
-            JOptionPane.showMessageDialog(null,"Aucun projet ouvert","Erreur",JOptionPane.ERROR_MESSAGE);
-        }
-        pieceRectangulaire = new PieceRectangulaire(longueur, largeur);
-        _projet.setPiece(pieceRectangulaire);
-        
-        
-    }
-    public double getLongeurPieceRectangulaire(){
-        return pieceRectangulaire.getHauteur();
-    }
-    
-    public double getLargeurPieceRectangulaire(){
-        return pieceRectangulaire.getLargeur();
-    }
-    
-    public void ajouterMeubleAvecDrain(Point sourisPosition, TypeAvecDrain type){
-        
-        if(_projet == null){
-            JOptionPane.showMessageDialog(null,"Aucun projet ouvert","Erreur",JOptionPane.ERROR_MESSAGE);
-        }
-        //pieceRectangulaire = new PieceRectangulaire(longueur, largeur);
-        _projet.setPiece(pieceRectangulaire);
-        
-        
+
+    public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type){
+        this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));
+
     }
 
     
@@ -125,19 +64,14 @@ public class Controller {
     public void supprimerItemSelectionne(){
         piece.supprimerItemSelectionne();
     }
-    
-    
+      
     public void deplacerItemSelectionne(Point nouvPosition){
-        
-
-        piece.deplacerItemSelectionne(nouvPosition);
-
-        
+        piece.deplacerItemSelectionne(nouvPosition);   
     }
     
     
     public void redimensionnerPiece(double nouvLarg, double nouvHaut){
-        
+        this.piece.redimensionner(nouvLarg, nouvHaut);
     }
     
     
@@ -165,10 +99,8 @@ public class Controller {
         return this.piece;
     }
     
-    
-    public UUID getSelectionId(){  //ajout memorise l'id de l'item selectionne
-        return selectionId;
-
+    public void setPiece(Piece piece){
+        this.piece = piece;
     }
     
     

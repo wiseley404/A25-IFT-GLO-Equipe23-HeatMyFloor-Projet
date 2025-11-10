@@ -5,26 +5,23 @@
 package com.heatmyfloor.gui;
 
 import com.heatmyfloor.domain.piece.Controller;
-import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
-import com.heatmyfloor.domain.piece.Projet;
+import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import javax.swing.*;
-import java.awt.*;
 import com.heatmyfloor.domain.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.SwingUtilities;
 
 
@@ -54,9 +51,10 @@ public class MainWindow extends javax.swing.JFrame {
 
     private BarreOutils barreOutils;
     private JTabbedPane tabs;
-    public Controller controller;
     private int i = 1;
     
+    public Map<Canvas, Controller> controllers = new HashMap<>();
+    public Controller controllerActif;
     public Canvas currentCanvas;
     public Proprietes props;
     public PositionPanel panelPosition;
@@ -66,15 +64,14 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils = new BarreOutils(this);
         tabs = new JTabbedPane();
         initComponents();
-        controller = new Controller();
+        controllerActif = new Controller();
 
     }
 
     @SuppressWarnings("unchecked")
     private void initComponents() {
-
+        
         initialiserComponent();
-
         addButton();
 
         //Menu du toolbar
@@ -82,14 +79,16 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.btnNouveau.setOnClick(e -> handleNewProject());
 
         //
-        //action pour le bouton rectangle//
+        //action pour le bouton rectangle
         barreOutils.onRectangleClick(() -> {
             Component componaint = tabs.getSelectedComponent();
             if (componaint instanceof Canvas canvas) {
-                controller.creerPieceRectangulaire(900.0, 400.0);
-                int longueur = (int)controller.getLongeurPieceRectangulaire();
-                int largeur = (int)controller.getLargeurPieceRectangulaire();
-                canvas.dessinerRectangle(longueur, largeur);
+                controllerActif = controllers.get(canvas);
+                controllerActif.setPiece(new PieceRectangulaire(500, 300));
+                currentCanvas = canvas;
+                currentCanvas.nettoyerModeDessin();
+                currentCanvas.repaint();
+                props.afficherProprietesPiece();
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
                         "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -103,34 +102,33 @@ public class MainWindow extends javax.swing.JFrame {
 
             Component componaint = tabs.getSelectedComponent();
             if (componaint instanceof Canvas canvas) {
-                
-                canvas.dessinerFormeIrreguliere();
+                controllerActif = controllers.get(canvas);
+                controllerActif.setPiece(new PieceIrreguliere());
+                currentCanvas = canvas;
+                currentCanvas.dessinerFormeIrreguliere();
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
                         "Erreur", JOptionPane.ERROR_MESSAGE);
             }
-
         });
 
         JPanel center = new JPanel(new BorderLayout());
         props = new Proprietes(this);
+        props.dimensionItemListener();
+        props.dimensionPieceListener();
         center.add(props, BorderLayout.WEST);
-
         center.add(tabs, BorderLayout.CENTER);
 
         mainPanel.add(center, BorderLayout.CENTER);
 
         JPanel bottom = new JPanel(new BorderLayout());
         panelPosition = new PositionPanel(this);
+        panelPosition.positionListener();
         bottom.add(panelPosition, BorderLayout.CENTER);
         bottom.add(new TableauErreur(), BorderLayout.EAST);
         mainPanel.add(bottom, BorderLayout.SOUTH);
 
-        /**
-         * quitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-         * public void actionPerformed(java.awt.event.ActionEvent evt) {
-         * quitMenuItemActionPerformed(evt); } });*
-         */
+
         quitMenuItem.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
@@ -157,97 +155,112 @@ public class MainWindow extends javax.swing.JFrame {
         );
 
         disableButton();
-        
+        tabListener();
         pack();
     }
 
     private void addNewProjet() {
-        Projet projet = controller.creerProjet();
-        PieceRectangulaire pr = (PieceRectangulaire) controller.getProjetPiece();
-        String title = projet.getNom() + i++;
+        String title = "Projet " + i++;
         Canvas canvas = new Canvas();
-
-        tabs.addTab(title, canvas);
-        tabs.setSelectedComponent(canvas);
-        int idx = tabs.indexOfComponent(canvas);
+        canvas.setMainWindow(this);
+        currentCanvas = canvas;
+        
+        controllerActif = new Controller(new PieceRectangulaire(900, 400));
+        controllers.put(currentCanvas, controllerActif);
+        
+        tabs.addTab(title, currentCanvas);
+        tabs.setSelectedComponent(currentCanvas);
+        int idx = tabs.indexOfComponent(currentCanvas);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
+        
         SwingUtilities.invokeLater(() -> {
-        canvas.dessinerRectangle((int)pr.getLargeur(), (int)pr.getHauteur());
+            currentCanvas.repaint();
         });
-//        canvas.dessinerRectangle(pr.getLongueur(), pr.getLargeur());
-        //sourisListener();
+        props.afficherProprietesPiece();
+        sourisListener();
+        suppressionListener();
+    }
         
             
-
-        canvas.addKeyListener(new KeyAdapter() {
-
+    public void suppressionListener(){
+        
+        currentCanvas.addKeyListener(new KeyAdapter() {
         @Override
-
         public void keyPressed(KeyEvent e) {
-
             if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
 
-                controller.supprimerItemSelectionne();
-
+                controllerActif.supprimerItemSelectionne();
                 props.afficherProprietesItemSelectionne();
-
                 panelPosition.afficherCoordItemSelectionne();
-
                 panelPosition.afficherAngleItemSelectionne();
-
-                canvas.repaint();
-
+                currentCanvas.repaint();
             }
-
         }
-
-       });
+        });
+    }
 
  
+    public void sourisListener(){
         
-       
-        canvas.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mousePressed(MouseEvent e){
-                Point cliqueSouris = new Point(e.getX(), e.getY());
-                controller.changerStatutSelection(cliqueSouris);
-                props.afficherProprietesItemSelectionne();
-                panelPosition.afficherCoordItemSelectionne();
-                panelPosition.afficherAngleItemSelectionne();
-                canvas.repaint();
-                
-            }
+        currentCanvas.addMouseListener(new MouseAdapter(){
+        @Override
+        public void mousePressed(MouseEvent e){
+            Point cliqueSouris = new Point(e.getX(), e.getY());
+            controllerActif.changerStatutSelection(cliqueSouris);
+            props.afficherProprietesItemSelectionne();
+            panelPosition.afficherCoordItemSelectionne();
+            panelPosition.afficherAngleItemSelectionne();
+            currentCanvas.repaint();
+
+        }
         });
         
-        canvas.addMouseMotionListener(new MouseMotionAdapter(){
-            @Override
-            public void mouseMoved(MouseEvent e){
-                positionSouris = new Point(e.getX(), e.getY());
-                List<PieceItemReadOnly> items = controller.getItemsList();
-                
-                PieceItemReadOnly ancienItemSurvole = canvas.getItemSurvole();
-                PieceItemReadOnly itemSurvole = null;
-                
-                for(int i = items.size() - 1; i >= 0; i--){
-                    PieceItemReadOnly item = items.get(i);
-                    if(item.contientLePoint(positionSouris)){
-                        itemSurvole = item;
-                        break;
-                    }
-                }
-                
-                if(ancienItemSurvole != itemSurvole){
-                    canvas.setItemSurvole(itemSurvole);
-                    canvas.repaint();
+        currentCanvas.addMouseMotionListener(new MouseMotionAdapter(){
+        @Override
+        public void mouseMoved(MouseEvent e){
+            positionSouris = new Point(e.getX(), e.getY());
+            List<PieceItemReadOnly> items = controllerActif.getItemsList();
+
+            PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
+            PieceItemReadOnly itemSurvole = null;
+
+            for(int i = items.size() - 1; i >= 0; i--){
+                PieceItemReadOnly item = items.get(i);
+                if(item.contientLePoint(positionSouris)){
+                    itemSurvole = item;
+                    break;
                 }
             }
+
+            if(ancienItemSurvole != itemSurvole){
+                currentCanvas.setItemSurvole(itemSurvole);
+                currentCanvas.repaint();
+            }
+        }
         });
+    }   
     
+    
+    private void tabListener(){
+        tabs.addChangeListener(e -> {
+            Component component = tabs.getSelectedComponent();
+            if(component instanceof Canvas canvas){
+                currentCanvas = canvas;
+                this.controllerActif = controllers.get(canvas);
+
+
+                SwingUtilities.invokeLater(() -> {
+                    props.afficherProprietesPiece();
+                    props.afficherProprietesItemSelectionne();
+                    panelPosition.afficherAngleItemSelectionne();
+                    panelPosition.afficherCoordItemSelectionne();
+                });
+            } 
+        });
     }
+
     
-
-
     private void disableButton() {
         if (tabs.getTabCount() == 0) {
             UiUtils.setEnabledRecursively(barreOutils, false);
@@ -262,9 +275,7 @@ public class MainWindow extends javax.swing.JFrame {
         UiUtils.setEnabledRecursively(barreOutils.btnRectangle, true);
     }
 
-    /**
-     * Renomme l’onglet à l’index idx (dialogue + validations).
-     */
+
     private void renameTabAt(int idx) {
         String current = tabs.getTitleAt(idx);
         String name = (String) JOptionPane.showInputDialog(
@@ -272,7 +283,7 @@ public class MainWindow extends javax.swing.JFrame {
                 JOptionPane.PLAIN_MESSAGE, null, null, current);
 
         if (name == null) {
-            return; // annulé
+            return;
         }
         name = name.trim();
         if (name.isEmpty()) {
@@ -289,12 +300,10 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         tabs.setTitleAt(idx, name);
-        // Si tu as un modèle Projet associé, mets-le à jour ici :
-        // projets.get(idx).setNom(name);
     }
 
+    
     private void closeTabAt(int idx) {
-        // TODO: sauvegarde si besoin
         tabs.removeTabAt(idx);
         disableButton();
     }
@@ -307,15 +316,7 @@ public class MainWindow extends javax.swing.JFrame {
         return null;
     }
     
-    
-    
-  
-    
-
-    
-  
-    
-    
+ 
 
     private void initialiserComponent() {
 
@@ -330,7 +331,6 @@ public class MainWindow extends javax.swing.JFrame {
         itemTypeBox = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         mainScrollPane = new javax.swing.JScrollPane();
-        //drawingPanel = new ca.ulaval.glo2004.gui.DrawingPanel(this);
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -388,7 +388,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             };
 
-            // --- Sélectionner l’onglet sur simple clic dans le header ---
+            // Sélectionner l’onglet sur simple clic dans le header
             java.awt.event.MouseAdapter selectOnClick = new java.awt.event.MouseAdapter() {
                 @Override
                 public void mousePressed(java.awt.event.MouseEvent e) {

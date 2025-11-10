@@ -20,7 +20,7 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public Piece(double largeur, double hauteur, List<Mur> murs){
-        this.itemsList = new ArrayList<PieceItem>();
+        this.itemsList = new ArrayList<>();
         this.graphe = new Graphe();
         this.murs = murs;    
         this.largeur = largeur;
@@ -28,9 +28,10 @@ public abstract class Piece implements PieceReadOnly{
         this.position = new Point();
     }
     
-    
+    @Override
     public abstract boolean contientLePoint(Point position);
     
+    @Override
     public abstract Point getCentre();
     
     public void ajouterItem(PieceItem item){
@@ -153,7 +154,8 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public void redimensionner(double nouvLarg, double nouvHaut){
-        
+        setLargeur(nouvLarg);
+        setHauteur(nouvHaut);
     }
     
     
@@ -229,10 +231,7 @@ public abstract class Piece implements PieceReadOnly{
     }
     
     public List<PieceItem> getItemsList(){
-
         return this.itemsList;
-
-
     }
     
     public Graphe getGraphe(){

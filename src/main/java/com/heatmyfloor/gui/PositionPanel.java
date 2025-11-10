@@ -1,6 +1,5 @@
 package com.heatmyfloor.gui;
 
-import com.heatmyfloor.domain.piece.Controller;
 import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.Point;
@@ -19,9 +18,6 @@ public class PositionPanel extends JPanel {
     
     public PositionPanel(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
-        
-
- 
 
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(1,0,0,0, new Color(230,230,230)));
@@ -48,24 +44,23 @@ public class PositionPanel extends JPanel {
         JPanel trans = new JPanel(new GridLayout(2,3,6,6));
         trans.setBorder(BorderFactory.createTitledBorder("Translation"));
         for (int i=0;i<6;i++) trans.add(new JButton(""));
-        inner.add(trans);
-        
-        
+        inner.add(trans);      
      
         JPanel rot = new JPanel();
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
-        rot.add(new JLabel("Rotation"));
-        rot.add(new JTextField("90°", 6));
+        degRotation = new JTextField("", 6);
+        rot.add(degRotation);
         inner.add(rot);
 
         add(inner, BorderLayout.CENTER);
         
-        positionListener();
     }
-        public void afficherCoordItemSelectionne(){
-        if(mainWindow.controller.trouverItemSelectionne() != null){
-            xPosition.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getPosition().getX()));
-            yPosition.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getPosition().getY()));  
+    
+    
+    public void afficherCoordItemSelectionne(){
+        if(mainWindow.controllerActif.trouverItemSelectionne() != null){
+            xPosition.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX()));
+            yPosition.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY()));  
         }else{
             xPosition.setText("");
             yPosition.setText("");
@@ -73,40 +68,37 @@ public class PositionPanel extends JPanel {
     }
     
     public void afficherAngleItemSelectionne(){
-        if(mainWindow.controller.trouverItemSelectionne() != null){
-            degRotation.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getAngle() + "°" ));
+        if(mainWindow.controllerActif.trouverItemSelectionne() != null){
+            degRotation.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getAngle() + "°" ));
         }else{
             degRotation.setText("");
 
         }
     }
     
-    
-    
-            public void positionListener() { 
-                ActionListener apply = (e  -> {
-            
-            if ( xPosition == null || yPosition == null) return;
-            Double x = parseNumber(xPosition.getText());
-            Double y  = parseNumber(yPosition.getText());
-            
-    
+  
+    public void positionListener() { 
+        ActionListener apply = (e  -> {
+        if ( xPosition == null || yPosition == null) return;
+        Double x = parseNumber(xPosition.getText());
+        Double y  = parseNumber(yPosition.getText());
 
-            //déplace et redimensionne l'item selectionné
-            moveSelectedTo(x, y);  
-            mainWindow.currentCanvas.repaint();                     //maj l'affichage  
+        //déplace l'item selectionné
+        moveSelectedTo(x, y);  
+        SwingUtilities.invokeLater(() -> {
+            mainWindow.currentCanvas.repaint();//maj l'affichage
+            mainWindow.currentCanvas.requestFocusInWindow();
+        });                        
         });
-      
-       
         
         // appuie sur Enter = applique
         xPosition.addActionListener(apply);
         yPosition.addActionListener(apply);
-        }
+    }
     
-        //ajout de ces methodes
-    public void moveSelectedTo(double x, double y) {     //place l'item aux coordonées exact
-    mainWindow.controller.deplacerItemSelectionne(new Point(x, y));
+
+    public void moveSelectedTo(double x, double y) {    
+    mainWindow.controllerActif.deplacerItemSelectionne(new Point(x, y));
     }
     
     
@@ -117,13 +109,7 @@ public class PositionPanel extends JPanel {
             return Double.parseDouble(s.replaceAll("[^0-9.]", ""));
         } catch (NumberFormatException e) {
             return null;
-    }
-}
-    
-    
-    
-    
-    
-    
+        }
+    }   
     
 }

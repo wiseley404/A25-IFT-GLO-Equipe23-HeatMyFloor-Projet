@@ -1,13 +1,10 @@
 package com.heatmyfloor.gui;
 
-import com.heatmyfloor.domain.piece.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
-import com.heatmyfloor.gui.Canvas;
 import java.awt.event.*;
-import java.util.function.*;
 
 /**
  *
@@ -23,7 +20,7 @@ public class Proprietes extends JPanel {
     private JTextField longueurFil;
     private MainWindow mainWindow;
     
-    public Proprietes(MainWindow mainWIndow) {
+    public Proprietes(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         setPreferredSize(new Dimension(300, 0));
         setLayout(new BorderLayout());
@@ -61,10 +58,9 @@ public class Proprietes extends JPanel {
         sp.getViewport().setOpaque(false);
         add(sp, BorderLayout.CENTER);
         
-        dimensionListener();
     }
 
-    // ===================== UI =====================
+
     private JComponent buildTitleBar() {
         JPanel bar = new JPanel(new BorderLayout());
         bar.setOpaque(false);
@@ -85,41 +81,44 @@ public class Proprietes extends JPanel {
         bar.add(gear, BorderLayout.EAST);
         return bar;
     }
-    
-    private JSpinner Longueur;
-    private JSpinner Largeur;
 
     private JComponent sectionPiece() {
         SectionPanel s = new SectionPanel("Pièce");
-        Longueur = number(300.0, 2.0, 1000.0, 1.0);
-        Largeur = number(250.0,2.0,450.0,1.0);
-        s.addRow("Longueur :", Longueur);
-        s.addRow("Largeur  :", Largeur);
-        
-        Longueur.addChangeListener(e -> modifierRectangle());
-        Largeur.addChangeListener(e -> modifierRectangle());
-        
+        largeurPiece = text("");
+        hauteurPiece = text("");
+        s.addRow("Largeur", largeurPiece);
+        s.addRow("Hauteur", hauteurPiece);  
         return s;
     }
     
-    private void modifierRectangle(){
-      java.awt.Window window = SwingUtilities.getWindowAncestor(this); 
-       if (window instanceof MainWindow) {
-           MainWindow main = (MainWindow) window;
-           Component comp = main.getSelectedCanvas();
-            if (comp instanceof Canvas) {
-                Canvas canvas = (Canvas) comp;
-                int longueur = ((Double) Longueur.getValue()).intValue();
-                int largeur = ((Double) Largeur.getValue()).intValue();
-                
-                canvas.dessinerRectangle(longueur,largeur);
-            }
-            
-           
-       
-            
-       }
+    public void afficherProprietesPiece() {
+        largeurPiece.setText(String.valueOf(mainWindow.controllerActif.getPiece().getLargeur()));
+        hauteurPiece.setText(String.valueOf(mainWindow.controllerActif.getPiece().getHauteur()));
     }
+    
+    public void dimensionPieceListener() { 
+        ActionListener apply = (e  -> {
+
+            if ( largeurPiece == null || hauteurPiece == null) return;
+            Double largeur = parseNumber(largeurPiece.getText());
+            Double hauteur  = parseNumber(hauteurPiece.getText());
+
+            resizePiece(largeur, hauteur);  
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.repaint();
+                mainWindow.currentCanvas.requestFocusInWindow();
+            });                    
+        });
+            // appuie sur Enter = applique
+            largeurPiece.addActionListener(apply);
+            hauteurPiece.addActionListener(apply);
+    }
+    
+    public void resizePiece(double L, double H) {   
+        if (L <= 0 || H <= 0) return;
+        mainWindow.controllerActif.redimensionnerPiece(L, H);
+    }
+    
     private JComponent sectionMembrane() {
         SectionPanel s = new SectionPanel("Membrane");
         distanceIntersections = text("");
@@ -140,9 +139,9 @@ public class Proprietes extends JPanel {
     }
     
     public void afficherProprietesItemSelectionne() {
-        if(mainWindow.controller.trouverItemSelectionne() != null){
-            largeurItem.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getLargeur()));
-            hauteurItem.setText(String.valueOf(mainWindow.controller.trouverItemSelectionne().getHauteur()));  
+        if(mainWindow.controllerActif.trouverItemSelectionne() != null){
+            largeurItem.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getLargeur()));
+            hauteurItem.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getHauteur()));  
         }else{
             largeurItem.setText("");
             hauteurItem.setText("");
@@ -150,61 +149,43 @@ public class Proprietes extends JPanel {
         
     }
 
-
      
-        
-        
-        
-        // Détecte quand l'utilisateur valide ou qitte le champ /enter
-        public void dimensionListener() { 
-                ActionListener apply = (e  -> {
-            
+    // Détecte quand l'utilisateur valide ou qitte le champ /enter
+    public void dimensionItemListener() { 
+        ActionListener apply = (e  -> {
+
             if ( largeurItem == null || hauteurItem == null) return;
             Double largeur = parseNumber(largeurItem.getText());
             Double hauteur  = parseNumber(hauteurItem.getText());
-            
-    
 
             //déplace et redimensionne l'item selectionné
-            resizeSelected(largeur, hauteur);  
-            mainWindow.currentCanvas.repaint();                     //maj l'affichage  
+            resizeItemSelected(largeur, hauteur);  
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.repaint();//maj l'affichage
+                mainWindow.currentCanvas.requestFocusInWindow();
+            });                        
         });
-      
-       
-        
+
         // appuie sur Enter = applique
         largeurItem.addActionListener(apply);
         hauteurItem.addActionListener(apply);
-        }
-    
-       
-        
-        
-        
-        
-        public void resizeSelected(double L, double H) {   
-        if (L <= 0 || H <= 0) return;//Modifier les dimensions (longueur, largeur) de l’item actuellement sélectionné.
-        mainWindow.controller.redimensionnerItemSelectionne(L, H);
-        }
-    
-   
-    
-    
-    //ajout
-    private Double parseNumber(String s) {
-    try {
-        // enlève tout sauf chiffres et point
-        return Double.parseDouble(s.replaceAll("[^0-9.]", ""));
-    } catch (NumberFormatException e) {
-        return null;
     }
-}
+    
+    
+    public void resizeItemSelected(double L, double H) {   
+        if (L <= 0 || H <= 0) return;//Modifier les dimensions (longueur, largeur) de l’item actuellement sélectionné.
+        mainWindow.controllerActif.redimensionnerItemSelectionne(L, H);
+    }
+     
 
-    
-    
-    
-    
-    
+    private Double parseNumber(String s) {
+        try {
+            // enlève tout sauf chiffres et point
+            return Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
 
     private JComponent sectionFil() {
@@ -224,20 +205,6 @@ public class Proprietes extends JPanel {
         return tf;
     }
 
-    private JSpinner number(Double value, Double min, Double max, Double step) {
-
-        JSpinner sp = new JSpinner(new SpinnerNumberModel(value, min, max, step));
-
-        sp.setEditor(new JSpinner.NumberEditor(sp, "#.########")); // affichage décimal
-
-//        stylizeSpinner(sp);
-
-//        sp.addChangeListener(e -> controller.onLongueurChanged(((Number) sp.getValue()).doubleValue()));
-
-        return sp;
-
-    }
-
     private JButton button(String label) {
         JButton b = new JButton(label);
         b.setFocusable(false);
@@ -246,10 +213,7 @@ public class Proprietes extends JPanel {
         return b;
     }
 
-    /**
-     * Panneau de section à fond blanc, bords arrondis, titre + fin filet.
-     * Layout interne = GridBagLayout pour un alignement propre.
-     */
+
     static class SectionPanel extends JPanel {
 
         private final String title;
@@ -284,66 +248,65 @@ public class Proprietes extends JPanel {
             row++;
         }
 
-        /**
-         * Ajoute une ligne label + champ
-         */
-        void addRow(String label, JComponent field) {
-            GridBagConstraints c1 = (GridBagConstraints) gc.clone();
-            c1.gridy = row;
-            c1.gridx = 0;
-            c1.weightx = 0;
-            c1.insets = new Insets(4, 0, 4, 8);
-            JLabel l = new JLabel(label);
-            add(l, c1);
 
-            GridBagConstraints c2 = (GridBagConstraints) gc.clone();
-            c2.gridy = row;
-            c2.gridx = 1;
-            c2.weightx = 1.0;
-            add(field, c2);
-            row++;
-        }
+    void addRow(String label, JComponent field) {
+        GridBagConstraints c1 = (GridBagConstraints) gc.clone();
+        c1.gridy = row;
+        c1.gridx = 0;
+        c1.weightx = 0;
+        c1.insets = new Insets(4, 0, 4, 8);
+        JLabel l = new JLabel(label);
+        add(l, c1);
 
-        /**
-         * Ajoute un composant sur toute la largeur (ex: bouton)
-         */
-        void addFull(JComponent comp) {
-            GridBagConstraints c = (GridBagConstraints) gc.clone();
-            c.gridy = row;
-            c.gridx = 0;
-            c.gridwidth = 2;
-            c.weightx = 1.0;
-            add(comp, c);
-            row++;
-        }
-
-        /**
-         * Espace vertical supplémentaire
-         */
-        void addSpacer(int h) {
-            GridBagConstraints c = (GridBagConstraints) gc.clone();
-            c.gridy = row;
-            c.gridx = 0;
-            c.gridwidth = 2;
-            add(Box.createVerticalStrut(h), c);
-            row++;
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            int arc = 12;
-            Shape r = new RoundRectangle2D.Float(2, 2, getWidth() - 4, getHeight() - 4, arc, arc);
-
-            g2.setColor(Color.WHITE);
-            g2.fill(r);
-            g2.setColor(new Color(230, 230, 230));
-            g2.draw(r);
-
-            g2.dispose();
-        }
+        GridBagConstraints c2 = (GridBagConstraints) gc.clone();
+        c2.gridy = row;
+        c2.gridx = 1;
+        c2.weightx = 1.0;
+        add(field, c2);
+        row++;
     }
+
+    /**
+     * Ajoute un composant sur toute la largeur (ex: bouton)
+     */
+    void addFull(JComponent comp) {
+        GridBagConstraints c = (GridBagConstraints) gc.clone();
+        c.gridy = row;
+        c.gridx = 0;
+        c.gridwidth = 2;
+        c.weightx = 1.0;
+        add(comp, c);
+        row++;
+    }
+
+    /**
+     * Espace vertical supplémentaire
+     */
+    void addSpacer(int h) {
+        GridBagConstraints c = (GridBagConstraints) gc.clone();
+        c.gridy = row;
+        c.gridx = 0;
+        c.gridwidth = 2;
+        add(Box.createVerticalStrut(h), c);
+        row++;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int arc = 12;
+        Shape r = new RoundRectangle2D.Float(2, 2, getWidth() - 4, getHeight() - 4, arc, arc);
+
+        g2.setColor(Color.WHITE);
+        g2.fill(r);
+        g2.setColor(new Color(230, 230, 230));
+        g2.draw(r);
+
+        g2.dispose();
+    }
+  }
+
 }
