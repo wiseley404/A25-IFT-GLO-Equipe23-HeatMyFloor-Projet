@@ -51,6 +51,7 @@ public class PositionPanel extends JPanel {
         JPanel rot = new JPanel();
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
         degRotation = new JTextField("", 6);
+        rot.add(new JLabel("Rotation"));
         rot.add(degRotation);
         inner.add(rot);
 
