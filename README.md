@@ -22,8 +22,8 @@ Application de modélisation d'un système de plancher chauffant conçue essenti
 
 - Créer une pièce rectangulaire
     - Dans la barre d'outils, cliquer sur la forme "Rectangle".
-    - Une pièce rectangulaire s'ajoute avec les dimensions actuelles.
-    - Redimensionnez la pièce avec la dimension souhaitée depuis le panneau de configuration.
+    - Une pièce rectangulaire s'ajoute avec des dimensions par défaut.
+    - Redimensionnez la pièce avec les dimensions souhaitées depuis le panneau de configuration.
 
 - Redimensionner une pièce rectangulaire
     - Depuis le panneau de configuration, entrez vos nouvelles données.
@@ -40,8 +40,8 @@ Application de modélisation d'un système de plancher chauffant conçue essenti
     - Depuis le canvas, vous pouvez directement visualiser la pièce et ses meubles.
 
 - Ajouter des meubles avec ou sans drain dans une pièce rectangulaire seulement
-    - Dans la barre d'outils, faites un clic sur Meuble avec ou sans drain dans le sous-menu.
-    - Choisissez le meuble désiré, et celui-ci s'ajoute directement au centre de la pièce avec une dimension par défaut.
+    - Dans la barre d'outils, faites un clic sur Meuble avec ou sans drain.
+    - Choisissez le meuble désiré, et celui-ci s'ajoute directement au centre de la pièce avec des dimensions par défaut.
     - Les données actuelles du meuble sont directement visibles depuis le panneau.
     - Vous pourrez ensuite redimensionner, repositionner, supprimer, etc.
 
