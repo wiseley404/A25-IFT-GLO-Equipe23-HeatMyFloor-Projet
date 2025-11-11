@@ -69,6 +69,10 @@ public class Controller {
         piece.deplacerItemSelectionne(nouvPosition);   
     }
     
+    public boolean estPositionValide(Point p){
+       return piece.estPositionItemValide(p);
+    }
+    
     
     public void redimensionnerPiece(double nouvLarg, double nouvHaut){
         this.piece.redimensionner(nouvLarg, nouvHaut);

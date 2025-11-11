@@ -57,6 +57,7 @@ public class MainWindow extends javax.swing.JFrame {
     public Proprietes props;
     public PositionPanel panelPosition;
     public Point positionSouris = new Point();
+    public TableauErreur tabsErreur;
 
     public MainWindow() {
         barreOutils = new BarreOutils(this);
@@ -123,7 +124,7 @@ public class MainWindow extends javax.swing.JFrame {
         panelPosition = new PositionPanel(this);
         panelPosition.positionListener();
         bottom.add(panelPosition, BorderLayout.CENTER);
-        bottom.add(new TableauErreur(), BorderLayout.EAST);
+        bottom.add(tabsErreur, BorderLayout.EAST);
         mainPanel.add(bottom, BorderLayout.SOUTH);
 
         quitMenuItem.addActionListener(e -> {
@@ -356,6 +357,7 @@ public class MainWindow extends javax.swing.JFrame {
         quitMenuItem = new javax.swing.JMenuItem();
         HelpMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
+        tabsErreur = new TableauErreur();
 
     }
 
