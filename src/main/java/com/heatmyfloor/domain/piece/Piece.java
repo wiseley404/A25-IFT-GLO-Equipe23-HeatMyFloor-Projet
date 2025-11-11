@@ -156,8 +156,14 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public void redimensionner(double nouvLarg, double nouvHaut){
+        double facteurX = nouvLarg / this.largeur;
+        double facteurY = nouvHaut / this.hauteur;
         setLargeur(nouvLarg);
         setHauteur(nouvHaut);
+        for (PieceItem item: this.itemsList){
+            item.redimensionner(facteurX, facteurY);
+            item.translater(facteurX, facteurY);
+        }
     }
     
     
