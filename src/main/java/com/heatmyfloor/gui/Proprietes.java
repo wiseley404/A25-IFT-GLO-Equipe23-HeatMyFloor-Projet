@@ -140,8 +140,10 @@ public class Proprietes extends JPanel {
     
     public void afficherProprietesItemSelectionne() {
         if(mainWindow.controllerActif.trouverItemSelectionne() != null){
-            largeurItem.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getLargeur()));
-            hauteurItem.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getHauteur()));  
+            double largeur = mainWindow.controllerActif.trouverItemSelectionne().getLargeur();
+            double hauteur = mainWindow.controllerActif.trouverItemSelectionne().getHauteur();
+            largeurItem.setText(String.format("%.2f", largeur));
+            hauteurItem.setText(String.format("%.2f", hauteur));  
         }else{
             largeurItem.setText("");
             hauteurItem.setText("");

@@ -60,8 +60,10 @@ public class PositionPanel extends JPanel {
 
     public void afficherCoordItemSelectionne() {
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
-            xPosition.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX()));
-            yPosition.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY()));
+            double x = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX();
+            double y = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY();
+            xPosition.setText(String.format("%.2f", x));
+            yPosition.setText(String.format("%.2f", y));
         } else {
             xPosition.setText("");
             yPosition.setText("");
