@@ -99,9 +99,11 @@ public abstract class Piece implements PieceReadOnly{
     
     
     public boolean estPositionItemValide(Point itemPosition){
-        
         boolean valide = false;
-        if(contientLePoint(itemPosition)){
+        PieceItem item = this.trouverItemSelectionne();
+        Point p1 = itemPosition;
+        Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
+        if(contientLePoint(p1) && contientLePoint(p2)){
             
             valide = true;
         }
