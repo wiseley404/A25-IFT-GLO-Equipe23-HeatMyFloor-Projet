@@ -111,7 +111,7 @@ public class BarreOutils extends JPanel {
         btnNouveau = card("Nouveau", "/Icons/NouveauProjet.png");
         btnOuvrir = card("Ouvrir", "/Icons/OuvrirProjet.png");
         btnEnregistrer = card("Enregistrer", "/Icons/save.png");
-        btnExporter = card("Exporter", "/Icons/exporter.png");
+        btnExporter = card("Exporter", "/Icons/Exporter.png");
 
         addGroup(ribbon, gc, col++, makeGroup("Projet",
                 btnNouveau, btnOuvrir, btnEnregistrer, btnExporter
@@ -120,7 +120,7 @@ public class BarreOutils extends JPanel {
 
         //Modélisation
         addGroup(ribbon, gc, col++, makeGroup("Modélisation",
-                card("Pièce", "/Icons/piece.png"),
+                card("Pièce", "/Icons/Piece.png"),
                 card("Fil", "/Icons/Fil.png")
         ), 2);
         addSep(ribbon, gc, col++);
@@ -128,7 +128,7 @@ public class BarreOutils extends JPanel {
         //Affichage
         addGroup(ribbon, gc, col++, makeGroup("Affichage",
                 // card("Vue 2D", "/icons/view2d.png"),
-                card("Vue 3D", "/Icons/3d.png")
+                card("Vue 3D", "/Icons/3D.png")
         ), 2);
         addSep(ribbon, gc, col++);
 
@@ -142,8 +142,8 @@ public class BarreOutils extends JPanel {
         addSep(ribbon, gc, col++);
 
         //Meubles
-        btnMenuSansDrain = card("Sans drain", "/icons/MeubleSansDrain.png");
-        btnMenuAvecDrain = card("Avec drain", "/icons/MeubleAvecDrain.png");
+        btnMenuSansDrain = card("Sans drain", "/Icons/MeubleSansDrain.png");
+        btnMenuAvecDrain = card("Avec drain", "/Icons/MeubleAvecDrain.png");
         addGroup(ribbon, gc, col++, makeGroup("Meubles",
                 btnMenuSansDrain,
                 btnMenuAvecDrain
@@ -152,8 +152,8 @@ public class BarreOutils extends JPanel {
 
         //Autres
         addGroup(ribbon, gc, col++, makeGroup("Autres",
-                card("Thermostat", "/icons/thermostat.png"),
-                card("Zones", "/icons/zone.png")
+                card("Thermostat", "/Icons/Thermostat.png"),
+                card("Zones", "/Icons/zone.png")
         ), 2);
 
         add(ribbon, BorderLayout.CENTER);
@@ -180,6 +180,7 @@ public class BarreOutils extends JPanel {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterMeubleSansDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeSansDrain.valueOf(nom));
                     mainWindow.currentCanvas.repaint();
+                    menuItemSansDrain.setVisible(false);
                 });
             }
         });
@@ -215,6 +216,7 @@ public class BarreOutils extends JPanel {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterMeubleAvecDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeAvecDrain.valueOf(nom));
                     mainWindow.currentCanvas.repaint();
+                    menuItemAvecDrain.setVisible(false);
                 });
             }
         });
