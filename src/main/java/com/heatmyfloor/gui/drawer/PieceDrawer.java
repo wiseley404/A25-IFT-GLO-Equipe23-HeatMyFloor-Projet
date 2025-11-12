@@ -74,7 +74,7 @@ public class PieceDrawer {
       double hauteur = controller.getPiece().getHauteur();
       double x = (canvasDimension.getWidth() - largeur) / 2;
       double y = (canvasDimension.getHeight() - hauteur) / 2;
-     // controller.repositionnerPiece(new Point(x,y));
+      controller.repositionnerPiece(new Point(x,y));
       var pos = controller.getPiece().getPosition();
       
       Rectangle2D pieceRectangulaire = new Rectangle2D.Double(pos.getX(), pos.getY(), largeur, hauteur);
