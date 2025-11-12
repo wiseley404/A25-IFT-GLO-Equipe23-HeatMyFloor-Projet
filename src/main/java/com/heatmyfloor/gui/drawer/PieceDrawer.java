@@ -48,11 +48,20 @@ public class PieceDrawer {
     
     
     public void dessiner(Graphics g){
+        Graphics2D g2 = (Graphics2D) g;
+        var oldTx = g2.getTransform();
+        
+        var origin = currentCanvas.getOriginePx();
+        g2.translate(origin.getX(), origin.getY());
+        g2.scale(currentCanvas.getZoom(), currentCanvas.getZoom());
+
         PieceReadOnly piece = controller.getPiece();
         if(piece instanceof PieceRectangulaire){
             dessinerPieceRectangulaire(g);
             dessinerPieceItems(g);
         } 
+        
+        g2.setTransform(oldTx);
         SwingUtilities.invokeLater(() -> {
             currentCanvas.requestFocusInWindow();
         });
@@ -65,9 +74,10 @@ public class PieceDrawer {
       double hauteur = controller.getPiece().getHauteur();
       double x = (canvasDimension.getWidth() - largeur) / 2;
       double y = (canvasDimension.getHeight() - hauteur) / 2;
-      controller.repositionnerPiece(new Point(x,y));
+     // controller.repositionnerPiece(new Point(x,y));
+      var pos = controller.getPiece().getPosition();
       
-      Rectangle2D pieceRectangulaire = new Rectangle2D.Double(x, y, largeur, hauteur);
+      Rectangle2D pieceRectangulaire = new Rectangle2D.Double(pos.getX(), pos.getY(), largeur, hauteur);
 
       g2.setColor(new Color(255, 232, 200, 120));
       g2.fill(pieceRectangulaire);

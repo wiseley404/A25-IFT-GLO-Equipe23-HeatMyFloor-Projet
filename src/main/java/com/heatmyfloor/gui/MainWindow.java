@@ -66,6 +66,18 @@ public class MainWindow extends javax.swing.JFrame {
         controllerActif = new Controller();
 
     }
+    
+    
+    // --- Conversion coordonnées (Zoom)
+private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
+    double zx = c.getZoom();
+    var o  = c.getOriginePx();
+    return new com.heatmyfloor.domain.Point(
+        (e.getX() - o.getX()) / zx,
+        (e.getY() - o.getY()) / zx
+    );
+}
+
 
     @SuppressWarnings("unchecked")
     private void initComponents() {
@@ -230,8 +242,11 @@ public class MainWindow extends javax.swing.JFrame {
         currentCanvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Point cliqueSouris = new Point(e.getX(), e.getY());
-                controllerActif.changerStatutSelection(cliqueSouris);
+                //Point cliqueSouris = new Point(e.getX(), e.getY());
+                //controllerActif.changerStatutSelection(cliqueSouris);
+                var pWorld = toWorld(currentCanvas, e);     // coord. monde (après zoom)
+                controllerActif.changerStatutSelection(pWorld);
+
                 props.afficherProprietesItemSelectionne();
                 panelPosition.afficherCoordItemSelectionne();
                 panelPosition.afficherAngleItemSelectionne();
@@ -243,7 +258,9 @@ public class MainWindow extends javax.swing.JFrame {
         currentCanvas.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                positionSouris = new Point(e.getX(), e.getY());
+                //positionSouris = new Point(e.getX(), e.getY());
+                positionSouris = toWorld(currentCanvas, e); // coord. monde
+
                 List<PieceItemReadOnly> items = controllerActif.getItemsList();
 
                 PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
