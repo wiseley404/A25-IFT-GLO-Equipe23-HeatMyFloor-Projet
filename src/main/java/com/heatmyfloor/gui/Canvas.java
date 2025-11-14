@@ -18,6 +18,13 @@ public class Canvas extends JPanel implements Serializable{
     private double zoom = 1.0;                       // facteur de zoom (1 = 100 %)
     private Point originePx   // décalage (en pixels) du repère “monde” sur l’écran
             = new com.heatmyfloor.domain.Point(0, 0);
+    
+    private double clamp(double v) {
+    if (v > 1e12) return 1e12;
+    if (v < -1e12) return -1e12;
+    return v;
+}
+
 
     public double getZoom() { return zoom; }
     public com.heatmyfloor.domain.Point getOriginePx() { return originePx; }
@@ -41,7 +48,7 @@ public class Canvas extends JPanel implements Serializable{
     public Canvas() {
         setBackground(Color.white);
         setLayout(null); 
-        setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2)); 
+        //setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2)); 
         
          //Ajout gestion du zoom
         addMouseWheelListener(e -> {
@@ -54,15 +61,17 @@ public class Canvas extends JPanel implements Serializable{
     double factor = Math.pow(1.1, Math.abs(steps));
     double proposed = (steps < 0) ? oldZoom * factor : oldZoom / factor;
 
-    // bornes raisonnables
-    double newZoom = Math.max(0.25, Math.min(5.0, proposed));
+    // bornes : zoom infini
+    double newZoom = proposed;
+    if (newZoom < 1e-6) newZoom = 1e-6;   // presque zéro
+    if (newZoom > 1e6)  newZoom = 1e6;    // zoom énorme
 
     // garder le point souris *immobile* à l’écran
     double mx = e.getX(), my = e.getY();
     double k = newZoom / oldZoom; // ratio de changement
     originePx = new com.heatmyfloor.domain.Point(
-        mx - k * (mx - originePx.getX()),
-        my - k * (my - originePx.getY())
+        clamp(mx - k * (mx - originePx.getX())),
+        clamp(my - k * (my - originePx.getY()))
     );
 
     zoom = newZoom;
