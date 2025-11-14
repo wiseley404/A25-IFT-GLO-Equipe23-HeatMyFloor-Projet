@@ -24,6 +24,52 @@ public class Canvas extends JPanel implements Serializable{
     if (v < -1e12) return -1e12;
     return v;
 }
+    //
+        /** Applique un zoom autour du point (mx, my) en pixels écran. */
+    private void applyZoom(double mx, double my, double factor) {
+        if (factor == 0) return;
+
+        double oldZoom = zoom;
+        double proposed = oldZoom * factor;
+
+        // bornes "quasi infinies"
+        double newZoom = proposed;
+        if (newZoom < 1e-6) newZoom = 1e-6;
+        if (newZoom > 1e6)  newZoom = 1e6;
+
+        double k = newZoom / oldZoom; // ratio
+
+        originePx = new com.heatmyfloor.domain.Point(
+                clamp(mx - k * (mx - originePx.getX())),
+                clamp(my - k * (my - originePx.getY()))
+        );
+
+        zoom = newZoom;
+
+    if (mainWindow != null) {
+        mainWindow.updateZoomLabel();
+}
+
+repaint();
+
+        repaint();
+    }
+
+  /** Zoom depuis le centre du canvas (utilisé par les boutons + / -) */
+public void zoomDepuisCentre(double factor) {
+    double mx = getWidth()  / 2.0;
+    double my = getHeight() / 2.0;
+    applyZoom(mx, my, factor);
+}
+
+/** Remet le zoom à 100 % et recentre la vue */
+public void resetZoomAndCenter() {
+    zoom = 1.0;
+    originePx = new com.heatmyfloor.domain.Point(0, 0);
+    repaint();
+}
+
+//
 
 
     public double getZoom() { return zoom; }
@@ -51,7 +97,7 @@ public class Canvas extends JPanel implements Serializable{
         //setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2)); 
         
          //Ajout gestion du zoom
-        addMouseWheelListener(e -> {
+       /* addMouseWheelListener(e -> {
     // rotation < 0 : on zoome / rotation > 0 : on dézoome
     int steps = e.getWheelRotation();
     if (steps == 0) return;
@@ -76,7 +122,20 @@ public class Canvas extends JPanel implements Serializable{
 
     zoom = newZoom;
     repaint();
-});
+});*/
+           addMouseWheelListener(e -> {
+        int steps = e.getWheelRotation();
+        if (steps == 0) return;
+
+        // < 0 : zoom +,  > 0 : zoom –
+        double factor = Math.pow(1.1, Math.abs(steps));
+        if (steps > 0) {
+            factor = 1.0 / factor;
+        }
+
+        applyZoom(e.getX(), e.getY(), factor);
+    });
+
 
     }
     

@@ -77,6 +77,12 @@ private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent
         (e.getY() - o.getY()) / zx
     );
 }
+public void updateZoomLabel() {
+    if (currentCanvas != null && barreOutils != null) {
+        barreOutils.setZoomLabel(currentCanvas.getZoom());
+    }
+}
+
 
 
     @SuppressWarnings("unchecked")

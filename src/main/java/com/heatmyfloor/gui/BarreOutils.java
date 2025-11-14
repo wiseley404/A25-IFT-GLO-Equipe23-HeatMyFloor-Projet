@@ -22,8 +22,19 @@ public class BarreOutils extends JPanel {
     private ButtonCard btnMenuSansDrain;
     private ButtonCard btnMenuAvecDrain;
     private FormeIrregulierPanel dessinPanel;
+    public ButtonCard btnZoomIn;
+    public ButtonCard btnZoomOut;
+    private JLabel lblZoom;
 
 
+
+//
+    public void setZoomLabel(double zoomFactor) {
+    if (lblZoom != null) {
+        lblZoom.setText(String.format("%.1f %%", zoomFactor * 100.0));
+    }
+}
+    //
     public BarreOutils(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         setLayout(new BorderLayout());
@@ -131,6 +142,65 @@ public class BarreOutils extends JPanel {
                 card("Vue 3D", "/Icons/3D.png")
         ), 2);
         addSep(ribbon, gc, col++);
+        
+                // Zoom
+       /* btnZoomIn     = card("Zoom +", "/Icons/zoomer.png");
+        btnZoomOut    = card("Zoom -", "/Icons/dezoomer.png");
+
+        addGroup(ribbon, gc, col++, makeGroup("Zoom",
+                btnZoomIn, btnZoomOut
+        ), 2);
+        addSep(ribbon, gc, col++);*/
+       // --- Zoom ---
+        btnZoomIn    = card("Zoom +",  "/Icons/zoomer.png");
+        btnZoomOut   = card("Zoom -",  "/Icons/dezoomer.png");
+
+        lblZoom = new JLabel("100 %");
+        lblZoom.setHorizontalAlignment(SwingConstants.CENTER);
+        lblZoom.setPreferredSize(new Dimension(70, 24));
+
+        // Ligne : [-]  100 %  [+]
+        JPanel zoomRow = new JPanel();
+        zoomRow.setOpaque(false);
+        zoomRow.setLayout(new BoxLayout(zoomRow, BoxLayout.X_AXIS));
+        zoomRow.add(btnZoomOut);
+        zoomRow.add(Box.createHorizontalStrut(4));
+        zoomRow.add(lblZoom);
+        zoomRow.add(Box.createHorizontalStrut(4));
+        zoomRow.add(btnZoomIn);
+
+        // Colonne : ligne + texte "Zoom"
+        JPanel zoomGroup = new JPanel();
+        zoomGroup.setOpaque(false);
+        zoomGroup.setLayout(new BoxLayout(zoomGroup, BoxLayout.Y_AXIS));
+        zoomGroup.add(zoomRow);
+        zoomGroup.add(Box.createVerticalStrut(6));
+        JLabel zoomTitle = new JLabel("Zoom", SwingConstants.CENTER);
+        zoomTitle.setAlignmentX(0.5f);
+        zoomGroup.add(zoomTitle);
+
+        // On place le groupe dans le ruban
+        addGroup(ribbon, gc, col++, zoomGroup, 2);
+        addSep(ribbon, gc, col++);
+        
+
+
+                // Actions des boutons de zoom
+        btnZoomIn.setOnClick(e -> {
+            Canvas c = mainWindow.currentCanvas;
+            if (c != null) {
+                c.zoomDepuisCentre(1.1);   // zoom x1.1
+            }
+        });
+
+        btnZoomOut.setOnClick(e -> {
+            Canvas c = mainWindow.currentCanvas;
+            if (c != null) {
+                c.zoomDepuisCentre(1.0 / 1.1); // dézoom
+            }
+        });
+
+
 
         //Formes
         btnRectangle = card("Rectangle", "/Icons/Rectangle.png");

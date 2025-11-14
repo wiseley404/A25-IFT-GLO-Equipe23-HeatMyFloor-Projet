@@ -48,12 +48,12 @@ public class PieceDrawer {
     
     
     public void dessiner(Graphics g){
-        Graphics2D g2 = (Graphics2D) g;
-        var oldTx = g2.getTransform();
+       // Graphics2D g2 = (Graphics2D) g;
+        /*var oldTx = g2.getTransform();
         
         var origin = currentCanvas.getOriginePx();
         g2.translate(origin.getX(), origin.getY());
-        g2.scale(currentCanvas.getZoom(), currentCanvas.getZoom());
+        g2.scale(currentCanvas.getZoom(), currentCanvas.getZoom());*/
 
         PieceReadOnly piece = controller.getPiece();
         if(piece instanceof PieceRectangulaire){
@@ -61,7 +61,7 @@ public class PieceDrawer {
             dessinerPieceItems(g);
         } 
         
-        g2.setTransform(oldTx);
+       // g2.setTransform(oldTx);*/
         SwingUtilities.invokeLater(() -> {
             currentCanvas.requestFocusInWindow();
         });

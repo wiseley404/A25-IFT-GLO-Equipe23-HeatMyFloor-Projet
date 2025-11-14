@@ -88,45 +88,48 @@ public class Proprietes extends JPanel {
         gear.setToolTipText("Paramètres");
         gear.setToolTipText("Choisir l’unité");
         
-        //  Quand on clique sur ⚙ : choisir l’unité globale
-    gear.addActionListener(e -> {
-        // options = toutes les valeurs de l’énum
-        Unite[] options = Unite.values();
+        gear.setToolTipText("Paramètres / Unités");
 
-        // unité actuelle (par défaut POUCE)
-        Unite actuelle = (unitePiece != null && unitePiece.getSelectedItem() != null)
-                ? (Unite) unitePiece.getSelectedItem()
-                : Unite.POUCE;
+        // MENU DÉROULANT POUR LES UNITÉS (SANS POPUP)
+         gear.addActionListener(e -> {
 
-        Unite choisie = (Unite) JOptionPane.showInputDialog(
-                Proprietes.this,                   
-                "Choisir l’unité par défaut :",    
-                "Unités",                           
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,                            
-                actuelle                            
-        );
+         // Le menu qui apparaît sous le bouton
+         JPopupMenu menu = new JPopupMenu();
 
-        if (choisie != null) {
-            // on applique cette unité à la pièce et aux meubles
-            if (unitePiece != null) {
-                unitePiece.setSelectedItem(choisie);
-            }
-            if (uniteItem != null) {
-                uniteItem.setSelectedItem(choisie);
-            }
+         // Titre du menu
+         JMenuItem titre = new JMenuItem("Choisir l’unité par défaut");
+         titre.setEnabled(false);              // non-cliquable
+         titre.setFont(titre.getFont().deriveFont(Font.BOLD));
+         menu.add(titre);
 
-            // on rafraîchit l’affichage des champs
-            afficherProprietesPiece();
-            afficherProprietesItemSelectionne();
-        }
-    });
+         // Ligne separator
+         menu.add(new JSeparator());
 
-        bar.add(title, BorderLayout.WEST);
-        bar.add(gear, BorderLayout.EAST);
-        return bar;
-    }
+         // Ajouter chaque unité
+         for (Unite u : Unite.values()) {
+
+             JMenuItem item = new JMenuItem(u.name());
+
+             // Action lorsqu’on clique l’unité
+             item.addActionListener(ev -> {
+                 // appliquer la nouvelle unité
+                 if (unitePiece != null) unitePiece.setSelectedItem(u);
+                 if (uniteItem != null) uniteItem.setSelectedItem(u);
+
+                 afficherProprietesPiece();
+                 afficherProprietesItemSelectionne();
+             });
+
+             menu.add(item);
+         }
+
+         // Affiche le menu sous le bouton ⚙
+         menu.show(gear, 0, gear.getHeight());
+     });
+      bar.add(title, BorderLayout.WEST);
+         bar.add(gear, BorderLayout.EAST);
+         return bar;
+     }
 
     private JComponent sectionPiece() {
         SectionPanel s = new SectionPanel("Pièce");
