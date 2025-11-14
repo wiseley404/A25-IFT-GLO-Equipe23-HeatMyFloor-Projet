@@ -41,7 +41,7 @@ public class Canvas extends JPanel implements Serializable{
     public Canvas() {
         setBackground(Color.white);
         setLayout(null); 
-        setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2)); 
+        //setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2)); 
         
          //Ajout gestion du zoom
         addMouseWheelListener(e -> {
@@ -84,7 +84,7 @@ public class Canvas extends JPanel implements Serializable{
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(255, 232, 200, 120));
         super.paintComponent(g);
-        
+
         Graphics2D g2 = (Graphics2D) g;
 
         g2.translate(originePx.getX(), originePx.getY());

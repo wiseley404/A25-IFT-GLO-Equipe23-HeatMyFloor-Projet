@@ -213,6 +213,8 @@ private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent
         tabs.setSelectedIndex(idx);
 
         SwingUtilities.invokeLater(() -> {
+
+            //panelPosition.afficherCoordItemSelectionne();
             currentCanvas.repaint();
         });
         props.afficherProprietesPiece();
@@ -260,7 +262,7 @@ private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent
             public void mouseMoved(MouseEvent e) {
                 //positionSouris = new Point(e.getX(), e.getY());
                 positionSouris = toWorld(currentCanvas, e); // coord. monde
-
+              
                 List<PieceItemReadOnly> items = controllerActif.getItemsList();
 
                 PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();

@@ -115,7 +115,7 @@ public class Proprietes extends JPanel {
     }
     
     public void resizePiece(double L, double H) {   
-        if (L <= 0 || H <= 0) return;
+        if (L <= 0 || H <= 0) return; 
         mainWindow.controllerActif.redimensionnerPiece(L, H);
     }
     

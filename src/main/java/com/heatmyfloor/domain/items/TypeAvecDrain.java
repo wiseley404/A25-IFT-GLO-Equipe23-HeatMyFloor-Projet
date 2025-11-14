@@ -26,4 +26,5 @@ public enum TypeAvecDrain {
     public String getImage(){
         return this.image;
     }
+   
 }
