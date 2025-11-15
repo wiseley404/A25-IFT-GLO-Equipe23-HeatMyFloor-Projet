@@ -11,10 +11,6 @@ import java.awt.Toolkit;
  * @author petit
  */
 public class Util {
-   // public static Point pixelsVersPouces(double pxX, double pxY, Point originePx, double zoom, double ppp) {
-     //   return null;
-  //  }
-    
     public static final double Pixel_Par_Pouce;
     static{
         int dpi;

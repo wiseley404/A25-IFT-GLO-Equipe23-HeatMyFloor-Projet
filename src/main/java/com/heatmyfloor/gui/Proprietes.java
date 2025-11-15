@@ -287,12 +287,6 @@ public class Proprietes extends JPanel {
      
 //Modifier pour les divisions avec /
     private Double parseNumber(String s) {
-       // try {
-            // enlève tout sauf chiffres et point
-           // return Double.parseDouble(s.replaceAll("[^0-9.]", ""));
-       // } catch (NumberFormatException e) {
-       //     return null;
-       // }
       if (s == null) return null;
 
     // Garder seulement chiffres, points et slash

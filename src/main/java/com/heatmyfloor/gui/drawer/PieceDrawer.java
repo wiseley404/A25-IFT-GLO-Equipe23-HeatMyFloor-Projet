@@ -48,12 +48,6 @@ public class PieceDrawer {
     
     
     public void dessiner(Graphics g){
-       // Graphics2D g2 = (Graphics2D) g;
-        /*var oldTx = g2.getTransform();
-        
-        var origin = currentCanvas.getOriginePx();
-        g2.translate(origin.getX(), origin.getY());
-        g2.scale(currentCanvas.getZoom(), currentCanvas.getZoom());*/
 
         PieceReadOnly piece = controller.getPiece();
         if(piece instanceof PieceRectangulaire){

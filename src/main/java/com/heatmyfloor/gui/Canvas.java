@@ -94,35 +94,6 @@ public void resetZoomAndCenter() {
     public Canvas() {
         setBackground(Color.white);
         setLayout(null); 
-        //setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2)); 
-        
-         //Ajout gestion du zoom
-       /* addMouseWheelListener(e -> {
-    // rotation < 0 : on zoome / rotation > 0 : on dézoome
-    int steps = e.getWheelRotation();
-    if (steps == 0) return;
-
-    double oldZoom = zoom;
-    // facteur progressif (≈10% par “cran”)
-    double factor = Math.pow(1.1, Math.abs(steps));
-    double proposed = (steps < 0) ? oldZoom * factor : oldZoom / factor;
-
-    // bornes : zoom infini
-    double newZoom = proposed;
-    if (newZoom < 1e-6) newZoom = 1e-6;   // presque zéro
-    if (newZoom > 1e6)  newZoom = 1e6;    // zoom énorme
-
-    // garder le point souris *immobile* à l’écran
-    double mx = e.getX(), my = e.getY();
-    double k = newZoom / oldZoom; // ratio de changement
-    originePx = new com.heatmyfloor.domain.Point(
-        clamp(mx - k * (mx - originePx.getX())),
-        clamp(my - k * (my - originePx.getY()))
-    );
-
-    zoom = newZoom;
-    repaint();
-});*/
            addMouseWheelListener(e -> {
         int steps = e.getWheelRotation();
         if (steps == 0) return;
