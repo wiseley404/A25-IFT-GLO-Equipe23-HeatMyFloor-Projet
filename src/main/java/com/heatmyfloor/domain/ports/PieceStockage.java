@@ -14,5 +14,5 @@ import java.nio.file.Path;
 public interface PieceStockage {
     Piece ouvrirFichier(Path cheminFichier);
     void saveFichier(Piece p, Path cheminSauvegarde);
-    void exporterFichierPng(Piece p, Path cheminExport);
+    void exporterFichierPng(Piece p, Path cheminExport, String nomProjet);
 }

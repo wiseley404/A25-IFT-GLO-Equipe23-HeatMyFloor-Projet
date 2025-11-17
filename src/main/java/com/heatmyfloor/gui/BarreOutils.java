@@ -15,7 +15,7 @@ import com.heatmyfloor.domain.Point;
 public class BarreOutils extends JPanel {
 
     private MainWindow mainWindow;
-    private BarreOutilsActions actions; 
+    private BarreOutilsActions actions;
     public ButtonCard btnNouveau;
     public ButtonCard btnOuvrir;
     public ButtonCard btnExporter;
@@ -244,6 +244,7 @@ public class BarreOutils extends JPanel {
     }
     
     
+
     public void onSansDrainClicked() {
         btnMenuSansDrain.setOnClick(e -> {
             JPopupMenu menuItemSansDrain = new JPopupMenu();
@@ -357,5 +358,17 @@ public class BarreOutils extends JPanel {
             }
             
         });
+    }
+
+    public void onEnregistrerProjetClick(Runnable r) {
+        btnEnregistrer.setOnClick(e -> r.run());
+    }
+    
+    public void onExportPngClick(Runnable r) {
+        btnEnregistrer.setOnClick(e -> r.run());
+    }
+    
+    public void onOuvrirProjetClick(Runnable r) {
+        btnEnregistrer.setOnClick(e -> r.run());
     }
 }

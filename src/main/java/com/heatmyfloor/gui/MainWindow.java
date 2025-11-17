@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.gui.UiUtils.ToastType;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -22,6 +23,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.SwingUtilities;
@@ -143,6 +146,85 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+         barreOutils.onEnregistrerProjetClick(() -> {
+
+            Path fichierSauvegarde;
+
+            if (controllerActif.GetCheminFichier() == null) {
+                fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
+                if (fichierSauvegarde == null) {
+
+                    UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
+                    return;
+                }
+
+            } else {
+                fichierSauvegarde = controllerActif.GetCheminFichier();
+            }
+
+            controllerActif.sauvegarderProjet(fichierSauvegarde);
+            UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+
+        });
+         
+         barreOutils.onExportPngClick(() -> {
+            Path fichierSauvegarde;
+            fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
+            if (fichierSauvegarde == null) {
+
+                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
+                return;
+            }
+
+            try {
+                controllerActif.exporterProjetPng(fichierSauvegarde);
+                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+            } catch (RuntimeException e) {
+                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
+            }
+
+        });
+         
+         barreOutils.onOuvrirProjetClick(() -> {
+
+            Path fichier;
+            fichier = UiUtils.choisirFichierJson(this);
+            if (fichier == null) {
+
+                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun fichier Json nà été sélectionné.");
+                return;
+            }
+
+            try {
+
+                controllerActif = new Controller();
+                controllerActif.ouvrirProjet(fichier);
+                controllers.put(currentCanvas, controllerActif);
+
+                Canvas canvas = new Canvas();
+                canvas.setMainWindow(this);
+                currentCanvas = canvas;
+                tabs.addTab(controllerActif.GetProjetNom(), currentCanvas);
+                tabs.setSelectedComponent(currentCanvas);
+                int idx = tabs.indexOfComponent(currentCanvas);
+                tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
+                tabs.setSelectedIndex(idx);
+
+                SwingUtilities.invokeLater(() -> {
+                    currentCanvas.repaint();
+                });
+                props.afficherProprietesPiece();
+                sourisListener();
+                suppressionListener();
+
+                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+            } catch (RuntimeException e) {
+                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
+            }
+
+        });
+
+
         JPanel center = new JPanel(new BorderLayout());
         props = new Proprietes(this);
         props.dimensionItemListener();
@@ -225,6 +307,7 @@ public class MainWindow extends javax.swing.JFrame {
         currentCanvas = canvas;
 
         controllerActif = new Controller(new PieceRectangulaire(900, 400));
+        controllerActif.SetProjetNom(title);
         controllers.put(currentCanvas, controllerActif);
 
         tabs.addTab(title, currentCanvas);
@@ -255,6 +338,23 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         
+    }
+
+    public void suppressionListener() {
+
+        currentCanvas.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+
+                    controllerActif.supprimerItemSelectionne();
+                    props.afficherProprietesItemSelectionne();
+                    panelPosition.afficherCoordItemSelectionne();
+                    panelPosition.afficherAngleItemSelectionne();
+                    currentCanvas.repaint();
+                }
+            }
+        });
     }
 
     public void supprimerItem() {
@@ -353,7 +453,6 @@ public class MainWindow extends javax.swing.JFrame {
                     "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        // Évite les doublons exacts
         for (int i = 0; i < tabs.getTabCount(); i++) {
             if (i != idx && name.equalsIgnoreCase(tabs.getTitleAt(i))) {
                 JOptionPane.showMessageDialog(this, "Un onglet porte déjà ce nom.",
@@ -362,6 +461,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         tabs.setTitleAt(idx, name);
+        controllerActif.SetProjetNom(name);
     }
 
     private void closeTabAt(int idx) {
