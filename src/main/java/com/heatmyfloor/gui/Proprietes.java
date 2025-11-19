@@ -44,8 +44,6 @@ public class Proprietes extends JPanel {
         // Pièce
         content.add(sectionPiece());
         content.add(Box.createVerticalStrut(10));
-        //unitePiece.addActionListener(e -> afficherProprietesPiece());
-
 
         // Membrane
         content.add(sectionMembrane());
@@ -54,8 +52,6 @@ public class Proprietes extends JPanel {
         // Meuble
         content.add(sectionMeuble());
         content.add(Box.createVerticalStrut(10));
-        //uniteItem.addActionListener(e -> afficherProprietesItemSelectionne());
-
 
         // Fil
         content.add(sectionFil());
@@ -76,9 +72,13 @@ public class Proprietes extends JPanel {
         bar.setOpaque(false);
         bar.setBorder(new EmptyBorder(8, 12, 8, 12));
 
-               JLabel title = new JLabel("Propriétés");
+        JLabel title = new JLabel("Propriétés");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 14f));
+        
+        //Boutons UNDO-REDO + PARAMETRES UNITE VALEURS NUMERIQUES
         JPanel espaceBoutton = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
+        
+        //UNDO
         ImageIcon undoImage  = new ImageIcon(getClass().getResource("/Icons/undo.png"));
         Image undoImg = undoImage.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         JButton undo = new JButton (new ImageIcon(undoImg));
@@ -88,6 +88,8 @@ public class Proprietes extends JPanel {
         undo.setBorderPainted(false);     
         undo.setContentAreaFilled(false);  
         undo.setFocusPainted(false);
+        
+        //REDO
         ImageIcon redoImage  = new ImageIcon(getClass().getResource("/Icons/redo.png"));
         Image redoImg = redoImage.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         JButton redo = new JButton (new ImageIcon(redoImg));
@@ -97,70 +99,71 @@ public class Proprietes extends JPanel {
         redo.setBorderPainted(false);     
         redo.setContentAreaFilled(false);  
         redo.setFocusPainted(false);
+        
         espaceBoutton.add(undo);
         espaceBoutton.add(redo);
         espaceBoutton.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         espaceBoutton.setOpaque(false);
+        
         undo.addActionListener(e -> {
             mainWindow.controllerActif.annulerModif();
-            mainWindow.repaint();
-            mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.currentCanvas.repaint();
+            afficherProprietesItemSelectionne();
             mainWindow.panelPosition.afficherAngleItemSelectionne();
             mainWindow.panelPosition.afficherCoordItemSelectionne();
         });
+        
         redo.addActionListener(e ->{
             mainWindow.controllerActif.retablirModif();
-            mainWindow.repaint();
-            mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.currentCanvas.repaint();
+            afficherProprietesItemSelectionne();
             mainWindow.panelPosition.afficherAngleItemSelectionne();
             mainWindow.panelPosition.afficherCoordItemSelectionne();
         });
 
- 
-
+        //PARAMETRES
         JButton gear = new JButton("⚙");
         gear.setFocusable(false);
         gear.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         gear.setOpaque(false);
         gear.setContentAreaFilled(false);
         gear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        gear.setToolTipText("Paramètres");
-        gear.setToolTipText("Choisir l’unité");
-        
         gear.setToolTipText("Paramètres / Unités");
 
         // MENU DÉROULANT POUR LES UNITÉS
-         gear.addActionListener(e -> {
+        gear.addActionListener(e -> {
 
-         JPopupMenu menu = new JPopupMenu();
+            JPopupMenu menu = new JPopupMenu();
 
-         JMenuItem titre = new JMenuItem("Choisir l’unité par défaut");
-         titre.setEnabled(false);
-         titre.setFont(titre.getFont().deriveFont(Font.BOLD));
-         menu.add(titre);
-         menu.add(new JSeparator());
-         for (Unite u : Unite.values()) {
-             JMenuItem item = new JMenuItem(u.name());
-             item.addActionListener(ev -> {
-                 if (unitePiece != null) unitePiece.setSelectedItem(u);
-                 if (uniteItem != null) uniteItem.setSelectedItem(u);
+            JMenuItem titre = new JMenuItem("Choisir l’unité par défaut");
+            titre.setEnabled(false);
+            titre.setFont(titre.getFont().deriveFont(Font.BOLD));
+            menu.add(titre);
+            menu.add(new JSeparator());
+            for (Unite u : Unite.values()) {
+                JMenuItem item = new JMenuItem(u.name());
+                item.addActionListener(ev -> {
+                    if (unitePiece != null) unitePiece.setSelectedItem(u);
+                    if (uniteItem != null) uniteItem.setSelectedItem(u);
 
-                 afficherProprietesPiece();
-                 afficherProprietesItemSelectionne();
-             });
+                    afficherProprietesPiece();
+                    afficherProprietesItemSelectionne();
+                });
 
-             menu.add(item);
-         }
+                menu.add(item);
+            }
 
-         // Affiche le menu sous le bouton principal
-         menu.show(gear, 0, gear.getHeight());
-     });
+            // Affiche le menu sous le bouton principal
+            menu.show(gear, 0, gear.getHeight());
+        }); 
+         
          espaceBoutton.add(gear);
-      bar.add(title, BorderLayout.WEST);
+         bar.add(title, BorderLayout.WEST);
          bar.add(espaceBoutton, BorderLayout.EAST);
          return bar;
-     }
+    }
 
+    
     private JComponent sectionPiece() {
         SectionPanel s = new SectionPanel("Pièce");
         largeurPiece = text("");

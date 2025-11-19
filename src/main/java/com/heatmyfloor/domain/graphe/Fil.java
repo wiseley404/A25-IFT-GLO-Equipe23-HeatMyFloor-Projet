@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.heatmyfloor.domain.graphe;
-
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Fil {
+public class Fil implements Serializable{
     private Intersection depart ;
     private Intersection arrivee;
     

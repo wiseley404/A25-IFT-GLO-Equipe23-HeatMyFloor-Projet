@@ -5,12 +5,12 @@
 package com.heatmyfloor.domain.graphe;
 import java.util.List;
 import java.util.ArrayList;
-
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Chemin {
+public class Chemin implements Serializable{
    private  List<Fil> aretes;
     
    public Chemin(List<Fil> aretes){

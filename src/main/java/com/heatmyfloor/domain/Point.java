@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.heatmyfloor.domain;
-
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Point {
+public class Point implements Serializable {
 
     public Point() {
     }

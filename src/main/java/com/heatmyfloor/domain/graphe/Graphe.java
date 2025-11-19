@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.ArrayList;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.Piece;
-
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Graphe {
+public class Graphe implements Serializable{
     private List<Intersection> intersections;
     private Chemin cheminActuel;
     private double distanceIntersection;

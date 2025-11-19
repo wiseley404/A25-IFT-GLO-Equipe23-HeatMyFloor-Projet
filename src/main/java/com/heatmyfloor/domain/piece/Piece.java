@@ -5,12 +5,12 @@ import com.heatmyfloor.domain.graphe.Graphe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import java.io.Serializable;
 /**
  *
  * @author Wily
  */
-public abstract class Piece implements PieceReadOnly{
+public abstract class Piece implements PieceReadOnly, Serializable{
     private List<PieceItem> itemsList;
     private Graphe graphe;
     private List<Mur> murs;

@@ -3,12 +3,12 @@ package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
 import java.awt.geom.Rectangle2D;
 import java.util.UUID;
-
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class PieceItem implements PieceItemReadOnly{
+public class PieceItem implements PieceItemReadOnly, Serializable{
     private final UUID id;
     private double largeur;
     private double hauteur;

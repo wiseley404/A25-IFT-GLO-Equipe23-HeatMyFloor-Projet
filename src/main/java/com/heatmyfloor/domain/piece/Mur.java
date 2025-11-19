@@ -2,11 +2,12 @@ package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
 import java.util.UUID;
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Mur {
+public class Mur implements Serializable{
     private final UUID id;
     private Point debut, fin;
     private final double distanceAvecFil;

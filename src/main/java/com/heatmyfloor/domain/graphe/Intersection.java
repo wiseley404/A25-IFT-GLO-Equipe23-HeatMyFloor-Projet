@@ -4,12 +4,12 @@
  */
 package com.heatmyfloor.domain.graphe;
 import com.heatmyfloor.domain.Point;
-
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Intersection {
+public class Intersection implements Serializable{
     private  Point coordonnees ;
     public  Intersection(Point coord){
     this.coordonnees = coord;

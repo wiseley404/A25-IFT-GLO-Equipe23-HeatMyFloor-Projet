@@ -7,11 +7,12 @@ package com.heatmyfloor.domain.items;
 import java.util.UUID;
 import com.heatmyfloor.domain.Point;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 /**
  *
  * @author petit
  */
-public class Drain implements DrainReadOnly {
+public class Drain implements DrainReadOnly, Serializable {
     
     //Attributs
     
