@@ -51,7 +51,7 @@ public class Controller {
     
     
     public void ajouterElementChauffant(Point position){
-        this.piece.ajouterItem(new ElementChauffant(120, 70, position));
+        this.piece.ajouterItem(new ElementChauffant(150, 50, position));
     }
     
     

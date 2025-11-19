@@ -114,6 +114,8 @@ public void updateZoomLabel() {
 
         barreOutils.onSansDrainClicked();
         barreOutils.onAvecDrainClicked();
+        barreOutils.onThermostatClicked();
+        barreOutils.onElementChauffant();
         barreOutils.onZonesClicked();
 
         barreOutils.onIrregularButtonClick(() -> {
