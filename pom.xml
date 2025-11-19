@@ -50,6 +50,9 @@
                 <version>3.0.2</version>
                 <configuration>
                     <archive>
+                        <manifestEntries>
+                            <SplashScreen-Image>LoadingScreen/HeatMyFloor.png</SplashScreen-Image>
+                        </manifestEntries>
                         <manifest>
                             <mainClass>com.heatmyfloor.HeatMyFloor</mainClass>
                         </manifest>

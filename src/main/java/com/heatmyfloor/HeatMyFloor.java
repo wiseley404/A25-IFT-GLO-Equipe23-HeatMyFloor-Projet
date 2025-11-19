@@ -6,6 +6,7 @@ package com.heatmyfloor;
 
 import com.heatmyfloor.gui.MainWindow;
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -14,10 +15,13 @@ import javax.swing.JFrame;
 public class HeatMyFloor {
 
     public static void main(String[] args) {
-  
         
+        LoadingScreen.show();
         MainWindow mainWindow = new MainWindow();
         mainWindow.setExtendedState(mainWindow.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         mainWindow.setVisible(true);
+        
+        ImageIcon logo = new ImageIcon(HeatMyFloor.class.getResource("/Icons/HeatMyFloor_logo.png"));
+        mainWindow.setIconImage(logo.getImage());
     }
 }
