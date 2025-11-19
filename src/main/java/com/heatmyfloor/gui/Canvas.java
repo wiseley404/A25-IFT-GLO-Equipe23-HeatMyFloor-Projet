@@ -15,8 +15,8 @@ public class Canvas extends JPanel implements Serializable{
     public PieceDrawer dessinateurPiece;
     
     // Zoom
-    private double zoom = 1.0;                       // facteur de zoom (1 = 100 %)
-    private Point originePx   // décalage (en pixels) du repère “monde” sur l’écran
+    private double zoom = 1.0; 
+    private Point originePx
             = new com.heatmyfloor.domain.Point(0, 0);
     
     private double clamp(double v) {
@@ -24,20 +24,18 @@ public class Canvas extends JPanel implements Serializable{
     if (v < -1e12) return -1e12;
     return v;
 }
-    //
-        /** Applique un zoom autour du point (mx, my) en pixels écran. */
     private void applyZoom(double mx, double my, double factor) {
         if (factor == 0) return;
 
         double oldZoom = zoom;
         double proposed = oldZoom * factor;
 
-        // bornes "quasi infinies"
+        // bornes infinies
         double newZoom = proposed;
         if (newZoom < 1e-6) newZoom = 1e-6;
         if (newZoom > 1e6)  newZoom = 1e6;
 
-        double k = newZoom / oldZoom; // ratio
+        double k = newZoom / oldZoom;
 
         originePx = new com.heatmyfloor.domain.Point(
                 clamp(mx - k * (mx - originePx.getX())),
@@ -55,35 +53,31 @@ repaint();
         repaint();
     }
 
-  /** Zoom depuis le centre du canvas (utilisé par les boutons + / -) */
 public void zoomDepuisCentre(double factor) {
     double mx = getWidth()  / 2.0;
     double my = getHeight() / 2.0;
     applyZoom(mx, my, factor);
 }
 
-/** Remet le zoom à 100 % et recentre la vue */
 public void resetZoomAndCenter() {
     zoom = 1.0;
     originePx = new com.heatmyfloor.domain.Point(0, 0);
     repaint();
 }
 
-//
-
 
     public double getZoom() { return zoom; }
     public com.heatmyfloor.domain.Point getOriginePx() { return originePx; }
     public void resetZoom() { zoom = 1.0; originePx = new com.heatmyfloor.domain.Point(0,0); }
     
-    /** Convertit un point de la souris (pixels écran) → coordonnées monde */
+    /* Convertit un point de la souris (pixels écran) en coordonnées monde */
     public Point toWorld(double sx, double sy) {
         double x = (sx - originePx.getX()) / zoom;
         double y = (sy - originePx.getY()) / zoom;
         return new com.heatmyfloor.domain.Point(x, y);
     }
 
-    /** Convertit un point du monde → position sur l’écran (si besoin) */
+    /* Convertit un point du monde en position sur l’écran */
     public Point toScreen(double wx, double wy) {
         double x = wx * zoom + originePx.getX();
         double y = wy * zoom + originePx.getY();
@@ -98,7 +92,6 @@ public void resetZoomAndCenter() {
         int steps = e.getWheelRotation();
         if (steps == 0) return;
 
-        // < 0 : zoom +,  > 0 : zoom –
         double factor = Math.pow(1.1, Math.abs(steps));
         if (steps > 0) {
             factor = 1.0 / factor;

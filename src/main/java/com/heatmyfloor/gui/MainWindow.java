@@ -68,7 +68,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     
-    // --- Conversion coordonnées (Zoom)
+    //Conversion coordonnées (Zoom)
 private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
     double zx = c.getZoom();
     var o  = c.getOriginePx();
@@ -79,7 +79,7 @@ private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent
 }
 public void updateZoomLabel() {
     if (currentCanvas != null && barreOutils != null) {
-        barreOutils.setZoomLabel(currentCanvas.getZoom());
+        barreOutils.setZoomPercent(currentCanvas.getZoom());
     }
 }
 
@@ -217,7 +217,6 @@ public void updateZoomLabel() {
         int idx = tabs.indexOfComponent(currentCanvas);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
-
         SwingUtilities.invokeLater(() -> {
             currentCanvas.repaint();
         });
@@ -248,9 +247,7 @@ public void updateZoomLabel() {
         currentCanvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                //Point cliqueSouris = new Point(e.getX(), e.getY());
-                //controllerActif.changerStatutSelection(cliqueSouris);
-                var pWorld = toWorld(currentCanvas, e);     // coord. monde (après zoom)
+                var pWorld = toWorld(currentCanvas, e);
                 controllerActif.changerStatutSelection(pWorld);
 
                 props.afficherProprietesItemSelectionne();
@@ -264,8 +261,7 @@ public void updateZoomLabel() {
         currentCanvas.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                //positionSouris = new Point(e.getX(), e.getY());
-                positionSouris = toWorld(currentCanvas, e); // coord. monde
+                positionSouris = toWorld(currentCanvas, e);
 
                 List<PieceItemReadOnly> items = controllerActif.getItemsList();
 

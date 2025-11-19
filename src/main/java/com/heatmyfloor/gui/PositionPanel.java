@@ -113,11 +113,10 @@ public class PositionPanel extends JPanel {
             mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce.");
         }
     }
-//Modifier pour les divisions avec /
+
     private Double parseNumber(String s) {
     if (s == null) return null;
 
-    // Garder seulement chiffres, points et slash
     s = s.replaceAll("[^0-9./ ]", "").trim();
 
     if (s.isEmpty()) return null;
@@ -131,11 +130,11 @@ public class PositionPanel extends JPanel {
             return a / b;
         }
 
-        // CAS 2 : Fraction du genre "a + b/c"
+        // CAS 2 : Fraction "a b/c"
         if (s.matches("[0-9]+\\s+[0-9]+\\s*/\\s*[0-9]+")) {
             String[] parts = s.split("\\s+");
-            double entier = Double.parseDouble(parts[0]); // le "a"
-            String frac = parts[1];                      // le "b/c"
+            double entier = Double.parseDouble(parts[0]);
+            String frac = parts[1];
             String[] fracParts = frac.split("/");
             double b = Double.parseDouble(fracParts[0]);
             double c = Double.parseDouble(fracParts[1]);

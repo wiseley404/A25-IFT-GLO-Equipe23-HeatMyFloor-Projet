@@ -76,8 +76,47 @@ public class Proprietes extends JPanel {
         bar.setOpaque(false);
         bar.setBorder(new EmptyBorder(8, 12, 8, 12));
 
-        JLabel title = new JLabel("Propriétés");
+               JLabel title = new JLabel("Propriétés");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 14f));
+        JPanel espaceBoutton = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
+        ImageIcon undoImage  = new ImageIcon(getClass().getResource("/Icons/undo.png"));
+        Image undoImg = undoImage.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        JButton undo = new JButton (new ImageIcon(undoImg));
+        undo.setToolTipText("Undo");
+        undo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        undo.setPreferredSize(new Dimension(30, 25));
+        undo.setBorderPainted(false);     
+        undo.setContentAreaFilled(false);  
+        undo.setFocusPainted(false);
+        ImageIcon redoImage  = new ImageIcon(getClass().getResource("/Icons/redo.png"));
+        Image redoImg = redoImage.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        JButton redo = new JButton (new ImageIcon(redoImg));
+        redo.setToolTipText("Redo");
+        redo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        redo.setPreferredSize(new Dimension(30, 25));
+        redo.setBorderPainted(false);     
+        redo.setContentAreaFilled(false);  
+        redo.setFocusPainted(false);
+        espaceBoutton.add(undo);
+        espaceBoutton.add(redo);
+        espaceBoutton.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        espaceBoutton.setOpaque(false);
+        undo.addActionListener(e -> {
+            mainWindow.controllerActif.annulerModif();
+            mainWindow.repaint();
+            mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.panelPosition.afficherAngleItemSelectionne();
+            mainWindow.panelPosition.afficherCoordItemSelectionne();
+        });
+        redo.addActionListener(e ->{
+            mainWindow.controllerActif.retablirModif();
+            mainWindow.repaint();
+            mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.panelPosition.afficherAngleItemSelectionne();
+            mainWindow.panelPosition.afficherCoordItemSelectionne();
+        });
+
+ 
 
         JButton gear = new JButton("⚙");
         gear.setFocusable(false);
@@ -90,29 +129,19 @@ public class Proprietes extends JPanel {
         
         gear.setToolTipText("Paramètres / Unités");
 
-        // MENU DÉROULANT POUR LES UNITÉS (SANS POPUP)
+        // MENU DÉROULANT POUR LES UNITÉS
          gear.addActionListener(e -> {
 
-         // Le menu qui apparaît sous le bouton
          JPopupMenu menu = new JPopupMenu();
 
-         // Titre du menu
          JMenuItem titre = new JMenuItem("Choisir l’unité par défaut");
-         titre.setEnabled(false);              // non-cliquable
+         titre.setEnabled(false);
          titre.setFont(titre.getFont().deriveFont(Font.BOLD));
          menu.add(titre);
-
-         // Ligne separator
          menu.add(new JSeparator());
-
-         // Ajouter chaque unité
          for (Unite u : Unite.values()) {
-
              JMenuItem item = new JMenuItem(u.name());
-
-             // Action lorsqu’on clique l’unité
              item.addActionListener(ev -> {
-                 // appliquer la nouvelle unité
                  if (unitePiece != null) unitePiece.setSelectedItem(u);
                  if (uniteItem != null) uniteItem.setSelectedItem(u);
 
@@ -123,11 +152,12 @@ public class Proprietes extends JPanel {
              menu.add(item);
          }
 
-         // Affiche le menu sous le bouton ⚙
+         // Affiche le menu sous le bouton principal
          menu.show(gear, 0, gear.getHeight());
      });
+         espaceBoutton.add(gear);
       bar.add(title, BorderLayout.WEST);
-         bar.add(gear, BorderLayout.EAST);
+         bar.add(espaceBoutton, BorderLayout.EAST);
          return bar;
      }
 
@@ -148,8 +178,6 @@ public class Proprietes extends JPanel {
     }
     
     public void afficherProprietesPiece() {
-        //largeurPiece.setText(String.valueOf(mainWindow.controllerActif.getPiece().getLargeur()));
-        //hauteurPiece.setText(String.valueOf(mainWindow.controllerActif.getPiece().getHauteur()));
         
         double largPx = mainWindow.controllerActif.getPiece().getLargeur();
         double hautPx = mainWindow.controllerActif.getPiece().getHauteur();
@@ -157,9 +185,6 @@ public class Proprietes extends JPanel {
         Unite u = (unitePiece != null)
                 ? (Unite) unitePiece.getSelectedItem()
                 : Unite.POUCE;
-        //double largPouces = Util.enUnite(largPx, Unite.POUCE);
-        //double hautPouces = Util.enUnite(hautPx, Unite.POUCE);
-        
         largeurPiece.setText(String.format("%.2f", Util.enUnite(largPx, u)));
         hauteurPiece.setText(String.format("%.2f", Util.enUnite(hautPx, u)));
     }
@@ -181,7 +206,6 @@ public class Proprietes extends JPanel {
                 mainWindow.currentCanvas.requestFocusInWindow();
             });                    
         });
-            // appuie sur Enter = applique
             largeurPiece.addActionListener(apply);
             hauteurPiece.addActionListener(apply);
     }
@@ -234,8 +258,6 @@ public class Proprietes extends JPanel {
             Unite u = (uniteItem != null)
                 ? (Unite) uniteItem.getSelectedItem()
                 : Unite.POUCE;
-            //double largPouces = Util.enUnite(largPx, Unite.POUCE);
-            //double hautPouces = Util.enUnite(hautPx, Unite.POUCE);
             
             largeurItem.setText(String.format("%.2f", Util.enUnite(largPx, u)));
             hauteurItem.setText(String.format("%.2f", Util.enUnite(hautPx, u))); 
@@ -247,7 +269,6 @@ public class Proprietes extends JPanel {
     }
 
      
-    // Détecte quand l'utilisateur valide ou qitte le champ /enter
     public void dimensionItemListener() { 
         ActionListener apply = (e  -> {
 
@@ -259,22 +280,19 @@ public class Proprietes extends JPanel {
                 return;
             }
 
-            //déplace et redimensionne l'item selectionné
             resizeItemSelected(largeur, hauteur);  
             SwingUtilities.invokeLater(() -> {
-                mainWindow.currentCanvas.repaint();//maj l'affichage
+                mainWindow.currentCanvas.repaint();
                 mainWindow.currentCanvas.requestFocusInWindow();
             });                        
         });
 
-        // appuie sur Enter = applique
         largeurItem.addActionListener(apply);
         hauteurItem.addActionListener(apply);
     }
     
-    //Modifier pour conversion
     public void resizeItemSelected(double L, double H) {   
-        if (L <= 0 || H <= 0) return;//Modifier les dimensions (longueur, largeur) de l’item actuellement sélectionné.
+        if (L <= 0 || H <= 0) return;
         
         Unite u = (uniteItem != null)
             ? (Unite) uniteItem.getSelectedItem()
@@ -285,11 +303,9 @@ public class Proprietes extends JPanel {
         mainWindow.controllerActif.redimensionnerItemSelectionne(Lpx, Hpx);
     }
      
-//Modifier pour les divisions avec /
     private Double parseNumber(String s) {
       if (s == null) return null;
 
-    // Garder seulement chiffres, points et slash
     s = s.replaceAll("[^0-9./ ]", "").trim();
 
     if (s.isEmpty()) return null;
@@ -307,8 +323,8 @@ public class Proprietes extends JPanel {
         // CAS 2 : Fraction mixte "a b/c"
         if (s.matches("[0-9]+\\s+[0-9]+\\s*/\\s*[0-9]+")) {
             String[] parts = s.split("\\s+");
-            double entier = Double.parseDouble(parts[0]); // le "a"
-            String frac = parts[1];                      // le "b/c"
+            double entier = Double.parseDouble(parts[0]);
+            String frac = parts[1];
             String[] fracParts = frac.split("/");
             double b = Double.parseDouble(fracParts[0]);
             double c = Double.parseDouble(fracParts[1]);
