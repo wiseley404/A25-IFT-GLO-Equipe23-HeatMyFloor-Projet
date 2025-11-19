@@ -68,20 +68,20 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     
-    //Conversion coordonnées (Zoom)
-private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
-    double zx = c.getZoom();
-    var o  = c.getOriginePx();
-    return new com.heatmyfloor.domain.Point(
-        (e.getX() - o.getX()) / zx,
-        (e.getY() - o.getY()) / zx
-    );
-}
-public void updateZoomLabel() {
-    if (currentCanvas != null && barreOutils != null) {
-        barreOutils.setZoomPercent(currentCanvas.getZoom());
+        //Conversion coordonnées (Zoom)
+    private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
+        double zx = c.getZoom();
+        var o  = c.getOriginePx();
+        return new com.heatmyfloor.domain.Point(
+            (e.getX() - o.getX()) / zx,
+            (e.getY() - o.getY()) / zx
+        );
     }
-}
+    public void updateZoomLabel() {
+        if (currentCanvas != null && barreOutils != null) {
+            barreOutils.setZoomPercent(currentCanvas.getZoom());
+        }
+    }
 
 
 
@@ -103,6 +103,14 @@ public void updateZoomLabel() {
                 controllerActif = controllers.get(canvas);
                 controllerActif.setPiece(new PieceRectangulaire(500, 300));
                 currentCanvas = canvas;
+                
+                double largeur = controllerActif.getPiece().getLargeur();
+                double hauteur = controllerActif.getPiece().getHauteur();
+                double x = (currentCanvas.getWidth() - largeur) / 2;
+                double y = (currentCanvas.getHeight() - hauteur) / 2;
+                controllerActif.repositionnerPiece(new Point(x,y));
+                panelPosition.afficherCoordItemSelectionne();
+                
                 currentCanvas.nettoyerModeDessin();
                 currentCanvas.repaint();
                 props.afficherProprietesPiece();
@@ -220,9 +228,17 @@ public void updateZoomLabel() {
         int idx = tabs.indexOfComponent(currentCanvas);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
+        
         SwingUtilities.invokeLater(() -> {
+            double largeur = controllerActif.getPiece().getLargeur();
+            double hauteur = controllerActif.getPiece().getHauteur();
+            double x = (currentCanvas.getWidth() - largeur) / 2;
+            double y = (currentCanvas.getHeight() - hauteur) / 2;
+            controllerActif.repositionnerPiece(new Point(x,y));
+            panelPosition.afficherCoordItemSelectionne();
             currentCanvas.repaint();
         });
+        
         props.afficherProprietesPiece();
         sourisListener();
         suppressionListener();

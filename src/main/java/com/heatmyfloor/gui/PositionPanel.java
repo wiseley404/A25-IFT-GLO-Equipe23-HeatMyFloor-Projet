@@ -66,8 +66,8 @@ public class PositionPanel extends JPanel {
             xPosition.setText(String.format("%.2f", x));
             yPosition.setText(String.format("%.2f", y));
         } else {
-            xPosition.setText("");
-            yPosition.setText("");
+            xPosition.setText(String.valueOf(mainWindow.controllerActif.getPiece().getPosition().getX()));
+            yPosition.setText(String.valueOf(mainWindow.controllerActif.getPiece().getPosition().getY()));
         }
     }
 
@@ -103,8 +103,10 @@ public class PositionPanel extends JPanel {
     public void moveSelectedTo(double x, double y) {
 
         Point p = new Point(x, y);
-
-        if (mainWindow.controllerActif.estPositionValide(p)) {
+        if(mainWindow.controllerActif.trouverItemSelectionne() == null){
+            mainWindow.controllerActif.repositionnerPiece(p);
+            
+        }else if (mainWindow.controllerActif.estPositionValide(p)) {
             mainWindow.tabsErreur.clearMessages();
 
             mainWindow.controllerActif.deplacerItemSelectionne(p);
