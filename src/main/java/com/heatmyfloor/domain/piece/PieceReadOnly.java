@@ -4,7 +4,7 @@
  */
 package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
-
+import java.awt.Shape;
 /**
  *
  * @author petit
@@ -15,4 +15,5 @@ public interface PieceReadOnly {
     Point getPosition();
     Point getCentre();
     boolean contientLePoint(Point position);
+    boolean contientLaForme(Shape itemRotation);
 }

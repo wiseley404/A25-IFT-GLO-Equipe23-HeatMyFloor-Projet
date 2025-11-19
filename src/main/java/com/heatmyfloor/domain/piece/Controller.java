@@ -107,6 +107,16 @@ public class Controller {
         this.piece.changerStatutSelectionItem(pos);
     }
     
+    public void changerAngleItemSelectionne(double nouvAngle){
+        this.historique.sauvegarder(piece);
+        this.piece.changerAngleItemSelectionne(nouvAngle);
+    }
+    
+    public void pivoterItemSelectionne(){
+        this.historique.sauvegarder(piece);
+        this.piece.pivoterItemSelectionne();
+    }
+    
     public List<PieceItemReadOnly> getItemsList(){
         return this.piece.getItemsList()
                 .stream()

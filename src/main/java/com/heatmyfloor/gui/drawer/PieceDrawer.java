@@ -16,6 +16,7 @@ import com.heatmyfloor.gui.Proprietes;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -78,16 +79,22 @@ public class PieceDrawer {
     
        
     public void dessinerPieceItems(Graphics g){
-        Graphics2D g2 = (Graphics2D) g;
-        
+
         List<PieceItemReadOnly> items = this.controller.getItemsList();
         for(PieceItemReadOnly item : items){
+            Graphics2D g2 = (Graphics2D) g;
+            AffineTransform transfParDefaut = g2.getTransform();
+            
             double padding = 7.5;
             Rectangle2D contourSelection = item.getItemForme().getBounds2D();
             Rectangle2D contourAvecPadding  = new Rectangle2D.Double(contourSelection.getX() - padding,
                                                           contourSelection.getY() - padding,
                                                           contourSelection.getWidth() + 2*padding,
                                                           contourSelection.getHeight() + 2*padding);
+            
+            double angleRad = Math.toRadians(item.getAngle());
+            g2.rotate(angleRad, item.getItemForme().getCenterX(), item.getItemForme().getCenterY());
+            
             if(item.estSelectionne()){
                 dessinerContourSelection(g2, contourAvecPadding);
             }
@@ -114,6 +121,7 @@ public class PieceDrawer {
                                         (int) item.getHauteur(),
                                          null);
             }  
+            g2.setTransform(transfParDefaut);
         }
         
         if(controller.trouverItemSelectionne() != null){

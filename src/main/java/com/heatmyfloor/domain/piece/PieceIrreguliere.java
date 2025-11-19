@@ -5,7 +5,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.awt.Shape;
 /**
  *
  * @author petit
@@ -70,6 +70,11 @@ public class PieceIrreguliere extends Piece {
     public boolean contientLePoint(Point position){
         return getForme(this.sommets).contains(position.getX(), position.getY());
     }   
+    
+    @Override
+    public boolean contientLaForme(Shape itemRotation){
+        return getForme(this.sommets).contains(itemRotation.getBounds2D());
+    }
     
     public void setSommets(List<Point> sommets){
         this.sommets = sommets;

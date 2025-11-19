@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.io.Serializable;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 /**
  *
  * @author Wily
@@ -30,6 +33,9 @@ public abstract class Piece implements PieceReadOnly, Serializable{
     
     @Override
     public abstract boolean contientLePoint(Point position);
+    
+    @Override
+    public abstract boolean contientLaForme(Shape itemRotation);
     
     @Override
     public abstract Point getCentre();
@@ -66,6 +72,29 @@ public abstract class Piece implements PieceReadOnly, Serializable{
         }
     }
     
+    public void changerAngleItemSelectionne(double nouvAngle){
+        PieceItem item = this.trouverItemSelectionne();
+        if(item != null){
+            double ancienAngle = item.getAngle();
+            item.setAngle(nouvAngle);
+            if(!this.estPositionItemValide(item.getPosition())){
+                item.setAngle(ancienAngle);
+                throw new IllegalArgumentException("Vous ne pouvez pas faire cette rotation aux bords de la pièce.");
+            }
+        }
+    }
+    
+    public void pivoterItemSelectionne(){
+        PieceItem item = this.trouverItemSelectionne();
+        if (item != null){
+            double ancienAngle = item.getAngle();
+            item.pivoter();
+            if(!this.estPositionItemValide(item.getPosition())){
+                item.setAngle(ancienAngle);
+                throw new IllegalArgumentException("Vous ne pouvez pas faire cette rotation aux bords de la pièce.");
+            }
+        }
+    }
     
     public void ajouterDrain(Point position){
         
@@ -101,14 +130,26 @@ public abstract class Piece implements PieceReadOnly, Serializable{
     public boolean estPositionItemValide(Point itemPosition){
         boolean valide = false;
         PieceItem item = this.trouverItemSelectionne();
-        Point p1 = itemPosition;
-        Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
-        if(contientLePoint(p1) && contientLePoint(p2)){
-            
-            valide = true;
-        }
-        return valide;   
         
+        if(item != null && itemPosition != null){
+            Point p1 = itemPosition;
+            Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
+            
+            if(item.getAngle() == 0){
+                valide = contientLePoint(p1) && contientLePoint(p2);
+                //Verification de la position de l'item en rotation
+            } else{
+                Rectangle2D formeTournee = new Rectangle2D.Double(itemPosition.getX(), itemPosition.getY(),
+                                                                  item.getLargeur(), item.getHauteur());
+                AffineTransform transf = new AffineTransform();
+                double angleRadian = Math.toRadians(item.getAngle());
+                transf.rotate(angleRadian, formeTournee.getCenterX(), formeTournee.getCenterY());
+                Shape itemRotation = transf.createTransformedShape(formeTournee);
+                valide = this.contientLaForme(itemRotation);
+            }
+        }
+        
+        return valide;
     }
     
     

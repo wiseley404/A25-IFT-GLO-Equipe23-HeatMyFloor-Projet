@@ -4,6 +4,8 @@ import com.heatmyfloor.domain.Point;
 import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 import java.io.Serializable;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 /**
  *
  * @author petit
@@ -13,7 +15,7 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     private double largeur;
     private double hauteur;
     private Point position;
-    private int angle;
+    private double angle;
     private final String image;
     private boolean estSelectionne;
     
@@ -138,7 +140,7 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     }
     
     
-    public void setAngle(int angle){
+    public void setAngle(double angle){
         angle = angle % 360;
         this.angle = angle;
     }
@@ -168,7 +170,7 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     }
     
     @Override
-    public int getAngle(){
+    public double getAngle(){
         return this.angle;
     }
     

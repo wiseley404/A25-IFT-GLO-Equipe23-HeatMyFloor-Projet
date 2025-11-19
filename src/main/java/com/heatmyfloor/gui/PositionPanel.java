@@ -14,6 +14,7 @@ public class PositionPanel extends JPanel {
     private JTextField xPosition;
     private JTextField yPosition;
     private JTextField degRotation;
+    private JButton rotationButton;
     private MainWindow mainWindow;
 
     public PositionPanel(MainWindow mainWindow) {
@@ -30,7 +31,7 @@ public class PositionPanel extends JPanel {
         coords.setLayout(new BoxLayout(coords, BoxLayout.Y_AXIS));
         coords.add(new JLabel("Position"));
         JPanel xy = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
-
+        
         xPosition = new JTextField("", 6);
         xy.add(new JLabel("X :"));
         xy.add(xPosition);
@@ -40,19 +41,34 @@ public class PositionPanel extends JPanel {
         coords.add(xy);
 
         inner.add(coords);
-
+        
+        //Translation
         JPanel trans = new JPanel(new GridLayout(2, 3, 6, 6));
         trans.setBorder(BorderFactory.createTitledBorder("Translation"));
         for (int i = 0; i < 6; i++) {
             trans.add(new JButton(""));
         }
         inner.add(trans);
-
+        
+        //Rotation
         JPanel rot = new JPanel();
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
-        degRotation = new JTextField("", 6);
         rot.add(new JLabel("Rotation"));
-        rot.add(degRotation);
+        
+        JPanel rotChamp = new JPanel();
+        rotChamp.setLayout(new BoxLayout(rotChamp, BoxLayout.X_AXIS));
+        degRotation = new JTextField("", 6);
+        degRotation.setPreferredSize(new Dimension(150, 30));
+        degRotation.setMaximumSize(new Dimension(150, 30));
+        degRotation.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.GRAY));
+        rotChamp.add(degRotation);
+        
+        rotationButton = new JButton("⟳");
+        rotationButton.setPreferredSize(new Dimension(30, 30));
+        rotationButton.setMaximumSize(new Dimension(30, 30));
+        rotationButton.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 1, Color.GRAY));
+        rotChamp.add(rotationButton);
+        rot.add(rotChamp);
         inner.add(rot);
 
         add(inner, BorderLayout.CENTER);
@@ -78,6 +94,36 @@ public class PositionPanel extends JPanel {
             degRotation.setText("");
 
         }
+    }
+    
+    public void angleListener(){
+        degRotation.addActionListener(e -> {
+            if(degRotation == null){
+                return;
+            }
+            String s = degRotation.getText();
+            double angle = Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+
+            try{
+                mainWindow.controllerActif.changerAngleItemSelectionne(angle);
+            }catch(IllegalArgumentException event){
+                mainWindow.tabsErreur.addErrorMessage(event.getMessage());
+            }   
+            
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.repaint();
+                mainWindow.currentCanvas.requestFocusInWindow();
+            });
+        });
+        
+        rotationButton.addActionListener(e -> {
+            try{
+                mainWindow.controllerActif.pivoterItemSelectionne();
+            }catch(IllegalArgumentException event){
+                mainWindow.tabsErreur.addErrorMessage(event.getMessage());
+            }
+            mainWindow.currentCanvas.repaint();
+        });
     }
 
     public void positionListener() {

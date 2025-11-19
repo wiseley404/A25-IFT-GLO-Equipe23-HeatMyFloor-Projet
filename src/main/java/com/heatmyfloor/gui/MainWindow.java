@@ -152,6 +152,7 @@ public class MainWindow extends javax.swing.JFrame {
         JPanel bottom = new JPanel(new BorderLayout());
         panelPosition = new PositionPanel(this);
         panelPosition.positionListener();
+        panelPosition.angleListener();
         bottom.add(panelPosition, BorderLayout.CENTER);
         bottom.add(tabsErreur, BorderLayout.EAST);
         mainPanel.add(bottom, BorderLayout.SOUTH);

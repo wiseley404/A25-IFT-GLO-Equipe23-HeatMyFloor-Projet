@@ -4,7 +4,7 @@ import com.heatmyfloor.domain.Point;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.List;
-
+import java.awt.Shape;
 /**
  *
  * @author petit
@@ -51,6 +51,11 @@ public class PieceRectangulaire extends Piece {
     @Override
     public boolean contientLePoint(Point position){
         return getForme().contains(position.getX(), position.getY());
+    }
+    
+    @Override 
+    public boolean contientLaForme(Shape itemRotation){
+        return this.getForme().contains(itemRotation.getBounds2D());
     }
 
 }

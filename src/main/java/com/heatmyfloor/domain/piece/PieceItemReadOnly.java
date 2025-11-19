@@ -15,7 +15,7 @@ public interface PieceItemReadOnly {
     Point getPosition();
     Rectangle2D getItemForme();
     boolean contientLePoint(Point position);
-    int getAngle();
+    double getAngle();
     String getImage();
     boolean estSelectionne();
 }
