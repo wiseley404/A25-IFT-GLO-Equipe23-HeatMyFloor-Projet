@@ -17,23 +17,23 @@ public class LoadingScreen {
         Color couleurBarreArrierePlan = Color.BLACK;
         Color couleurBarreProgression = new Color (0xF3B24E);
         
-        int largeurBarre = 400;
-        int hauteurBarre = 20;
+        int largeurBarreProgression = 400;
+        int hauteurBarreProgression = 20;
         int xPosition = 50;
         int yPosition = 350;
         int coinArrondi = 10;
         
         g.setColor(couleurBarreArrierePlan);
-        g.fillRoundRect(xPosition, yPosition, largeurBarre, hauteurBarre, coinArrondi, coinArrondi);
+        g.fillRoundRect(xPosition, yPosition, largeurBarreProgression, hauteurBarreProgression, coinArrondi, coinArrondi);
         
         
-        int largeur = (int) ((frame / 100) * largeurBarre);
+        int largeur = (int) ((frame / 100) * largeurBarreProgression);
         g.setColor(couleurBarreProgression);
-        g.fillRoundRect(xPosition, yPosition, largeur, hauteurBarre, coinArrondi, coinArrondi);
+        g.fillRoundRect(xPosition, yPosition, largeur, hauteurBarreProgression, coinArrondi, coinArrondi);
         
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.BOLD, 14));
-        g.drawString("Loading " + frame + "%", xPosition + largeurBarre / 2 - 30, yPosition + hauteurBarre -5);
+        g.drawString("Loading " + frame + "%", xPosition + largeurBarreProgression / 2 - 30, yPosition + hauteurBarreProgression -5);
         
     }
     
