@@ -72,6 +72,10 @@ public class Controller {
         this.piece.setPosition(position);
     }
     
+    public void centrerPiece(Point position){
+        this.piece.setPosition(position);
+    }
+    
     public void supprimerItemSelectionne(){
         this.historique.sauvegarder(piece);
         piece.supprimerItemSelectionne();

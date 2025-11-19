@@ -113,7 +113,7 @@ public class MainWindow extends javax.swing.JFrame {
                 double hauteur = controllerActif.getPiece().getHauteur();
                 double x = (currentCanvas.getWidth() - largeur) / 2;
                 double y = (currentCanvas.getHeight() - hauteur) / 2;
-                controllerActif.repositionnerPiece(new Point(x,y));
+                controllerActif.centrerPiece(new Point(x,y));
                 panelPosition.afficherCoordItemSelectionne();
                 
                 currentCanvas.nettoyerModeDessin();
@@ -240,7 +240,7 @@ public class MainWindow extends javax.swing.JFrame {
             double hauteur = controllerActif.getPiece().getHauteur();
             double x = (currentCanvas.getWidth() - largeur) / 2;
             double y = (currentCanvas.getHeight() - hauteur) / 2;
-            controllerActif.repositionnerPiece(new Point(x,y));
+            controllerActif.centrerPiece(new Point(x,y));
             panelPosition.afficherCoordItemSelectionne();
             currentCanvas.repaint();
         });
