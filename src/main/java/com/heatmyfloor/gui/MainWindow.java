@@ -9,6 +9,10 @@ import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import javax.swing.*;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.Image;
 import com.heatmyfloor.domain.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,6 +39,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.ButtonGroup createFruitButtonGroup;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JComboBox itemTypeBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSplitPane jSplitPane1;
@@ -242,24 +247,24 @@ public class MainWindow extends javax.swing.JFrame {
         
         props.afficherProprietesPiece();
         sourisListener();
-        suppressionListener();
-    }
-
-    public void suppressionListener() {
-
+        
         currentCanvas.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
-
-                    controllerActif.supprimerItemSelectionne();
-                    props.afficherProprietesItemSelectionne();
-                    panelPosition.afficherCoordItemSelectionne();
-                    panelPosition.afficherAngleItemSelectionne();
-                    currentCanvas.repaint();
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {     
+                    supprimerItem();
                 }
             }
         });
+        
+    }
+
+    public void supprimerItem() {
+        controllerActif.supprimerItemSelectionne();
+        props.afficherProprietesItemSelectionne();
+        panelPosition.afficherCoordItemSelectionne();
+        panelPosition.afficherAngleItemSelectionne();
+        currentCanvas.repaint();
     }
 
     public void sourisListener() {
@@ -396,6 +401,7 @@ public class MainWindow extends javax.swing.JFrame {
         quitMenuItem = new javax.swing.JMenuItem();
         HelpMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
+        helpMenu = new javax.swing.JMenu();
         tabsErreur = new TableauErreur();
 
     }
@@ -403,9 +409,10 @@ public class MainWindow extends javax.swing.JFrame {
     private void addButton() {
 
         JToolBar toolBar = new JToolBar();
-        JMenuItem newItem = new JMenuItem("Nouveau");
-        JMenuItem openItem = new JMenuItem("Ouvrir");
-        JMenuItem exportItem = new JMenuItem("Exporter");
+        JMenuItem newItem = new JMenuItem("Nouveau Projet");
+        JMenuItem openItem = new JMenuItem("Ouvrir Projet");
+        JMenuItem saveItem = new JMenuItem("Enregistrer Projet");
+        JMenuItem exportItem = new JMenuItem("Exporter en PNG");
 
         createFruitButtonGroup.add(selectionButton);
         createFruitButtonGroup.add(additionButton);
@@ -416,22 +423,63 @@ public class MainWindow extends javax.swing.JFrame {
         mainPanel.setLayout(new java.awt.BorderLayout());
 
         //Menu du bouton fichier
-        newItem.setText("nouveau projet");
+        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(newItem);
         newItem.addActionListener(e -> handleNewProject());
+        
+        openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(openItem);
+        fileMenu.addSeparator();
+        
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+        fileMenu.add(saveItem);
         fileMenu.add(exportItem);
-        HelpMenuItem.setText("Aide");
-        fileMenu.add(HelpMenuItem);
+        fileMenu.addSeparator();
         quitMenuItem.setText("Quitter");
-
+        quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(quitMenuItem);
-
         topMenuBar.add(fileMenu);
-
-        editMenu.setText("Editer");
+        
+        //Menu du bouton Editer
+        editMenu.setText("Edition");
+        JMenuItem undoItem = new JMenuItem("Undo");
+        undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK));
+        undoItem.addActionListener(e -> props.undoListener());
+        editMenu.add(undoItem);
+        
+        JMenuItem redoItem = new JMenuItem("Redo");
+        redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK));
+        redoItem.addActionListener(e -> props.redoListener());
+        editMenu.add(redoItem);
+        editMenu.addSeparator();
+        
+        JMenuItem zoomItem = new JMenuItem("Zoomer");
+        zoomItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        zoomItem.addActionListener(e -> barreOutils.zoomListener());
+        editMenu.add(zoomItem);
+        
+        JMenuItem dezoomItem = new JMenuItem("Dezoomer");
+        dezoomItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK));
+        dezoomItem.addActionListener(e -> barreOutils.dezoomListener());
+        editMenu.add(dezoomItem);
+        editMenu.addSeparator();
+        
+        JMenuItem deleteItem = new JMenuItem("Supprimer");
+        deleteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+        deleteItem.addActionListener(e -> supprimerItem());
+        editMenu.add(deleteItem);
+        
+        //Menu du bouton Aide
+        helpMenu.setText("Aide");
+        JMenuItem aboutMenu = new JMenuItem("A propos");
+        HelpMenuItem.setText("Documentation");
+        helpMenu.add(aboutMenu);
+        helpMenu.add(HelpMenuItem);
+        
         topMenuBar.add(editMenu);
+        topMenuBar.add(helpMenu);
     }
+    
 
     private static class ClosableTabHeader extends JPanel {
 

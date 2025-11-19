@@ -220,24 +220,27 @@ public class BarreOutils extends JPanel {
             }
         });
 
-        btnZoom.addActionListener(e -> {
-            Canvas c = mainWindow.currentCanvas;
-            if (c != null) {
-                c.zoomDepuisCentre(1.1);
-                mainWindow.updateZoomLabel();
-            }
-        });
-
-        btnDezoom.addActionListener(e -> {
-            Canvas c = mainWindow.currentCanvas;
-            if (c != null) {
-                c.zoomDepuisCentre(1.0 / 1.1);
-                mainWindow.updateZoomLabel();
-            }
-        });
+        btnZoom.addActionListener(e -> zoomListener());
+        btnDezoom.addActionListener(e -> dezoomListener());
 
         add(ribbon, BorderLayout.CENTER);
         
+    }
+    
+    public void zoomListener(){
+        Canvas c = mainWindow.currentCanvas;
+        if (c != null) {
+            c.zoomDepuisCentre(1.1);
+            mainWindow.updateZoomLabel();
+        }
+    }
+    
+    public void dezoomListener(){
+        Canvas c = mainWindow.currentCanvas;
+        if (c != null) {
+            c.zoomDepuisCentre(1.0 / 1.1);
+            mainWindow.updateZoomLabel();
+        }
     }
     
     

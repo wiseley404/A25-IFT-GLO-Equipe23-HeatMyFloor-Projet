@@ -23,6 +23,8 @@ public class Proprietes extends JPanel {
     private JTextField longueurFil;
     private MainWindow mainWindow;
     
+    private JButton undo;
+    private JButton redo;
     private JComboBox<Unite> unitePiece;
     private JComboBox<Unite> uniteItem;
     
@@ -81,7 +83,7 @@ public class Proprietes extends JPanel {
         //UNDO
         ImageIcon undoImage  = new ImageIcon(getClass().getResource("/Icons/undo.png"));
         Image undoImg = undoImage.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-        JButton undo = new JButton (new ImageIcon(undoImg));
+        undo = new JButton (new ImageIcon(undoImg));
         undo.setToolTipText("Undo");
         undo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         undo.setPreferredSize(new Dimension(30, 25));
@@ -92,7 +94,7 @@ public class Proprietes extends JPanel {
         //REDO
         ImageIcon redoImage  = new ImageIcon(getClass().getResource("/Icons/redo.png"));
         Image redoImg = redoImage.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-        JButton redo = new JButton (new ImageIcon(redoImg));
+        redo = new JButton (new ImageIcon(redoImg));
         redo.setToolTipText("Redo");
         redo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         redo.setPreferredSize(new Dimension(30, 25));
@@ -105,21 +107,8 @@ public class Proprietes extends JPanel {
         espaceBoutton.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         espaceBoutton.setOpaque(false);
         
-        undo.addActionListener(e -> {
-            mainWindow.controllerActif.annulerModif();
-            mainWindow.currentCanvas.repaint();
-            afficherProprietesItemSelectionne();
-            mainWindow.panelPosition.afficherAngleItemSelectionne();
-            mainWindow.panelPosition.afficherCoordItemSelectionne();
-        });
-        
-        redo.addActionListener(e ->{
-            mainWindow.controllerActif.retablirModif();
-            mainWindow.currentCanvas.repaint();
-            afficherProprietesItemSelectionne();
-            mainWindow.panelPosition.afficherAngleItemSelectionne();
-            mainWindow.panelPosition.afficherCoordItemSelectionne();
-        });
+        undo.addActionListener(e -> undoListener());
+        redo.addActionListener(e -> redoListener());
 
         //PARAMETRES
         JButton gear = new JButton("⚙");
@@ -161,6 +150,22 @@ public class Proprietes extends JPanel {
          bar.add(title, BorderLayout.WEST);
          bar.add(espaceBoutton, BorderLayout.EAST);
          return bar;
+    }
+    
+    public void undoListener(){
+        mainWindow.controllerActif.annulerModif();
+        mainWindow.currentCanvas.repaint();
+        afficherProprietesItemSelectionne();
+        mainWindow.panelPosition.afficherAngleItemSelectionne();
+        mainWindow.panelPosition.afficherCoordItemSelectionne();
+    }
+    
+    public void redoListener(){
+        mainWindow.controllerActif.retablirModif();
+        mainWindow.currentCanvas.repaint();
+        afficherProprietesItemSelectionne();
+        mainWindow.panelPosition.afficherAngleItemSelectionne();
+        mainWindow.panelPosition.afficherCoordItemSelectionne();
     }
 
     
