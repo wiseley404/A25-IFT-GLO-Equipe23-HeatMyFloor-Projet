@@ -3,6 +3,8 @@ package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
 import com.heatmyfloor.domain.items.TypeSansDrain;
+import com.heatmyfloor.domain.items.Zone;
+import com.heatmyfloor.domain.items.Zone.TypeZone;
 import com.heatmyfloor.domain.ports.PieceStockage;
 import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.Thermostat;
@@ -55,6 +57,10 @@ public class Controller {
     
     public void ajouterThermostat(Point position){
         this.piece.ajouterItem(new Thermostat(70, 50, position));
+    }
+    
+    public void ajouterZone(Point position, TypeZone type){
+        this.piece.ajouterItem(new Zone(150, 70, position, type));
     }
     
     public void repositionnerPiece(Point position){

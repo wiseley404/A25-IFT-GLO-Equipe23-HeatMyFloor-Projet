@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
+import com.heatmyfloor.domain.items.Zone;
 import java.awt.event.ComponentAdapter;
 
 /**
@@ -22,6 +23,7 @@ public class BarreOutils extends JPanel {
     private ButtonCard btnIrregulier;
     private ButtonCard btnMenuSansDrain;
     private ButtonCard btnMenuAvecDrain;
+    private ButtonCard btnMenuZones;
     private FormeIrregulierPanel dessinPanel;
     public ButtonCard btnZoomIn;
     public ButtonCard btnZoomOut;
@@ -225,9 +227,10 @@ public class BarreOutils extends JPanel {
         addSep(ribbon, gc, col++);
 
         //Autres
+        btnMenuZones = card("Zones", "/Icons/zone.png");
         addGroup(ribbon, gc, col++, makeGroup("Autres",
                 card("Thermostat", "/Icons/Thermostat.png"),
-                card("Zones", "/Icons/zone.png")
+                btnMenuZones
         ), 2);
 
         add(ribbon, BorderLayout.CENTER);
@@ -293,6 +296,40 @@ public class BarreOutils extends JPanel {
                     menuItemAvecDrain.setVisible(false);
                 });
             }
+        });
+    }
+    
+    
+    public void onZonesClicked(){
+        btnMenuZones.setOnClick( e -> {
+            JPopupMenu menuItemZones = new JPopupMenu();
+            
+            JPanel panelZones = new JPanel();
+            panelZones.setLayout(new BoxLayout(panelZones, BoxLayout.Y_AXIS));
+            panelZones.setPreferredSize(new Dimension(130, 200));
+            
+            ButtonCard card1 = card("Interdite", "/images/zoneInterdite.png");
+            ButtonCard card2 = card("Tampon", "/images/zoneTampon.png");
+            
+            card1.setMinimumSize(new Dimension(120, 100));
+            card2.setMinimumSize(new Dimension(120, 100));
+            
+            panelZones.add(card1);
+            panelZones.add(card2);
+            
+            menuItemZones.add(panelZones);
+            menuItemZones.show(btnMenuZones, btnMenuZones.getWidth() - 5, btnMenuZones.getHeight() - 5);
+            
+            ButtonCard[] cards = {card1, card2};
+            for(ButtonCard c : cards){
+                c.setOnClick( event -> {
+                    String nom = event.getActionCommand().toUpperCase();
+                    mainWindow.controllerActif.ajouterZone(mainWindow.controllerActif.getPiece().getCentre(), Zone.TypeZone.valueOf(nom));
+                    mainWindow.currentCanvas.repaint();
+                    menuItemZones.setVisible(false);
+                });
+            }
+            
         });
     }
 }
