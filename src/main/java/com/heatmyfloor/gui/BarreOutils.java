@@ -20,9 +20,12 @@ public class BarreOutils extends JPanel {
     public ButtonCard btnExporter;
     public ButtonCard btnEnregistrer;
     public ButtonCard btnRectangle;
+    private ButtonCard btnDrain;
     private ButtonCard btnIrregulier;
     private ButtonCard btnMenuSansDrain;
     private ButtonCard btnMenuAvecDrain;
+    private ButtonCard btnThermostat;
+    private ButtonCard btnElementChauffant;
     private ButtonCard btnMenuZones;
     private FormeIrregulierPanel dessinPanel;
     public ButtonCard btnZoomIn;
@@ -131,19 +134,43 @@ public class BarreOutils extends JPanel {
         ), 4);
         addSep(ribbon, gc, col++);
 
-        //Modélisation
-        addGroup(ribbon, gc, col++, makeGroup("Modélisation",
-                card("Pièce", "/Icons/Piece.png"),
-                card("Fil", "/Icons/Fil.png")
-        ), 2);
-        addSep(ribbon, gc, col++);
-
         //Affichage
         addGroup(ribbon, gc, col++, makeGroup("Affichage",
-                // card("Vue 2D", "/icons/view2d.png"),
+                card("Vue 2D", "/Icons/2D.png"),
                 card("Vue 3D", "/Icons/3D.png")
         ), 2);
         addSep(ribbon, gc, col++);
+
+        //Formes
+        btnRectangle = card("Rectangle", "/Icons/Rectangle.png");
+        btnDrain = card("Drain", "/Icons/Drain.png");
+        btnIrregulier = card("Irregulière", "/Icons/Polygone.png");
+        addGroup(ribbon, gc, col++, makeGroup("Formes",
+                btnRectangle,
+                btnDrain,
+                btnIrregulier
+        ), 3);
+        addSep(ribbon, gc, col++);
+
+        //Meubles
+        btnMenuSansDrain = card("Sans drain", "/Icons/MeubleSansDrain.png");
+        btnMenuAvecDrain = card("Avec drain", "/Icons/MeubleAvecDrain.png");
+        addGroup(ribbon, gc, col++, makeGroup("Meubles",
+                btnMenuSansDrain,
+                btnMenuAvecDrain
+        ), 2);
+        addSep(ribbon, gc, col++);
+
+        //Autres
+        btnThermostat = card("Thermostat", "/Icons/Thermostat.png");
+        btnElementChauffant = card("A. Chauffants", "/Icons/ElementChauffant.png");
+        btnMenuZones = card("Zones", "/Icons/zone.png");
+        addGroup(ribbon, gc, col++, makeGroup("Autres",
+                btnThermostat,
+                btnElementChauffant,
+                btnMenuZones
+                
+        ), 3);
         
         // Zoom
         JLayeredPane layeredZoom = new JLayeredPane();
@@ -204,34 +231,6 @@ public class BarreOutils extends JPanel {
                 mainWindow.updateZoomLabel();
             }
         });
-
-
-
-
-        //Formes
-        btnRectangle = card("Rectangle", "/Icons/Rectangle.png");
-        btnIrregulier = card("Irregulière", "/Icons/Polygone.png");
-        addGroup(ribbon, gc, col++, makeGroup("Formes",
-                btnRectangle,
-                btnIrregulier
-        ), 2);
-        addSep(ribbon, gc, col++);
-
-        //Meubles
-        btnMenuSansDrain = card("Sans drain", "/Icons/MeubleSansDrain.png");
-        btnMenuAvecDrain = card("Avec drain", "/Icons/MeubleAvecDrain.png");
-        addGroup(ribbon, gc, col++, makeGroup("Meubles",
-                btnMenuSansDrain,
-                btnMenuAvecDrain
-        ), 2);
-        addSep(ribbon, gc, col++);
-
-        //Autres
-        btnMenuZones = card("Zones", "/Icons/zone.png");
-        addGroup(ribbon, gc, col++, makeGroup("Autres",
-                card("Thermostat", "/Icons/Thermostat.png"),
-                btnMenuZones
-        ), 2);
 
         add(ribbon, BorderLayout.CENTER);
     }
