@@ -24,52 +24,32 @@ public class PositionPanel extends JPanel {
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(230, 230, 230)));
         setPreferredSize(new Dimension(800, 120));
         setBackground(Color.white);
-        JPanel inner = new JPanel();
-        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+        JPanel inner = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
         inner.setOpaque(false);
-        
-        JPanel title = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        add(title, BorderLayout.NORTH);
-        //Position
-        JPanel rangeeHaut = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 5));
-        rangeeHaut.setOpaque(false);
+ 
         JPanel coords = new JPanel();
-        coords.setOpaque(false);
-        coords.setMaximumSize(new Dimension(100, 40));
         coords.setLayout(new BoxLayout(coords, BoxLayout.Y_AXIS));
         coords.add(new JLabel("Position"));
+        JPanel xy = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
         
-        JPanel xLigne = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
-        xLigne.setOpaque(false);
-        xPosition = new JTextField("", 10);
-        xPosition.setMargin(new Insets(2, 4, 2, 4));
-        xLigne.add(new JLabel("X :"));
-        xLigne.add(xPosition);
-        coords.add(xLigne);
+        xPosition = new JTextField("", 6);
+        xy.add(new JLabel("X :"));
+        xy.add(xPosition);
+        yPosition = new JTextField("", 6);
+        xy.add(new JLabel("Y :"));
+        xy.add(yPosition);
+        coords.add(xy);
         
-        JPanel yLigne = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-        yLigne.setOpaque(false);
-        yPosition = new JTextField("", 10);
-        yPosition.setMargin(new Insets(2, 4, 2, 4));
-        yLigne.add(new JLabel("Y :"));
-        yLigne.add(yPosition);
-        coords.add(yLigne);
+        inner.add(coords);
         
-        //Translation
-        JPanel rangeeBas = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));
-        rangeeBas.add(Box.createRigidArea(new Dimension(20, 0)));
-        rangeeBas.setOpaque(false);
         JPanel trans = new JPanel(new GridLayout(2, 3, 6, 6));
-        trans.setPreferredSize(new Dimension(150, 80));
-        trans.setOpaque(false);
         trans.setBorder(BorderFactory.createTitledBorder("Translation"));
         for (int i = 0; i < 6; i++) {
             trans.add(new JButton(""));
         }
+        inner.add(trans);
         
-        //Rotation
         JPanel rot = new JPanel();
-        rot.setOpaque(false);
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
         rot.add(new JLabel("Rotation"));
         
@@ -89,18 +69,13 @@ public class PositionPanel extends JPanel {
         rotationButton = new JButton("⟳");
         rotationButton.setPreferredSize(new Dimension(30, 27));
         rotationButton.setMaximumSize(new Dimension(30, 27));
-        rotationButton.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 1, Color.GRAY));
+        rotationButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
         rotationButton.setFocusPainted(false);
         rotationButton.setFocusable(false);
 
         rotChamp.add(rotationButton);
         rot.add(rotChamp);
-        
-        rangeeHaut.add(coords);
-        rangeeHaut.add(rot);
-        rangeeBas.add(trans);
-        inner.add(rangeeHaut);
-        inner.add(rangeeBas);
+        inner.add(rot);
 
         add(inner, BorderLayout.CENTER);
 

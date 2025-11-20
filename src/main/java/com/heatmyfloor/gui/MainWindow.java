@@ -11,8 +11,6 @@ import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import javax.swing.*;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.Image;
 import com.heatmyfloor.domain.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -154,7 +152,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         mainPanel.add(center, BorderLayout.CENTER);
 
-        JPanel bottom = new JPanel(new BorderLayout());
+        JPanel bottom = new JPanel(new BorderLayout());  
         panelPosition = new PositionPanel(this);
         panelPosition.positionListener();
         panelPosition.angleListener();
