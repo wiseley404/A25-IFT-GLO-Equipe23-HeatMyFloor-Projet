@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.gui.UiUtils.ToastType;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,6 +26,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.SwingUtilities;
@@ -72,24 +74,22 @@ public class MainWindow extends javax.swing.JFrame {
         controllerActif = new Controller();
 
     }
-    
-    
-        //Conversion coordonnées (Zoom)
+
+    //Conversion coordonnées (Zoom)
     private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
         double zx = c.getZoom();
-        var o  = c.getOriginePx();
+        var o = c.getOriginePx();
         return new com.heatmyfloor.domain.Point(
-            (e.getX() - o.getX()) / zx,
-            (e.getY() - o.getY()) / zx
+                (e.getX() - o.getX()) / zx,
+                (e.getY() - o.getY()) / zx
         );
     }
+
     public void updateZoomLabel() {
         if (currentCanvas != null && barreOutils != null) {
             barreOutils.setZoomPercent(currentCanvas.getZoom());
         }
     }
-
-
 
     @SuppressWarnings("unchecked")
     private void initComponents() {
@@ -109,14 +109,14 @@ public class MainWindow extends javax.swing.JFrame {
                 controllerActif = controllers.get(canvas);
                 controllerActif.setPiece(new PieceRectangulaire(500, 300));
                 currentCanvas = canvas;
-                
+
                 double largeur = controllerActif.getPiece().getLargeur();
                 double hauteur = controllerActif.getPiece().getHauteur();
                 double x = (currentCanvas.getWidth() - largeur) / 2;
                 double y = (currentCanvas.getHeight() - hauteur) / 2;
-                controllerActif.centrerPiece(new Point(x,y));
+                controllerActif.centrerPiece(new Point(x, y));
                 panelPosition.afficherCoordItemSelectionne();
-                
+
                 currentCanvas.nettoyerModeDessin();
                 currentCanvas.repaint();
                 props.afficherProprietesPiece();
@@ -145,7 +145,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-         barreOutils.onEnregistrerProjetClick(() -> {
+        barreOutils.onEnregistrerProjetClick(() -> {
 
             Path fichierSauvegarde;
 
@@ -215,14 +215,15 @@ public class MainWindow extends javax.swing.JFrame {
                 props.afficherProprietesPiece();
                 sourisListener();
                 suppressionListener();
+                disableButton();
 
                 UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
             } catch (RuntimeException e) {
                 UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
             }
         });
-         
-         barreOutils.onExportPngClick(() -> {
+
+        barreOutils.onExportPngClick(() -> {
             Path fichierSauvegarde;
             fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
             if (fichierSauvegarde == null) {
@@ -239,8 +240,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
 
         });
-         
-         barreOutils.onOuvrirProjetClick(() -> {
+
+        barreOutils.onOuvrirProjetClick(() -> {
 
             Path fichier;
             fichier = UiUtils.choisirFichierJson(this);
@@ -254,11 +255,12 @@ public class MainWindow extends javax.swing.JFrame {
 
                 controllerActif = new Controller();
                 controllerActif.ouvrirProjet(fichier);
-                controllers.put(currentCanvas, controllerActif);
 
                 Canvas canvas = new Canvas();
                 canvas.setMainWindow(this);
                 currentCanvas = canvas;
+                controllers.put(currentCanvas, controllerActif);
+
                 tabs.addTab(controllerActif.GetProjetNom(), currentCanvas);
                 tabs.setSelectedComponent(currentCanvas);
                 int idx = tabs.indexOfComponent(currentCanvas);
@@ -279,7 +281,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         });
 
-
         JPanel center = new JPanel(new BorderLayout());
         props = new Proprietes(this);
         props.dimensionItemListener();
@@ -289,7 +290,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         mainPanel.add(center, BorderLayout.CENTER);
 
-        JPanel bottom = new JPanel(new BorderLayout());  
+        JPanel bottom = new JPanel(new BorderLayout());
         panelPosition = new PositionPanel(this);
         panelPosition.positionListener();
         panelPosition.angleListener();
@@ -305,6 +306,9 @@ public class MainWindow extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION
             );
             if (confirm == JOptionPane.YES_OPTION) {
+                if(!this.controllers.isEmpty()){
+                    this.sauvegarderSession();
+                }
                 System.exit(0); // quitte proprement le programme
             }
         });
@@ -370,29 +374,29 @@ public class MainWindow extends javax.swing.JFrame {
         int idx = tabs.indexOfComponent(currentCanvas);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
-        
+
         SwingUtilities.invokeLater(() -> {
             double largeur = controllerActif.getPiece().getLargeur();
             double hauteur = controllerActif.getPiece().getHauteur();
             double x = (currentCanvas.getWidth() - largeur) / 2;
             double y = (currentCanvas.getHeight() - hauteur) / 2;
-            controllerActif.centrerPiece(new Point(x,y));
+            controllerActif.centrerPiece(new Point(x, y));
             panelPosition.afficherCoordItemSelectionne();
             currentCanvas.repaint();
         });
-        
+
         props.afficherProprietesPiece();
         sourisListener();
-        
+
         currentCanvas.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {     
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
                     supprimerItem();
                 }
             }
         });
-        
+
     }
 
     public void suppressionListener() {
@@ -480,7 +484,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void disableButton() {
-        if (tabs.getTabCount() == 0) {
+        if (tabs.getTabCount() == 0 && controllerActif ==null) {
             UiUtils.setEnabledRecursively(barreOutils, false);
             UiUtils.setEnabledRecursively(barreOutils.btnNouveau, true);
             UiUtils.setEnabledRecursively(barreOutils.btnOuvrir, true);
@@ -579,11 +583,11 @@ public class MainWindow extends javax.swing.JFrame {
         newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(newItem);
         newItem.addActionListener(e -> handleNewProject());
-        
+
         openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(openItem);
         fileMenu.addSeparator();
-        
+
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(saveItem);
         fileMenu.add(exportItem);
@@ -592,47 +596,46 @@ public class MainWindow extends javax.swing.JFrame {
         quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(quitMenuItem);
         topMenuBar.add(fileMenu);
-        
+
         //Menu du bouton Editer
         editMenu.setText("Edition");
         JMenuItem undoItem = new JMenuItem("Undo");
         undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK));
         undoItem.addActionListener(e -> props.undoListener());
         editMenu.add(undoItem);
-        
+
         JMenuItem redoItem = new JMenuItem("Redo");
         redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK));
         redoItem.addActionListener(e -> props.redoListener());
         editMenu.add(redoItem);
         editMenu.addSeparator();
-        
+
         JMenuItem zoomItem = new JMenuItem("Zoomer");
         zoomItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         zoomItem.addActionListener(e -> barreOutils.zoomListener());
         editMenu.add(zoomItem);
-        
+
         JMenuItem dezoomItem = new JMenuItem("Dezoomer");
         dezoomItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK));
         dezoomItem.addActionListener(e -> barreOutils.dezoomListener());
         editMenu.add(dezoomItem);
         editMenu.addSeparator();
-        
+
         JMenuItem deleteItem = new JMenuItem("Supprimer");
         deleteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
         deleteItem.addActionListener(e -> supprimerItem());
         editMenu.add(deleteItem);
-        
+
         //Menu du bouton Aide
         helpMenu.setText("Aide");
         JMenuItem aboutMenu = new JMenuItem("A propos");
         HelpMenuItem.setText("Documentation");
         helpMenu.add(aboutMenu);
         helpMenu.add(HelpMenuItem);
-        
+
         topMenuBar.add(editMenu);
         topMenuBar.add(helpMenu);
     }
-    
 
     private static class ClosableTabHeader extends JPanel {
 
@@ -730,6 +733,22 @@ public class MainWindow extends javax.swing.JFrame {
 
             add(title);
             add(close);
+        }
+    }
+    
+     private void sauvegarderSession() {
+        try {
+            // Crée un objet qui contiendra tous les projets ouverts
+            Map<String, Piece> sessionData = new HashMap<>();
+            Path cheminFichier = Paths.get("sauvegardes","autosaves.json");
+            for (Map.Entry<Canvas, Controller> entry : controllers.entrySet()) {
+                Controller controller = entry.getValue();
+                controller.sauvegarderProjet(cheminFichier);
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

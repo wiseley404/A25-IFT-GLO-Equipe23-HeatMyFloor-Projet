@@ -203,6 +203,7 @@ public class Controller {
         try {
             this.piece = stockage.ouvrirFichier(cheminFichier);
             this.nom_ptojet = GetNomProjet(cheminFichier);
+            this.cheminFichier = cheminFichier;
         } catch (RuntimeException r) {
             throw r;
         }

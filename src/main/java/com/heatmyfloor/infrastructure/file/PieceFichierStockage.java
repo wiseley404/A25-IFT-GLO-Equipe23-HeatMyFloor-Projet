@@ -20,8 +20,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -44,14 +48,22 @@ public class PieceFichierStockage implements PieceStockage {
 
     @Override
     public Piece ouvrirFichier(Path fichierCharge) {
+        Piece piece = null;
         try {
-            if (!Files.exists(fichierCharge)) {
-                throw new RuntimeException("Le fichier n'existe pas : " + fichierCharge);
-            }
+            
+            FileInputStream fi = new FileInputStream(fichierCharge.toFile());
+            ObjectInputStream in =  new ObjectInputStream(fi);
+            
+            piece = (Piece) in.readObject();
+            in.close();
+            fi.close();
 
-            return mapper.readValue(fichierCharge.toFile(), Piece.class);
+            return piece;
 
         } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Impossible de lire le fichier : " + fichierCharge, ex);
+        } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
             throw new RuntimeException("Impossible de lire le fichier : " + fichierCharge, ex);
         }
@@ -61,9 +73,12 @@ public class PieceFichierStockage implements PieceStockage {
     public void saveFichier(Piece piece, Path fichier) {
 
         try {
-            Files.createDirectories(fichier.getParent());
-
-            mapper.writeValue(fichier.toFile(), piece);
+            
+            FileOutputStream fo = new FileOutputStream(fichier.toFile());
+            ObjectOutputStream out = new ObjectOutputStream(fo);
+            out.writeObject(piece);
+            out.close();
+            fo.close();
 
         } catch (IOException ex) {
             throw new RuntimeException("Erreur lors de la sauvegarde de la pièce : " + fichier, ex);

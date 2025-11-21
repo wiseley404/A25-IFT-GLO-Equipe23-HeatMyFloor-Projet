@@ -145,4 +145,5 @@ public class Canvas extends JPanel implements Serializable {
         PieceIrreguliere pir = (PieceIrreguliere) mainWindow.controllerActif.getPiece();
         pir.setSommets((java.util.List<com.heatmyfloor.domain.Point>) (Point) dessinPanel.getPoints());
     }
+    
 }
