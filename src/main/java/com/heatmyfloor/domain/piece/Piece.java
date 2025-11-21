@@ -1,7 +1,5 @@
 package com.heatmyfloor.domain.piece;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.graphe.Graphe;
 import java.util.ArrayList;
@@ -11,17 +9,12 @@ import java.io.Serializable;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+
 /**
  *
  * @author Wily
  */
-
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "@class"
-)
-public abstract class Piece implements PieceReadOnly {
+public abstract class Piece implements PieceReadOnly, Serializable {
 
     private List<PieceItem> itemsList;
     private Graphe graphe;
@@ -51,7 +44,7 @@ public abstract class Piece implements PieceReadOnly {
 
     @Override
     public abstract boolean contientLaForme(Shape itemRotation);
-    
+
     @Override
     public abstract Point getCentre();
 
@@ -86,32 +79,30 @@ public abstract class Piece implements PieceReadOnly {
             }
         }
     }
-    
-    public void changerAngleItemSelectionne(double nouvAngle){
+
+    public void changerAngleItemSelectionne(double nouvAngle) {
         PieceItem item = this.trouverItemSelectionne();
-        if(item != null){
+        if (item != null) {
             double ancienAngle = item.getAngle();
             item.setAngle(nouvAngle);
-            if(!this.estPositionItemValide(item.getPosition())){
+            if (!this.estPositionItemValide(item.getPosition())) {
                 item.setAngle(ancienAngle);
                 throw new IllegalArgumentException("Vous ne pouvez pas faire cette rotation aux bords de la pièce.");
             }
         }
     }
-    
-    public void pivoterItemSelectionne(){
+
+    public void pivoterItemSelectionne() {
         PieceItem item = this.trouverItemSelectionne();
-        if (item != null){
+        if (item != null) {
             double ancienAngle = item.getAngle();
             item.pivoter();
-            if(!this.estPositionItemValide(item.getPosition())){
+            if (!this.estPositionItemValide(item.getPosition())) {
                 item.setAngle(ancienAngle);
                 throw new IllegalArgumentException("Vous ne pouvez pas faire cette rotation aux bords de la pièce.");
             }
         }
     }
-    
-
 
     public void ajouterDrain(Point position) {
 
@@ -147,17 +138,17 @@ public abstract class Piece implements PieceReadOnly {
     public boolean estPositionItemValide(Point itemPosition) {
         boolean valide = false;
         PieceItem item = this.trouverItemSelectionne();
-        
-        if(item != null && itemPosition != null){
+
+        if (item != null && itemPosition != null) {
             Point p1 = itemPosition;
             Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
-            
-            if(item.getAngle() == 0){
+
+            if (item.getAngle() == 0) {
                 valide = contientLePoint(p1) && contientLePoint(p2);
                 //Verification de la position de l'item en rotation
-            } else{
+            } else {
                 Rectangle2D formeTournee = new Rectangle2D.Double(itemPosition.getX(), itemPosition.getY(),
-                                                                  item.getLargeur(), item.getHauteur());
+                        item.getLargeur(), item.getHauteur());
                 AffineTransform transf = new AffineTransform();
                 double angleRadian = Math.toRadians(item.getAngle());
                 transf.rotate(angleRadian, formeTournee.getCenterX(), formeTournee.getCenterY());
@@ -165,7 +156,7 @@ public abstract class Piece implements PieceReadOnly {
                 valide = this.contientLaForme(itemRotation);
             }
         }
-        
+
         return valide;
     }
 
@@ -290,12 +281,10 @@ public abstract class Piece implements PieceReadOnly {
         return this.itemsList;
     }
 
-    @JsonIgnore
     public Graphe getGraphe() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
 
-    @JsonIgnore
     public List<Mur> getMurs() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }

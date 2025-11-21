@@ -365,10 +365,10 @@ public class BarreOutils extends JPanel {
     }
     
     public void onExportPngClick(Runnable r) {
-        btnEnregistrer.setOnClick(e -> r.run());
+        btnExporter.setOnClick(e -> r.run());
     }
     
     public void onOuvrirProjetClick(Runnable r) {
-        btnEnregistrer.setOnClick(e -> r.run());
+        btnOuvrir.setOnClick(e -> r.run());
     }
 }

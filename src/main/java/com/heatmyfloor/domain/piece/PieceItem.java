@@ -2,19 +2,14 @@ package com.heatmyfloor.domain.piece;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.heatmyfloor.domain.Point;
-import com.heatmyfloor.domain.Rect2D;
 import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 import java.io.Serializable;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 /**
  *
  * @author petit
  */
-<<<<<<< HEAD
-public class PieceItem implements PieceItemReadOnly, Serializable{
-=======
+
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
@@ -22,8 +17,7 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     property = "@class"
 )
 
-public abstract class PieceItem implements PieceItemReadOnly{
->>>>>>> 92dd526 (maj)
+public abstract class PieceItem implements PieceItemReadOnly, Serializable{
     private final UUID id;
     private double largeur;
     private double hauteur;
@@ -115,17 +109,17 @@ public abstract class PieceItem implements PieceItemReadOnly{
     
     
     @Override
-    public Rect2D getItemForme(){
+    public Rectangle2D getItemForme(){
         Rectangle2D itemForme = new Rectangle2D.Double(
                         this.getPosition().getX(), this.getPosition().getY(),
                         this.getLargeur(), this.getHauteur());
-        return new Rect2D(itemForme);
+        return itemForme;
     }
     
     
     @Override
     public boolean contientLePoint(Point position){
-        return this.getItemForme().Contains(position.getX(), position.getY());
+        return this.getItemForme().contains(position.getX(), position.getY());
 
     
     }    

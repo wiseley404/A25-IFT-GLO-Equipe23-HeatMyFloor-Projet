@@ -86,7 +86,7 @@ public class PieceDrawer {
             AffineTransform transfParDefaut = g2.getTransform();
             
             double padding = 7.5;
-            Rectangle2D contourSelection = item.getItemForme().GetBounds2D();
+            Rectangle2D contourSelection = item.getItemForme().getBounds2D();
             Rectangle2D contourAvecPadding  = new Rectangle2D.Double(contourSelection.getX() - padding,
                                                           contourSelection.getY() - padding,
                                                           contourSelection.getWidth() + 2*padding,
