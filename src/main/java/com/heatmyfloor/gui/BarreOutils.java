@@ -28,6 +28,15 @@ public class BarreOutils extends JPanel {
     private ButtonCard btnThermostat;
     private ButtonCard btnElementChauffant;
     private ButtonCard btnMenuZones;
+    //public ButtonCard btnHautGauche;
+   // public ButtonCard btnBasGauche;
+    //public ButtonCard btnHautDroit;
+    //public ButtonCard btnBasDroit;
+    //public ButtonCard btnHautMilieu;
+    //public ButtonCard btnBasMilieu;
+    
+    
+    
     private FormeIrregulierPanel dessinPanel;
     public ButtonCard btnZoomIn;
     public ButtonCard btnZoomOut;
@@ -49,7 +58,9 @@ public class BarreOutils extends JPanel {
         setBackground(Color.white);
 
         addButton();
-
+        
+        
+      
     }
 
     public void onRectangleClick(Runnable r) {
@@ -223,8 +234,39 @@ public class BarreOutils extends JPanel {
         btnZoom.addActionListener(e -> zoomListener());
         btnDezoom.addActionListener(e -> dezoomListener());
 
-        add(ribbon, BorderLayout.CENTER);
+//        add(ribbon, BorderLayout.CENTER);
+//        
+//                card("Thermostat", "/Icons/Thermostat.png"),
+//                card("Zones", "/Icons/zone.png"),
+//                card("Drain","/Icons/Drain.png"),
+//                card("ElementChauffant", "/Icons/ElementChauffant.png")
+//        ), 4);
+
+        //add(ribbon, BorderLayout.CENTER);
+        /*//deplacements
+        btnHautGauche= card("HautGauche","/Icons/HautGauche.jpg");
+        btnBasGauche = card("BasGauche","/Icons/BasGauche.jpg");
+        btnHautDroit=  card("HautDroit", "/Icons/HautDroit.jpg");
+        btnBasDroit = card("BasDroit", "/Icons/BasDroit.jpg");
+        btnHautMilieu = card("HautMilieu", "/Icons/HautMilieu.jpg");
+        btnBasMilieu = card("BasMilieu", "/Icons/BasMilieu.jpg");
+       
+        addGroup(ribbon, gc, col++, makeGroup("deplacements",
+                btnHautGauche,
+                btnBasGauche,
+                btnHautDroit,
+                btnBasDroit,
+                btnHautMilieu,
+                btnBasMilieu
+            ), 6
+        );*/
         
+        JScrollPane scroller = new JScrollPane(
+        ribbon,
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
+);      add(scroller, BorderLayout.CENTER);
+
     }
     
     public void zoomListener(){

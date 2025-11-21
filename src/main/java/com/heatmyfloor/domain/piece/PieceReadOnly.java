@@ -16,4 +16,11 @@ public interface PieceReadOnly {
     Point getCentre();
     boolean contientLePoint(Point position);
     boolean contientLaForme(Shape itemRotation);
+    Point getExtremiteHautGauche();
+    Point getExtremiteHautDroite();
+    Point getExtremiteBasGauche();
+    Point getExtremiteBasDroite();
+    Point getExtremiteHautMilieu();
+    Point getExtremiteBasMilieu();
+    
 }

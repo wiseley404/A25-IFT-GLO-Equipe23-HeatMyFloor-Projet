@@ -14,6 +14,7 @@ import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.gui.UiUtils.ToastType;
+import com.heatmyfloor.domain.piece.PieceItem;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -158,6 +159,66 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.onThermostatClicked();
         barreOutils.onElementChauffant();
         barreOutils.onZonesClicked();
+        //déplacement
+        /*barreOutils.btnHautMilieu.setOnClick(e->{
+            int Step=10;
+            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
+            if(it != null){
+            Point p =it.getPosition();
+            panelPosition.moveSelectedTo(p.getX(), p.getY()-Step);
+            
+        }
+        });
+        
+        barreOutils.btnHautGauche.setOnClick(e->{
+            int Step=10;
+            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
+            if(it != null){
+            Point p =it.getPosition();
+            panelPosition.moveSelectedTo(p.getX()-Step, p.getY()-Step);
+            
+        }
+        });
+        
+        barreOutils.btnHautDroit.setOnClick(e->{
+            int Step=10;
+            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
+            if(it != null){
+            Point p =it.getPosition();
+            panelPosition.moveSelectedTo(p.getX()+Step, p.getY()-Step);
+            
+        }
+        });
+        
+        barreOutils.btnBasGauche.setOnClick(e->{
+            int Step=10;
+            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
+            if(it != null){
+            Point p =it.getPosition();
+            panelPosition.moveSelectedTo(p.getX()-Step, p.getY()+Step);
+            
+        }
+        });
+        
+        barreOutils.btnBasDroit.setOnClick(e->{
+            int Step=10;
+            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
+            if(it != null){
+            Point p =it.getPosition();
+            panelPosition.moveSelectedTo(p.getX()+Step, p.getY()+Step);
+            
+        }
+        });
+        
+        barreOutils.btnBasMilieu.setOnClick(e->{
+            int Step=10;
+            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
+            if(it != null){
+            Point p =it.getPosition();
+            panelPosition.moveSelectedTo(p.getX(), p.getY()+Step);
+            
+        }
+        });*/
 
         barreOutils.onIrregularButtonClick(() -> {
 

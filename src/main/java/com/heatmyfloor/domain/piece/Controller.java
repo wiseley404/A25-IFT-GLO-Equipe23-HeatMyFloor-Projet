@@ -305,6 +305,7 @@ public class Controller {
         }
         this.piece = (Piece) data.get("piece");
     }
+<<<<<<< HEAD
 
 
     public boolean peutAnnuler(){
@@ -318,4 +319,6 @@ public class Controller {
     }
     
     
+=======
+>>>>>>> 746c711 (ésolution des conflits)
 }

@@ -137,7 +137,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
 
-    public boolean estPositionItemValide(Point itemPosition) {
+    /*public boolean estPositionItemValide(Point itemPosition){
         boolean valide = false;
         PieceItem item = this.trouverItemSelectionne();
 
@@ -185,7 +185,39 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 //            }
         }
         return valide;
+    }*/
+    
+    public boolean estPositionItemValide(Point itemPosition){
+        boolean valide = false;
+        PieceItem item = this.trouverItemSelectionne();
+        Point p1 = itemPosition;
+        Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
+        if(contientLePoint(p1) && contientLePoint(p2)){
+            double x1 = itemPosition.getX();
+            double y1 = itemPosition.getY();
+            double x2 = x1 + item.getLargeur();
+            double y2 = y1 + item.getHauteur();
 
+            for(PieceItem autre : itemsList){
+                if(autre == item){
+                    continue;
+                }
+
+                double ax1 = autre.getPosition().getX();
+                double ay1 = autre.getPosition().getY();
+                double ax2 = ax1 + autre.getLargeur();
+                double ay2 = ay1 +autre.getHauteur();
+                boolean overlapX = x1 < ax2 && x2 > ax1;
+                boolean overlapY = y1 < ay2 && y2 > ay1;
+                if(overlapX && overlapY){
+                    //chevauchement position invalide
+                    return false;
+                }
+            }
+
+            valide = true;
+        }
+        return valide;   
     }
 
     public boolean estItemPresent(UUID idItem) {
@@ -315,5 +347,51 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     public List<Mur> getMurs() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
+    } 
+    
+    @Override
+    public Point getExtremiteHautGauche(){
+        return position;
+    }
+    
+    @Override
+    public Point getExtremiteBasGauche(){
+        double x = position.getX() + getLargeur()/2 ;
+        double y = position.getY();
+
+        return new Point(x,y);
+        
+    }
+    @Override
+    public Point getExtremiteHautDroite(){
+            double x = position.getX() + largeur;
+            double y = position.getY();
+            return new Point(x,y);
+    }
+    @Override
+    public Point getExtremiteBasMilieu(){
+        
+        double x = position.getX();
+        double y = position.getY() + getHauteur();
+        return new Point(x,y);
+        
+    }
+    @Override
+    public Point getExtremiteHautMilieu(){
+        
+        double x = position.getX() + (getLargeur() / 2); 
+        double y = position.getY() + getHauteur() ;
+        return new Point(x,y);
+      
+
+    }
+   
+    @Override
+    public Point getExtremiteBasDroite(){
+        
+        double x = position.getX() + getLargeur();
+        double y = position.getY() + getHauteur() ;
+        return new Point(x,y);
+
     }
 }
