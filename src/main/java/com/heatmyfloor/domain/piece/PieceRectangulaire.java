@@ -1,5 +1,6 @@
 package com.heatmyfloor.domain.piece;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.heatmyfloor.domain.Point;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
@@ -10,6 +11,10 @@ import java.awt.Shape;
  * @author petit
  */
 public class PieceRectangulaire extends Piece {
+    
+     public PieceRectangulaire() {
+        super(); 
+    }
 
     public PieceRectangulaire(double largeur, double hauteur){   
         super(largeur, hauteur, creerMurs(largeur, hauteur));
@@ -31,7 +36,7 @@ public class PieceRectangulaire extends Piece {
                 new Mur(d, b)
               );        
     }
-    
+     @JsonIgnore
     public Rectangle2D getForme(){
         Rectangle2D pieceForme = new Rectangle2D.Double(
                                     this.getPosition().getX(),

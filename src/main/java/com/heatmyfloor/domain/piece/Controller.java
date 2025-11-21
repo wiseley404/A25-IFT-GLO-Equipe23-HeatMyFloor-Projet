@@ -11,6 +11,7 @@ import com.heatmyfloor.domain.items.Thermostat;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.MeubleSansDrain;
 import com.heatmyfloor.infrastructure.file.PieceFichierStockage;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -205,7 +206,6 @@ public class Controller {
         } catch (RuntimeException r) {
             throw r;
         }
-
     }
 
     public void sauvegarderProjet(Path fichierSauvegarde) {
@@ -238,6 +238,17 @@ public class Controller {
             throw r;
         }
 
+        try {
+
+            String nomPropre = this.nom_ptojet.replaceAll("[^a-zA-Z0-9_-]", "_");
+            String nomFichier = nomPropre + "__" + UUID.randomUUID() + ".png";
+
+            this.cheminFichier = fichierExport.resolve(nomFichier);
+            stockage.exporterFichierPng(piece, cheminFichier, nomPropre);
+
+        } catch (RuntimeException r) {
+            throw r;
+        }
     }
 
     public PieceItemReadOnly trouverItemSelectionne() {

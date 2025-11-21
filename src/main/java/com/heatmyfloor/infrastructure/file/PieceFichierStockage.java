@@ -38,7 +38,8 @@ public class PieceFichierStockage implements PieceStockage {
     public PieceFichierStockage() {
         this.mapper = new ObjectMapper()
                 .enable(SerializationFeature.INDENT_OUTPUT)
-                .findAndRegisterModules();
+
+            .findAndRegisterModules(); 
     }
 
     @Override
@@ -217,5 +218,4 @@ public class PieceFichierStockage implements PieceStockage {
         }
     }
 
-  
 }

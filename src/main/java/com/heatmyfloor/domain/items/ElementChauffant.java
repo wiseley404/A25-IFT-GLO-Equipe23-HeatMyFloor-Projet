@@ -15,7 +15,11 @@ public class ElementChauffant extends PieceItem {
 
     //Constructeur
     public ElementChauffant(double largeur, double hauteur, Point pos) {
-        super(largeur, hauteur, pos,"/images/elementChauffant.png");
+        super(largeur, hauteur, pos, "/images/elementChauffant.png");
+    }
+
+    public ElementChauffant() {
+        super();
     }
 
 }

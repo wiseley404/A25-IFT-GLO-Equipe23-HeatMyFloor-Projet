@@ -141,8 +141,7 @@ public class MainWindow extends javax.swing.JFrame {
                 currentCanvas = canvas;
                 currentCanvas.dessinerFormeIrreguliere();
             } else {
-                JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
-                        "Erreur", JOptionPane.ERROR_MESSAGE);
+                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun projet ouvert.");
             }
         });
 
@@ -165,6 +164,62 @@ public class MainWindow extends javax.swing.JFrame {
             controllerActif.sauvegarderProjet(fichierSauvegarde);
             UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
 
+        });
+
+        barreOutils.onExportPngClick(() -> {
+            Path fichierSauvegarde;
+            fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
+            if (fichierSauvegarde == null) {
+
+                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
+                return;
+            }
+
+            try {
+                controllerActif.exporterProjetPng(fichierSauvegarde);
+                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+            } catch (RuntimeException e) {
+                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
+            }
+
+        });
+
+        barreOutils.onOuvrirProjetClick(() -> {
+
+            Path fichier;
+            fichier = UiUtils.choisirFichierJson(this);
+            if (fichier == null) {
+
+                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun fichier Json nà été sélectionné.");
+                return;
+            }
+
+            try {
+
+                controllerActif = new Controller();
+                controllerActif.ouvrirProjet(fichier);
+                controllers.put(currentCanvas, controllerActif);
+
+                Canvas canvas = new Canvas();
+                canvas.setMainWindow(this);
+                currentCanvas = canvas;
+                tabs.addTab(controllerActif.GetProjetNom(), currentCanvas);
+                tabs.setSelectedComponent(currentCanvas);
+                int idx = tabs.indexOfComponent(currentCanvas);
+                tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
+                tabs.setSelectedIndex(idx);
+
+                SwingUtilities.invokeLater(() -> {
+                    currentCanvas.repaint();
+                });
+                props.afficherProprietesPiece();
+                sourisListener();
+                suppressionListener();
+
+                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+            } catch (RuntimeException e) {
+                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
+            }
         });
          
          barreOutils.onExportPngClick(() -> {

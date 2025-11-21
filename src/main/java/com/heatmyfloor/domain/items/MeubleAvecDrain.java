@@ -32,6 +32,11 @@ public class MeubleAvecDrain extends PieceItem {
         this.type = type;
     }
     
+    public MeubleAvecDrain() {
+        super();
+        this.distanceAvecFil = 0.0;
+    }
+    
     
     //Méthodes
     

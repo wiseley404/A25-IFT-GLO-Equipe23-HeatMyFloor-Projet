@@ -1,6 +1,8 @@
 package com.heatmyfloor.domain.piece;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Rect2D;
 import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 import java.io.Serializable;
@@ -10,7 +12,18 @@ import java.awt.geom.AffineTransform;
  *
  * @author petit
  */
+<<<<<<< HEAD
 public class PieceItem implements PieceItemReadOnly, Serializable{
+=======
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "@class"
+)
+
+public abstract class PieceItem implements PieceItemReadOnly{
+>>>>>>> 92dd526 (maj)
     private final UUID id;
     private double largeur;
     private double hauteur;
@@ -18,7 +31,6 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     private double angle;
     private final String image;
     private boolean estSelectionne;
-    
     
     public PieceItem(double largeur, double hauteur, Point pos, String img){
         this.id = UUID.randomUUID();
@@ -28,6 +40,13 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
         this.angle = 0;
         this.image = img;
         this.estSelectionne = false;
+    }
+    
+    public PieceItem(){
+        this.angle = 0;
+        this.id = UUID.randomUUID();
+        this.estSelectionne = false;
+        this.image="";
     }
     
     
@@ -96,17 +115,17 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     
     
     @Override
-    public Rectangle2D getItemForme(){
+    public Rect2D getItemForme(){
         Rectangle2D itemForme = new Rectangle2D.Double(
                         this.getPosition().getX(), this.getPosition().getY(),
                         this.getLargeur(), this.getHauteur());
-        return itemForme;
+        return new Rect2D(itemForme);
     }
     
     
     @Override
     public boolean contientLePoint(Point position){
-        return this.getItemForme().contains(position.getX(), position.getY());
+        return this.getItemForme().Contains(position.getX(), position.getY());
 
     
     }    
@@ -184,5 +203,6 @@ public class PieceItem implements PieceItemReadOnly, Serializable{
     public boolean estSelectionne(){
         return estSelectionne;
     }
+    
 }
 

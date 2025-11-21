@@ -4,6 +4,7 @@
  */
 package com.heatmyfloor.domain.items;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.UUID;
 import com.heatmyfloor.domain.Point;
 import java.awt.geom.Ellipse2D;
@@ -49,6 +50,7 @@ public class Drain implements DrainReadOnly, Serializable {
     }
     
     @Override
+    @JsonIgnore
     public Ellipse2D getForme(){
        Ellipse2D drainForme = new Ellipse2D.Double(
                this.getPosition().getX(), this.getPosition().getY(),

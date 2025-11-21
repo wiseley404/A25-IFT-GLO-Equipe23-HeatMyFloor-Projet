@@ -19,6 +19,11 @@ public class Mur implements Serializable{
         this.distanceAvecFil = 3;
     }
     
+    public Mur(){
+        this.id = UUID.randomUUID();
+        this.distanceAvecFil = 3;
+    }
+    
     public void positionnerItem(PieceItem item){
 
     }

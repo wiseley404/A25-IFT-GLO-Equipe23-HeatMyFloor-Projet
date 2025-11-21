@@ -1,5 +1,6 @@
 package com.heatmyfloor.gui;
 
+import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
@@ -7,7 +8,7 @@ import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 import com.heatmyfloor.domain.Point;
 
-public class Canvas extends JPanel implements Serializable{
+public class Canvas extends JPanel implements Serializable {
 
     private MainWindow mainWindow;
     private FormeIrregulierPanel dessinPanel;
@@ -85,29 +86,17 @@ public class Canvas extends JPanel implements Serializable{
     
     public Canvas() {
         setBackground(Color.white);
-        setLayout(null); 
-        addMouseWheelListener(e -> {
-            int steps = e.getWheelRotation();
-            if (steps == 0) return;
-
-            double factor = Math.pow(1.1, Math.abs(steps));
-            if (steps > 0) {
-                factor = 1.0 / factor;
-            }
-
-            applyZoom(e.getX(), e.getY(), factor);
-        });
+        setLayout(null);
+        setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2));
     }
-    
-    
-    public MainWindow getMainWindow(){
+
+    public MainWindow getMainWindow() {
         return this.mainWindow;
     }
-    
-    public void setMainWindow(MainWindow mainWindow){
+
+    public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
-    
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -127,22 +116,22 @@ public class Canvas extends JPanel implements Serializable{
             dessinateurPiece.dessiner(g2);
         }
     }
-    
-    public PieceItemReadOnly getItemSurvole(){
+
+    public PieceItemReadOnly getItemSurvole() {
         return this.itemSurvole;
     }
-    
-    public void setItemSurvole(PieceItemReadOnly item){
+
+    public void setItemSurvole(PieceItemReadOnly item) {
         this.itemSurvole = item;
     }
-    
-    public void nettoyerModeDessin(){
+
+    public void nettoyerModeDessin() {
         if (dessinPanel != null) {
             remove(dessinPanel);
             dessinPanel = null;
         }
     }
-           
+
     void dessinerFormeIrreguliere() {
         nettoyerModeDessin();
         dessinPanel = new FormeIrregulierPanel();
@@ -153,9 +142,7 @@ public class Canvas extends JPanel implements Serializable{
         add(dessinPanel);
         revalidate();
         repaint();
-
-        JOptionPane.showMessageDialog(this,
-                "Cliquez pour placer des points.\nDouble-cliquez pour fermer la forme.",
-                "Mode dessin", JOptionPane.INFORMATION_MESSAGE);
+        PieceIrreguliere pir = (PieceIrreguliere) mainWindow.controllerActif.getPiece();
+        pir.setSommets((java.util.List<com.heatmyfloor.domain.Point>) (Point) dessinPanel.getPoints());
     }
 }

@@ -19,5 +19,7 @@ public class Thermostat extends PieceItem {
         super(largeur, hauteur, pos,"/images/thermostat.png");
     }
     
-    
+     public Thermostat() {
+        super();
+    }
 }

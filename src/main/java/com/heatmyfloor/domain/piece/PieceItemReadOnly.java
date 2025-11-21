@@ -1,8 +1,8 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Rect2D;
 import java.util.UUID;
-import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -13,7 +13,7 @@ public interface PieceItemReadOnly {
     double getHauteur();
     double getLargeur();
     Point getPosition();
-    Rectangle2D getItemForme();
+    Rect2D getItemForme();
     boolean contientLePoint(Point position);
     double getAngle();
     String getImage();

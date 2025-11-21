@@ -12,30 +12,29 @@ import com.heatmyfloor.domain.piece.PieceItem;
  * @author petit
  */
 public class MeubleSansDrain extends PieceItem {
-    
+
     //Attributs
-    
-    private final double distanceAvecFil;
+    private double distanceAvecFil;
     private TypeSansDrain type;
-    
+
     //Constructeur
-    
-    public MeubleSansDrain(double largeur, double hauteur, Point pos, TypeSansDrain type){
+    public MeubleSansDrain(double largeur, double hauteur, Point pos, TypeSansDrain type) {
         super(largeur, hauteur, pos, type.getImage());
         this.distanceAvecFil = 0.0;
         this.type = type;
     }
-    
-    
+
+    public MeubleSansDrain() {
+        super();
+    }
+
     //Méthode
-    
-    public double getDistanceAvecFil(){
+    public double getDistanceAvecFil() {
         return this.distanceAvecFil;
     }
-    
-    public TypeSansDrain getType(){
+
+    public TypeSansDrain getType() {
         return this.type;
     }
-    
-    
+
 }
