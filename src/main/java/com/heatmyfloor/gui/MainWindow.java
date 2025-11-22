@@ -18,6 +18,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ContainerAdapter;
 import java.awt.event.ContainerEvent;
 import java.awt.event.MouseAdapter;
@@ -86,7 +87,7 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         controllerActif = new Controller();
         setupTabListeners();
-
+        setupKeyBindings();
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -168,22 +169,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         barreOutils.onEnregistrerProjetClick(() -> {
 
-            Path fichierSauvegarde;
+            Path fichierSauvegarde = null;
 
-            if (controllerActif.GetCheminFichier() == null) {
-                fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
-                if (fichierSauvegarde == null) {
-
-                    UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
-                    return;
-                }
-
-            } else {
-                fichierSauvegarde = controllerActif.GetCheminFichier();
-            }
-
-            controllerActif.sauvegarderProjet(fichierSauvegarde);
-            UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+            enregistrerProjet(fichierSauvegarde);
 
         });
 
@@ -767,6 +755,23 @@ public class MainWindow extends javax.swing.JFrame {
         topMenuBar.add(helpMenu);
     }
 
+    private void enregistrerProjet(Path fichierSauvegarde) {
+        if (controllerActif.GetCheminFichier() == null) {
+             fichierSauvegarde= UiUtils.choisirDossierSauvegarde(MainWindow.this);
+            if (fichierSauvegarde == null) {
+
+                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
+                return;
+            }
+
+        } else {
+            fichierSauvegarde = controllerActif.GetCheminFichier();
+        }
+
+        controllerActif.sauvegarderProjet(fichierSauvegarde);
+        UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+    }
+
     private static class ClosableTabHeader extends JPanel {
 
         public ClosableTabHeader(JTabbedPane tabs,
@@ -923,6 +928,25 @@ public class MainWindow extends javax.swing.JFrame {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void setupKeyBindings() {
+        InputMap inputMap = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = this.getRootPane().getActionMap();
+
+        // On lie Ctrl+S à la clé "saveSession"
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK), "saveSession");
+
+        actionMap.put("saveSession", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                Path fichierSauvegarde = null;
+               
+
+                enregistrerProjet(fichierSauvegarde);
+            }
+        });
     }
 
 }
