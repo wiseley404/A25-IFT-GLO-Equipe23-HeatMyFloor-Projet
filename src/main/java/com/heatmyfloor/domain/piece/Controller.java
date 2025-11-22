@@ -13,7 +13,9 @@ import com.heatmyfloor.domain.items.MeubleSansDrain;
 import com.heatmyfloor.infrastructure.file.PieceFichierStockage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -227,7 +229,7 @@ public class Controller {
     }
 
     public void exporterProjetPng(Path fichierExport) {
-         try {
+        try {
 
             String nomPropre = this.nom_ptojet.replaceAll("[^a-zA-Z0-9_-]", "_");
             String nomFichier = nomPropre + "__" + UUID.randomUUID() + ".png";
@@ -285,6 +287,23 @@ public class Controller {
 
         String[] parts = nomFichier.split("__");
         return parts.length > 0 ? parts[0] : nomFichier;
+    }
+
+    public Map<String, Object> getSessionData() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("nom", this.nom_ptojet);
+        data.put("chemin", cheminFichier != null ? this.cheminFichier.toString() : null);
+
+        data.put("piece", this.piece);
+        return data;
+    }
+
+    public void restaurerDepuisSession(Map<String, Object> data) {
+        this.nom_ptojet = (String) data.get("nom");
+        if (data.get("chemin") != null) {
+            this.cheminFichier = Path.of((String) data.get("chemin"));
+        }
+        this.piece = (Piece) data.get("piece");
     }
 
 }

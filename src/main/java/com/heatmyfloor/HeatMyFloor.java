@@ -23,5 +23,6 @@ public class HeatMyFloor {
         
         ImageIcon logo = new ImageIcon(HeatMyFloor.class.getResource("/Icons/HeatMyFloor_logo.png"));
         mainWindow.setIconImage(logo.getImage());
+        mainWindow.restaurerSession();
     }
 }

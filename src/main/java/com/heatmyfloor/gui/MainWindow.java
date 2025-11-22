@@ -18,13 +18,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -76,7 +85,15 @@ public class MainWindow extends javax.swing.JFrame {
         tabs = new JTabbedPane();
         initComponents();
         controllerActif = new Controller();
+        setupTabListeners();
 
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                sauvegarderSession();
+                System.exit(0);
+            }
+        });
     }
 
     //Conversion coordonnées (Zoom)
@@ -313,7 +330,7 @@ public class MainWindow extends javax.swing.JFrame {
                 if (!this.controllers.isEmpty()) {
                     this.sauvegarderSession();
                 }
-                System.exit(0); // quitte proprement le programme
+                System.exit(0);
             }
         });
 
@@ -364,13 +381,24 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void addNewProjet() {
-        String title = "Projet " + i++;
+        addNewProjet(null);
+    }
+
+    private void addNewProjet(Controller ctrl) {
+
         Canvas canvas = new Canvas();
         canvas.setMainWindow(this);
         currentCanvas = canvas;
+        String title;
+        if (ctrl == null) {
+            title = "Projet " + i++;
+            controllerActif = new Controller(new PieceRectangulaire(900, 400));
+            controllerActif.SetProjetNom(title);
+        } else {
+            controllerActif = ctrl;
+            title = controllerActif.GetProjetNom();
+        }
 
-        controllerActif = new Controller(new PieceRectangulaire(900, 400));
-        controllerActif.SetProjetNom(title);
         controllers.put(currentCanvas, controllerActif);
 
         tabs.addTab(title, currentCanvas);
@@ -567,11 +595,30 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void disableButton() {
-        if (tabs.getTabCount() == 0 && controllerActif == null) {
+        if (tabs.getTabCount() == 0 || controllerActif == null) {
             UiUtils.setEnabledRecursively(barreOutils, false);
             UiUtils.setEnabledRecursively(barreOutils.btnNouveau, true);
             UiUtils.setEnabledRecursively(barreOutils.btnOuvrir, true);
+        } else {
+            UiUtils.setEnabledRecursively(barreOutils, true);
         }
+    }
+
+    private void setupTabListeners() {
+
+        tabs.addChangeListener(e -> disableButton());
+
+        tabs.addContainerListener(new ContainerAdapter() {
+            @Override
+            public void componentAdded(ContainerEvent e) {
+                disableButton();
+            }
+
+            @Override
+            public void componentRemoved(ContainerEvent e) {
+                disableButton();
+            }
+        });
     }
 
     private void handleNewProject() {
@@ -821,13 +868,57 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void sauvegarderSession() {
         try {
-            // Crée un objet qui contiendra tous les projets ouverts
-            Map<String, Piece> sessionData = new HashMap<>();
-            Path cheminFichier = Paths.get("sauvegardes", "autosaves.json");
+            Path fichierSession = Paths.get("sauvegardes", "autosaves.json");
+
+            FileOutputStream fo = new FileOutputStream(fichierSession.toFile(), false);
+            ObjectOutputStream out = new ObjectOutputStream(fo);
+
+            out.writeInt(controllers.size());
+
             for (Map.Entry<Canvas, Controller> entry : controllers.entrySet()) {
-                Controller controller = entry.getValue();
-                controller.sauvegarderProjet(cheminFichier);
+                Controller ctrl = entry.getValue();
+
+                Map<String, Object> data = ctrl.getSessionData();
+
+                out.writeObject(data);
             }
+
+            out.close();
+            fo.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void restaurerSession() {
+
+        try {
+            Path fichierSession = Paths.get("sauvegardes", "autosaves.json");
+
+            if (!Files.exists(fichierSession) || Files.size(fichierSession) == 0) {
+                return;
+            }
+
+            FileInputStream fi = new FileInputStream(fichierSession.toFile());
+            ObjectInputStream in = new ObjectInputStream(fi);
+
+            int nb = in.readInt();
+
+            for (int i = 0; i < nb; i++) {
+
+                Map<String, Object> data = (Map<String, Object>) in.readObject();
+
+                Controller ctrl = new Controller();
+                ctrl.restaurerDepuisSession(data);
+
+                addNewProjet(ctrl);
+            }
+
+            Files.write(fichierSession, new byte[0]);
+
+            in.close();
+            fi.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
