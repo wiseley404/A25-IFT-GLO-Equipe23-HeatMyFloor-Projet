@@ -67,6 +67,10 @@ public class MainWindow extends javax.swing.JFrame {
     public Point positionSouris = new Point();
     public TableauErreur tabsErreur;
 
+    private double dragOffsetX = 0; //ajout
+    private double dragOffsetY = 0; //ajout
+    private final int STEP = 5;
+
     public MainWindow() {
         barreOutils = new BarreOutils(this);
         tabs = new JTabbedPane();
@@ -306,7 +310,7 @@ public class MainWindow extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION
             );
             if (confirm == JOptionPane.YES_OPTION) {
-                if(!this.controllers.isEmpty()){
+                if (!this.controllers.isEmpty()) {
                     this.sauvegarderSession();
                 }
                 System.exit(0); // quitte proprement le programme
@@ -397,6 +401,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        clavierListener();
+        suppressionListener();
     }
 
     public void suppressionListener() {
@@ -432,6 +438,17 @@ public class MainWindow extends javax.swing.JFrame {
                 var pWorld = toWorld(currentCanvas, e);
                 controllerActif.changerStatutSelection(pWorld);
 
+                currentCanvas.requestFocus();//ajout
+                Point cliqueSouris = new Point(e.getX(), e.getY());
+                controllerActif.changerStatutSelection(cliqueSouris);
+
+                //Ajout
+                PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
+                if (sel != null) {
+
+                    dragOffsetX = e.getX() - sel.getPosition().getX();
+                    dragOffsetY = e.getY() - sel.getPosition().getY();
+                }
                 props.afficherProprietesItemSelectionne();
                 panelPosition.afficherCoordItemSelectionne();
                 panelPosition.afficherAngleItemSelectionne();
@@ -463,6 +480,72 @@ public class MainWindow extends javax.swing.JFrame {
                     currentCanvas.repaint();
                 }
             }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+
+                PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
+                if (sel == null) {
+                    return;
+                }
+
+                double newX = e.getX() - dragOffsetX;
+                double newY = e.getY() - dragOffsetY;
+
+                panelPosition.moveSelectedTo(newX, newY);
+
+                panelPosition.afficherCoordItemSelectionne();
+                currentCanvas.repaint();
+
+            }
+
+        });
+    }
+
+    public void clavierListener() {
+
+        currentCanvas.setFocusable(true);
+        currentCanvas.requestFocusInWindow();
+
+        currentCanvas.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
+                if (sel == null) {
+                    return;
+                }
+
+                double x = sel.getPosition().getX();
+                double y = sel.getPosition().getY();
+
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP:
+                        y -= STEP;
+                        break;
+
+                    case KeyEvent.VK_DOWN:
+                        y += STEP;
+                        break;
+
+                    case KeyEvent.VK_LEFT:
+                        x -= STEP;
+                        break;
+
+                    case KeyEvent.VK_RIGHT:
+                        x += STEP;
+                        break;
+                    default:
+                        return;
+
+                }
+
+                panelPosition.moveSelectedTo(x, y);
+                panelPosition.afficherAngleItemSelectionne();
+                currentCanvas.repaint();
+
+            }
+
         });
     }
 
@@ -484,7 +567,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void disableButton() {
-        if (tabs.getTabCount() == 0 && controllerActif ==null) {
+        if (tabs.getTabCount() == 0 && controllerActif == null) {
             UiUtils.setEnabledRecursively(barreOutils, false);
             UiUtils.setEnabledRecursively(barreOutils.btnNouveau, true);
             UiUtils.setEnabledRecursively(barreOutils.btnOuvrir, true);
@@ -735,17 +818,16 @@ public class MainWindow extends javax.swing.JFrame {
             add(close);
         }
     }
-    
-     private void sauvegarderSession() {
+
+    private void sauvegarderSession() {
         try {
             // Crée un objet qui contiendra tous les projets ouverts
             Map<String, Piece> sessionData = new HashMap<>();
-            Path cheminFichier = Paths.get("sauvegardes","autosaves.json");
+            Path cheminFichier = Paths.get("sauvegardes", "autosaves.json");
             for (Map.Entry<Canvas, Controller> entry : controllers.entrySet()) {
                 Controller controller = entry.getValue();
                 controller.sauvegarderProjet(cheminFichier);
             }
-
 
         } catch (Exception ex) {
             ex.printStackTrace();

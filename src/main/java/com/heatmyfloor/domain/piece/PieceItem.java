@@ -1,3 +1,5 @@
+
+
 package com.heatmyfloor.domain.piece;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

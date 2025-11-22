@@ -167,7 +167,7 @@ public class PositionPanel extends JPanel {
             mainWindow.controllerActif.deplacerItemSelectionne(p);
         } else {
 
-            mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce.");
+            mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce ou la position est déja occupée.");
         }
     }
 

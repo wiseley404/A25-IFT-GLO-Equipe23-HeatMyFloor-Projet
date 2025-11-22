@@ -82,6 +82,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     public void changerAngleItemSelectionne(double nouvAngle) {
         PieceItem item = this.trouverItemSelectionne();
+
         if (item != null) {
             double ancienAngle = item.getAngle();
             item.setAngle(nouvAngle);
@@ -90,6 +91,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
                 throw new IllegalArgumentException("Vous ne pouvez pas faire cette rotation aux bords de la pièce.");
             }
         }
+
     }
 
     public void pivoterItemSelectionne() {
@@ -155,9 +157,35 @@ public abstract class Piece implements PieceReadOnly, Serializable {
                 Shape itemRotation = transf.createTransformedShape(formeTournee);
                 valide = this.contientLaForme(itemRotation);
             }
-        }
 
+//            double x1 = itemPosition.getX();
+//            double y1 = itemPosition.getY();
+//            double x2 = x1 + item.getLargeur();
+//            double y2 = y1 + item.getHauteur();
+//
+//            for (PieceItem autre : itemsList) {
+//                if (autre == item) {
+//                    continue;
+//                }
+//
+//                double ax1 = autre.getPosition().getX();
+//                double ay1 = autre.getPosition().getY();
+//                double ax2 = ax1 + autre.getLargeur();
+//                double ay2 = ay1 + autre.getHauteur();
+//
+//                boolean overlapX = x1 < ax2 && x2 > ax1;
+//                boolean overlapY = y1 < ay2 && y2 > ay1;
+//
+//                if (overlapX && overlapY) {
+//
+//                    return false;
+//
+//                }
+//
+//            }
+        }
         return valide;
+
     }
 
     public boolean estItemPresent(UUID idItem) {
