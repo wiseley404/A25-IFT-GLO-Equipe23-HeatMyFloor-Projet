@@ -2,6 +2,9 @@ package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.graphe.Graphe;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.DrainReadOnly;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +12,8 @@ import java.io.Serializable;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
+import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 
 /**
  *
@@ -45,8 +50,45 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     @Override
     public abstract boolean contientLaForme(Shape itemRotation);
 
+//    @Override
+//    public abstract Point getCentre();
+    private List<Point> sommets;
+
+// ...
     @Override
-    public abstract Point getCentre();
+    public Point getCentre() {
+        if (sommets == null || sommets.isEmpty()) {
+            return new Point(0, 0); // valeur par défaut, au cas où
+        }
+
+        double minX = sommets.get(0).getX();
+        double maxX = minX;
+        double minY = sommets.get(0).getY();
+        double maxY = minY;
+
+        for (Point p : sommets) {
+            double x = p.getX();
+            double y = p.getY();
+
+            if (x < minX) {
+                minX = x;
+            }
+            if (x > maxX) {
+                maxX = x;
+            }
+            if (y < minY) {
+                minY = y;
+            }
+            if (y > maxY) {
+                maxY = y;
+            }
+        }
+
+        double cx = (minX + maxX) / 2.0;
+        double cy = (minY + maxY) / 2.0;
+
+        return new Point(cx, cy);
+    }
 
     public void ajouterItem(PieceItem item) {
         for (PieceItem i : itemsList) {
@@ -122,7 +164,10 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     }
 
     public void redimensionnerDrainSelectionne(double nouvDiametre) {
-
+        PieceItem item = trouverItemSelectionne();
+        if (item instanceof MeubleAvecDrain meuble) {
+            meuble.redimensionnerDrainSelectionne(nouvDiametre);
+        }
     }
 
     public void redimensionnerDrainSelectionne(Point delta) {
@@ -137,7 +182,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
 
-    /*public boolean estPositionItemValide(Point itemPosition){
+    public boolean estPositionItemValide(Point itemPosition) {
         boolean valide = false;
         PieceItem item = this.trouverItemSelectionne();
 
@@ -185,39 +230,24 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 //            }
         }
         return valide;
-    }*/
-    
-    public boolean estPositionItemValide(Point itemPosition){
+    }
+
+    public boolean estPositionDrainValide(double x, double y) {
         boolean valide = false;
-        PieceItem item = this.trouverItemSelectionne();
-        Point p1 = itemPosition;
-        Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
-        if(contientLePoint(p1) && contientLePoint(p2)){
-            double x1 = itemPosition.getX();
-            double y1 = itemPosition.getY();
-            double x2 = x1 + item.getLargeur();
-            double y2 = y1 + item.getHauteur();
-
-            for(PieceItem autre : itemsList){
-                if(autre == item){
-                    continue;
-                }
-
-                double ax1 = autre.getPosition().getX();
-                double ay1 = autre.getPosition().getY();
-                double ax2 = ax1 + autre.getLargeur();
-                double ay2 = ay1 +autre.getHauteur();
-                boolean overlapX = x1 < ax2 && x2 > ax1;
-                boolean overlapY = y1 < ay2 && y2 > ay1;
-                if(overlapX && overlapY){
-                    //chevauchement position invalide
-                    return false;
-                }
+        PieceItem item = trouverItemSelectionne();
+        if (item instanceof MeubleAvecDrain meuble) {
+            Drain d = meuble.trouverDrainSelectionne();
+            if (d != null) {
+                double posX = meuble.getPosition().getX() - d.getDiametre();
+                double posY = meuble.getPosition().getY() - d.getDiametre();
+                double largeur = meuble.getLargeur() + d.getDiametre();
+                double hauteur = meuble.getHauteur() + d.getDiametre();
+                Rectangle2D espaceDrain = new Rectangle2D.Double(posX, posY, largeur, hauteur);
+                valide = espaceDrain.contains(x, y);
             }
 
-            valide = true;
         }
-        return valide;   
+        return valide;
     }
 
     public boolean estItemPresent(UUID idItem) {
@@ -347,51 +377,96 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     public List<Mur> getMurs() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
-    } 
-    
+    }
+
     @Override
-    public Point getExtremiteHautGauche(){
+    public Point getExtremiteHautGauche() {
         return position;
     }
-    
-    @Override
-    public Point getExtremiteBasGauche(){
-        double x = position.getX() + getLargeur()/2 ;
-        double y = position.getY();
 
-        return new Point(x,y);
-        
-    }
     @Override
-    public Point getExtremiteHautDroite(){
-            double x = position.getX() + largeur;
-            double y = position.getY();
-            return new Point(x,y);
-    }
-    @Override
-    public Point getExtremiteBasMilieu(){
-        
+    public Point getExtremiteBasGauche() {
         double x = position.getX();
         double y = position.getY() + getHauteur();
-        return new Point(x,y);
-        
-    }
-    @Override
-    public Point getExtremiteHautMilieu(){
-        
-        double x = position.getX() + (getLargeur() / 2); 
-        double y = position.getY() + getHauteur() ;
-        return new Point(x,y);
-      
+
+        return new Point(x, y);
 
     }
-   
+
     @Override
-    public Point getExtremiteBasDroite(){
-        
+    public Point getExtremiteHautDroite() {
+        double x = position.getX() + largeur;
+        double y = position.getY();
+        return new Point(x, y);
+    }
+
+    @Override
+    public Point getExtremiteBasMilieu() {
+
+        double x = position.getX() + (getLargeur() / 2.0);
+        double y = position.getY() + getHauteur();
+        return new Point(x, y);
+
+    }
+
+    @Override
+    public Point getExtremiteHautMilieu() {
+
+        double x = position.getX() + (getLargeur() / 2.0);
+        double y = position.getY();
+        return new Point(x, y);
+
+    }
+
+    @Override
+    public Point getExtremiteBasDroite() {
+
         double x = position.getX() + getLargeur();
-        double y = position.getY() + getHauteur() ;
-        return new Point(x,y);
+        double y = position.getY() + getHauteur();
+        return new Point(x, y);
 
     }
+
+    public void ajouterDrain(Drain d) {
+
+        // Un drain n’a pas de sélection, on ignore cette partie
+        // Vérifier que le drain entre entièrement dans la pièce
+        //if (this.contientLePoint(d.getPosition())) {
+        this.listeDrains.add(d);
+
+    }
+    private List<Drain> listeDrains = new ArrayList<>();
+
+    @Override
+    public List<DrainReadOnly> getDrains() {
+        return Collections.unmodifiableList(listeDrains);
+    }
+
+    public List<Drain> getDrainsModifiables() {
+        return listeDrains; // liste interne modifiable
+    }
+
+    public Drain trouverDrainSelectionne() {
+        PieceItem item = this.trouverItemSelectionne();
+        if (item instanceof MeubleAvecDrain meuble) {
+            return meuble.trouverDrainSelectionne();
+        }
+        return null;
+    }
+
+    /*public void repositionnerDrainSelectionne(Point nouvPosition,PieceItem item){
+        
+        Drain drain =(Drain) trouverDrainPourItem(item); // ou utiliser trouverDrainPourItem si tu as l'item
+        if (drain == null) return;
+
+            // calcul du delta
+            Point delta = new Point(
+                nouvPosition.getX() - drain.getPosition().getX(),
+                nouvPosition.getY() - drain.getPosition().getY()
+            );
+
+            // déplacer le drain
+            drain.translater(delta);
+    }
+     */
 }

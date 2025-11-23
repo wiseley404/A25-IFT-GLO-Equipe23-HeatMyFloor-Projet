@@ -31,16 +31,26 @@ public class Drain implements DrainReadOnly, Serializable {
         this.diametre = diam;
         this.position = pos;
         this.distanceAvecFil = 0.0;
-        this.estSelectionne = false;
+        this.estSelectionne = true;
     }
     
     
     //Méthodes
     
-    public void translater(Point delta){}
+    @Override
+    public void translater(Point delta) {
+    this.position = new Point(
+        this.position.getX() + delta.getX(),
+        this.position.getY() + delta.getY()
+    );
+}
+
     
     public void translater(double facteurX, double facteurY){
-        
+        this.position = new Point(
+        this.getPosition().getX()*facteurX,
+        this.getPosition().getY() * facteurY
+        );
     }
      
     public void redimensionner(Point delta){}
@@ -91,7 +101,8 @@ public class Drain implements DrainReadOnly, Serializable {
     }
     
     public void setDiametre(double nouvDiametre){
-        
+       
+        this.diametre=nouvDiametre;
     }
     
     public void setPosition(Point nouvPosition){

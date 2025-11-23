@@ -3,6 +3,8 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceItem;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
@@ -55,9 +57,9 @@ public class PositionPanel extends JPanel {
         JButton HM = new JButton(new ImageIcon(getClass().getResource("/Icons/HautMilieu.jpg")));
         JButton BM = new JButton(new ImageIcon(getClass().getResource("/Icons/BasMilieu.jpg")));
 
-        JButton[] boutons = {HG, BG, HD, BD, HM, BM};
+        JButton[] boutons = {HG, HM, HD, BG, BM, BD};
         for (JButton bouton : boutons) {
-            redimensionnerTailleImage(bouton, 40, 40);
+//            redimensionnerTailleImage(bouton, 40, 40);
         }
 
         for (JButton bouton : boutons) {
@@ -97,20 +99,30 @@ public class PositionPanel extends JPanel {
 
         HG.addActionListener(e -> {
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
-
+            
+            PieceItem its = (PieceItem)it;
+            Point Pos = its.getPosition();
             if (it != null) {
                 // Récupérer la pièce associée
                 PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
 
                 Point hautGauche = piece.getExtremiteHautGauche();
 
-                ((PieceItem) it).setPosition(hautGauche);
-                inner.repaint();
+                 
+                
+                            Point delta = new Point(
+                   hautGauche.getX() - Pos.getX(),
+                   hautGauche.getY() - Pos.getY()
+               );
+                            
+               its.setPosition(hautGauche);
+               
+               inner.repaint();
+                           
             }
+                   });
 
-        });
-
-        /*HD.addActionListener(e ->{
+        HD.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
                  // Dimensions du meuble
@@ -131,8 +143,8 @@ public class PositionPanel extends JPanel {
 
 
                         
-        });*/
- /*BM.addActionListener(e ->{
+        });
+        BM.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
                  // Dimensions du meuble
@@ -143,7 +155,7 @@ public class PositionPanel extends JPanel {
 
 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
-                double x = extremite.getX() - meubleLargeur;
+                double x = extremite.getX() - (meubleLargeur/2.0);
                 double y = extremite.getY() - meubleHauteur;
 
                 
@@ -153,8 +165,8 @@ public class PositionPanel extends JPanel {
 
 
                         
-        }); */
- /*BD.addActionListener(e ->{
+        }); 
+        BD.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
                  // Dimensions du meuble
@@ -166,7 +178,7 @@ public class PositionPanel extends JPanel {
 
 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
-                double x = extremite.getX();
+                double x = extremite.getX()-meubleLargeur;
                 double y = extremite.getY()- meubleHauteur;
 
                 
@@ -180,16 +192,15 @@ public class PositionPanel extends JPanel {
         BG.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
-                 // Dimensions du meuble
-                double meubleLargeur = it.getLargeur();
+                
                 double meubleHauteur = it.getHauteur();
-                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
+                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); 
                 Point extremite = piece.getExtremiteBasGauche();
 
 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
-                double x =extremite.getX() - (meubleLargeur/2);
-                double y = extremite.getY();
+                double x =extremite.getX();
+                double y = extremite.getY()- meubleHauteur;
 
                  ((PieceItem) it).setPosition(new Point(x, y));
                  inner.repaint();
@@ -201,23 +212,23 @@ public class PositionPanel extends JPanel {
         HM.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
-                 // Dimensions du meuble
+                 
                 double meubleLargeur = it.getLargeur();
-                double meubleHauteur = it.getHauteur();
-                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
+                
+                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); 
                 Point  extremite = piece.getExtremiteHautMilieu();
 
 
-                // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
-                double x = extremite.getX() - (meubleLargeur / 2);
-                double y =  extremite.getY() - meubleHauteur;
+                
+                double x = extremite.getX() - (meubleLargeur / 2.0);
+                double y =  extremite.getY() ;
 
                  ((PieceItem) it).setPosition(new Point(x, y));
                  inner.repaint();
 
 
 
-        });*/
+        });
     }
 
     public void afficherCoordItemSelectionne() {
@@ -318,73 +329,5 @@ public class PositionPanel extends JPanel {
             }
         }
     }
-<<<<<<< HEAD
-   
-=======
 
-    private Double parseNumber(String s) {
-        if (s == null) {
-            return null;
-        }
-
-        s = s.replaceAll("[^0-9./ ]", "").trim();
-
-        if (s.isEmpty()) {
-            return null;
-        }
-        try {
-            // CAS 1 : Fraction simple "a/b"
-            if (s.matches("[0-9]+\\s*/\\s*[0-9]+")) {
-                String[] parts = s.split("/");
-                double a = Double.parseDouble(parts[0].trim());
-                double b = Double.parseDouble(parts[1].trim());
-                if (b == 0) {
-                    return null;
-                }
-                return a / b;
-            }
-
-            // CAS 2 : Fraction "a b/c"
-            if (s.matches("[0-9]+\\s+[0-9]+\\s*/\\s*[0-9]+")) {
-                String[] parts = s.split("\\s+");
-                double entier = Double.parseDouble(parts[0]);
-                String frac = parts[1];
-                String[] fracParts = frac.split("/");
-                double b = Double.parseDouble(fracParts[0]);
-                double c = Double.parseDouble(fracParts[1]);
-                if (c == 0) {
-                    return null;
-                }
-                return entier + (b / c);
-            }
-
-            // CAS 3 : Nombre normal (décimal)
-            return Double.parseDouble(s);
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private void redimensionnerTailleImage(JButton bouton, int largeur, int longueur) {
-        Icon icon = bouton.getIcon();
-        if (icon == null) {
-            return;
-        }
-        Image image = ((ImageIcon) icon).getImage();
-        Image img = image.getScaledInstance(largeur, longueur, Image.SCALE_SMOOTH);
-        bouton.setIcon(new ImageIcon(img));
-
-    }
-
-    /* public void deplacerHautGauche(JButton HG){
-        ActionListener apply = (e ->{
-            PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
-            if (it != null){
-                moveSelectedTo(0,0);
-            }
-        });
-        HG.addActionListener(apply);
-    }*/
->>>>>>> 746c711 (ésolution des conflits)
 }

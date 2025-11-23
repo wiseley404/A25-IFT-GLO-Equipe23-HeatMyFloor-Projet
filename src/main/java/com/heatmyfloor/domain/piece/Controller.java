@@ -1,6 +1,8 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.items.Zone;
@@ -45,6 +47,7 @@ public class Controller {
 
     public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type) {
         this.historique.sauvegarder(piece);
+        piece.getItemsList().removeIf(item -> item instanceof MeubleAvecDrain);
         this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));
     }
 
@@ -95,6 +98,11 @@ public class Controller {
         this.historique.sauvegarder(piece);
         this.piece.redimensionner(nouvLarg, nouvHaut);
     }
+
+//    public void redimensionnerDrain(double diametre, double x, double y) {
+//        this.historique.sauvegarder(piece);
+    ////        this.piece.redimensionnerDrain(diametre, x, y);
+//    }
 
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHaut) {
         this.historique.sauvegarder(piece);
@@ -153,12 +161,27 @@ public class Controller {
 
     public void ajouterDrain(Point position) {
         this.historique.sauvegarder(piece);
+        double diametre = 40;
+        double rayon = diametre / 2.0;
+        Point point = new Point(position.getX() - rayon, position.getY() - rayon);
+
+        this.piece.ajouterDrain(new Drain(diametre, point));
         //Appel a la methode en dessous 
+
     }
 
-    public void repositionnerDrainSelectionne(Point nouvPosition) {
+    public boolean estPositionDrainValide(double x, double y) {
         this.historique.sauvegarder(piece);
+        return this.piece.estPositionDrainValide(x, y);
+    }
+
+    /*public void repositionnerDrainSelectionne(Point nouvPosition,PieceItem item){
+        this.historique.sauvegarder(piece);
+        this.piece.repositionnerDrainSelectionne(nouvPosition,item);
         //Appel a la methode en dessous
+    }*/
+    public void deplacerDrain(double x, double y) {
+
     }
 
     public void deplacerDrainSelectionne(Point delta) {
@@ -166,9 +189,19 @@ public class Controller {
         //Appelez votre methode en dessous
     }
 
+    public Drain trouverDrainSelectionne() {
+        this.historique.sauvegarder(piece);
+        return this.piece.trouverDrainSelectionne();
+    }
+
+    /*public Drain trouverDrainPourItem(PieceItem item){
+        this.historique.sauvegarder(piece);
+        return this.piece.trouverDrainPourItem(item);
+    }*/
+
     public void redimensionnerDrainSelectionne(double nouvDiametre) {
         this.historique.sauvegarder(piece);
-        //Appelez votre methode en dessous
+        this.piece.redimensionnerDrainSelectionne(nouvDiametre);
     }
 
     public void redimensionnerDrainSelectionne(Point delta) {
@@ -305,7 +338,7 @@ public class Controller {
         }
         this.piece = (Piece) data.get("piece");
     }
-<<<<<<< HEAD
+
 
 
     public boolean peutAnnuler(){
@@ -319,6 +352,5 @@ public class Controller {
     }
     
     
-=======
->>>>>>> 746c711 (ésolution des conflits)
+
 }

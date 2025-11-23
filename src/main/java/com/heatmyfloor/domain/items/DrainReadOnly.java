@@ -21,5 +21,6 @@ public interface DrainReadOnly {
     boolean estSelectionne();
     Ellipse2D getForme();
     boolean contientLePoint(Point pos);
+    void translater(Point delta);
     
 }

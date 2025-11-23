@@ -29,27 +29,23 @@ public class BarreOutils extends JPanel {
     private ButtonCard btnElementChauffant;
     private ButtonCard btnMenuZones;
     //public ButtonCard btnHautGauche;
-   // public ButtonCard btnBasGauche;
+    // public ButtonCard btnBasGauche;
     //public ButtonCard btnHautDroit;
     //public ButtonCard btnBasDroit;
     //public ButtonCard btnHautMilieu;
     //public ButtonCard btnBasMilieu;
-    
-    
-    
+
     private FormeIrregulierPanel dessinPanel;
     public ButtonCard btnZoomIn;
     public ButtonCard btnZoomOut;
     private JLabel valeurZoom;
 
-
-
-
     public void setZoomPercent(double zoomFactor) {
-    if (valeurZoom != null) {
-        valeurZoom.setText(String.format("%.0f %%", zoomFactor * 100.0));
+        if (valeurZoom != null) {
+            valeurZoom.setText(String.format("%.0f %%", zoomFactor * 100.0));
+        }
     }
-}
+
     public BarreOutils(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         setLayout(new BorderLayout());
@@ -58,9 +54,7 @@ public class BarreOutils extends JPanel {
         setBackground(Color.white);
 
         addButton();
-        
-        
-      
+
     }
 
     public void onRectangleClick(Runnable r) {
@@ -181,18 +175,17 @@ public class BarreOutils extends JPanel {
                 btnThermostat,
                 btnElementChauffant,
                 btnMenuZones
-                
         ), 3);
-        
+
         // Zoom
         JLayeredPane layeredZoom = new JLayeredPane();
         layeredZoom.setLayout(null);
         ribbon.setBounds(0, 0, 2000, 120);
         layeredZoom.add(ribbon, JLayeredPane.DEFAULT_LAYER);
-        
+
         JPanel panelZoom = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
         panelZoom.setOpaque(false);
-        
+
         ImageIcon zoomImage = new ImageIcon(getClass().getResource("/Icons/zoomer.png"));
         Image zoomImg = zoomImage.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         JButton btnZoom = new JButton(new ImageIcon(zoomImg));
@@ -202,7 +195,7 @@ public class BarreOutils extends JPanel {
         btnZoom.setBorderPainted(false);
         btnZoom.setContentAreaFilled(false);
         btnZoom.setFocusPainted(false);
-        
+
         ImageIcon dezoomImage = new ImageIcon(getClass().getResource("/Icons/dezoomer.png"));
         Image dezoomImg = dezoomImage.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         JButton btnDezoom = new JButton(new ImageIcon(dezoomImg));
@@ -212,16 +205,16 @@ public class BarreOutils extends JPanel {
         btnDezoom.setBorderPainted(false);
         btnDezoom.setContentAreaFilled(false);
         btnDezoom.setFocusPainted(false);
-        
+
         valeurZoom = new JLabel("100%");
-         
+
         panelZoom.add(btnDezoom);
         panelZoom.add(valeurZoom);
         panelZoom.add(btnZoom);
-        panelZoom.setBounds(0, 70, 150, 35);  
-        layeredZoom.add(panelZoom, JLayeredPane.PALETTE_LAYER);  
+        panelZoom.setBounds(0, 70, 150, 35);
+        layeredZoom.add(panelZoom, JLayeredPane.PALETTE_LAYER);
         add(layeredZoom, BorderLayout.CENTER);
-        
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(java.awt.event.ComponentEvent e) {
@@ -241,7 +234,6 @@ public class BarreOutils extends JPanel {
 //                card("Drain","/Icons/Drain.png"),
 //                card("ElementChauffant", "/Icons/ElementChauffant.png")
 //        ), 4);
-
         //add(ribbon, BorderLayout.CENTER);
         /*//deplacements
         btnHautGauche= card("HautGauche","/Icons/HautGauche.jpg");
@@ -260,32 +252,30 @@ public class BarreOutils extends JPanel {
                 btnBasMilieu
             ), 6
         );*/
-        
         JScrollPane scroller = new JScrollPane(
-        ribbon,
-        ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
-);      add(scroller, BorderLayout.CENTER);
+                ribbon,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        );
+        add(scroller, BorderLayout.CENTER);
 
     }
-    
-    public void zoomListener(){
+
+    public void zoomListener() {
         Canvas c = mainWindow.currentCanvas;
         if (c != null) {
             c.zoomDepuisCentre(1.1);
             mainWindow.updateZoomLabel();
         }
     }
-    
-    public void dezoomListener(){
+
+    public void dezoomListener() {
         Canvas c = mainWindow.currentCanvas;
         if (c != null) {
             c.zoomDepuisCentre(1.0 / 1.1);
             mainWindow.updateZoomLabel();
         }
     }
-    
-    
 
     public void onSansDrainClicked() {
         btnMenuSansDrain.setOnClick(e -> {
@@ -343,74 +333,88 @@ public class BarreOutils extends JPanel {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterMeubleAvecDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeAvecDrain.valueOf(nom));
+                    //mainWindow.controllerActif.ajouterDrain(mainWindow.controllerActif.getPiece().getCentre());
+
                     mainWindow.currentCanvas.repaint();
                     menuItemAvecDrain.setVisible(false);
                 });
             }
         });
     }
-    
-    public void onThermostatClicked(){
-        btnThermostat.setOnClick( e -> {
+
+    public void onThermostatClicked() {
+        btnThermostat.setOnClick(e -> {
             Point position = mainWindow.controllerActif.getPiece().getCentre();
             mainWindow.controllerActif.ajouterThermostat(position);
             mainWindow.props.afficherProprietesItemSelectionne();
             mainWindow.currentCanvas.repaint();
         });
     }
-    
-    public void onElementChauffant(){
-        btnElementChauffant.setOnClick( e -> {
+
+    public void onElementChauffant() {
+        btnElementChauffant.setOnClick(e -> {
             Point position = mainWindow.controllerActif.getPiece().getCentre();
             mainWindow.controllerActif.ajouterElementChauffant(position);
             mainWindow.props.afficherProprietesItemSelectionne();
             mainWindow.currentCanvas.repaint();
         });
     }
-    
-    
-    public void onZonesClicked(){
-        btnMenuZones.setOnClick( e -> {
+
+    public void onZonesClicked() {
+        btnMenuZones.setOnClick(e -> {
             JPopupMenu menuItemZones = new JPopupMenu();
-            
+
             JPanel panelZones = new JPanel();
             panelZones.setLayout(new BoxLayout(panelZones, BoxLayout.Y_AXIS));
             panelZones.setPreferredSize(new Dimension(130, 200));
-            
+
             ButtonCard card1 = card("Interdite", "/images/zoneInterdite.png");
             ButtonCard card2 = card("Tampon", "/images/zoneTampon.png");
-            
+
             card1.setMinimumSize(new Dimension(120, 100));
             card2.setMinimumSize(new Dimension(120, 100));
-            
+
             panelZones.add(card1);
             panelZones.add(card2);
-            
+
             menuItemZones.add(panelZones);
             menuItemZones.show(btnMenuZones, btnMenuZones.getWidth() - 5, btnMenuZones.getHeight() - 5);
-            
+
             ButtonCard[] cards = {card1, card2};
-            for(ButtonCard c : cards){
-                c.setOnClick( event -> {
+            for (ButtonCard c : cards) {
+                c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterZone(mainWindow.controllerActif.getPiece().getCentre(), Zone.TypeZone.valueOf(nom));
                     mainWindow.currentCanvas.repaint();
                     menuItemZones.setVisible(false);
                 });
             }
-            
+
         });
     }
 
     public void onEnregistrerProjetClick(Runnable r) {
         btnEnregistrer.setOnClick(e -> r.run());
     }
-    
+
     public void onExportPngClick(Runnable r) {
         btnExporter.setOnClick(e -> r.run());
     }
-    
+
     public void onOuvrirProjetClick(Runnable r) {
         btnOuvrir.setOnClick(e -> r.run());
+
     }
+    
+    
+    public void onDrain() {
+        btnDrain.setOnClick(e -> {
+
+            Point position = mainWindow.controllerActif.getPiece().getCentre();
+            mainWindow.controllerActif.ajouterDrain(position);
+            mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.currentCanvas.repaint();
+        });
+    }
+    
 }

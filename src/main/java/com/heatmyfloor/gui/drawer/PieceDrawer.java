@@ -5,6 +5,8 @@
 package com.heatmyfloor.gui.drawer;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.DrainReadOnly;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Controller;
 import com.heatmyfloor.gui.MainWindow;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
@@ -54,6 +56,7 @@ public class PieceDrawer {
         if(piece instanceof PieceRectangulaire){
             dessinerPieceRectangulaire(g);
             dessinerPieceItems(g);
+            
         } 
         
         SwingUtilities.invokeLater(() -> {
@@ -122,8 +125,14 @@ public class PieceDrawer {
                                         (int) item.getLargeur(),
                                         (int) item.getHauteur(),
                                          null);
-            }  
+            }
+            
+            if(item instanceof MeubleAvecDrain  ){
+               dessinerDrains(g2, (MeubleAvecDrain) item); 
+            }
             g2.setTransform(transfParDefaut);
+            
+            
         }
         
         if(controller.trouverItemSelectionne() != null){
@@ -161,5 +170,15 @@ public class PieceDrawer {
                 (int)(contourAvecPadding.getY() + contourAvecPadding.getHeight()) - ovalCoinSize/2,
                 ovalCoinSize, ovalCoinSize
         );   
+    }
+    private void dessinerDrains(Graphics2D g2,MeubleAvecDrain meuble){
+      for (DrainReadOnly d:meuble.getDrainList()){
+          g2.setColor(Color.orange); // orange semi-transparent
+        g2.fill(d.getForme());
+   
+        g2.setColor(new Color(0,0,0,150));
+        g2.setStroke(new BasicStroke(2f));
+        g2.draw(d.getForme());
+      }
     }
 }

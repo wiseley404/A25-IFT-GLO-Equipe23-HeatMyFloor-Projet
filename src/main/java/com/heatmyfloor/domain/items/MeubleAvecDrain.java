@@ -22,12 +22,19 @@ public class MeubleAvecDrain extends PieceItem {
     private List<Drain> drainList;
     private final double distanceAvecFil;
     private TypeAvecDrain type;
+    private Drain drain;
     
     //Constructeur
     
     public MeubleAvecDrain(double largeur, double hauteur, Point pos, TypeAvecDrain type){
         super(largeur, hauteur, pos, type.getImage());
-        this.drainList = new ArrayList<>();
+        this.drainList = new ArrayList<>(List.of(
+                new Drain(40.0,
+                new Point(this.getItemForme().getCenterX()-20,this.getItemForme().getCenterY()-20)
+             )    
+           
+            )
+        );
         this.distanceAvecFil = 0.0;
         this.type = type;
     }
@@ -70,7 +77,17 @@ public class MeubleAvecDrain extends PieceItem {
         throw new UnsupportedOperationException("estDrainPresent non implémentée");
     }
     
-    public void redimensionnerDrainSelectionne(double nouvDiam){}
+    public void redimensionnerDrainSelectionne(double nouvDiametre){
+        Drain drain = this.trouverDrainSelectionne();
+        if (drain != null) {
+          double ancien=  drain.getDiametre();
+          double facteur = nouvDiametre / ancien;
+          drain.setDiametre(nouvDiametre);
+          
+          drain.setDiametre(nouvDiametre);
+          drain.translater(facteur, facteur);
+        }
+    }
     public void redimensionnerDrainSelectionne(Point delta){}
     public void redimensionnerDrain(double facteur){}
     
@@ -90,6 +107,8 @@ public class MeubleAvecDrain extends PieceItem {
     public TypeAvecDrain getType(){
         return this.type;
     }
-    
+    public void setDiametre(double nouvDiametre){
+        this.drain.setDiametre(nouvDiametre);
+    }
     
 }

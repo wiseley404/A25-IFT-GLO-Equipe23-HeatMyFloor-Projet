@@ -159,66 +159,8 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.onThermostatClicked();
         barreOutils.onElementChauffant();
         barreOutils.onZonesClicked();
-        //déplacement
-        /*barreOutils.btnHautMilieu.setOnClick(e->{
-            int Step=10;
-            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
-            if(it != null){
-            Point p =it.getPosition();
-            panelPosition.moveSelectedTo(p.getX(), p.getY()-Step);
-            
-        }
-        });
-        
-        barreOutils.btnHautGauche.setOnClick(e->{
-            int Step=10;
-            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
-            if(it != null){
-            Point p =it.getPosition();
-            panelPosition.moveSelectedTo(p.getX()-Step, p.getY()-Step);
-            
-        }
-        });
-        
-        barreOutils.btnHautDroit.setOnClick(e->{
-            int Step=10;
-            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
-            if(it != null){
-            Point p =it.getPosition();
-            panelPosition.moveSelectedTo(p.getX()+Step, p.getY()-Step);
-            
-        }
-        });
-        
-        barreOutils.btnBasGauche.setOnClick(e->{
-            int Step=10;
-            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
-            if(it != null){
-            Point p =it.getPosition();
-            panelPosition.moveSelectedTo(p.getX()-Step, p.getY()+Step);
-            
-        }
-        });
-        
-        barreOutils.btnBasDroit.setOnClick(e->{
-            int Step=10;
-            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
-            if(it != null){
-            Point p =it.getPosition();
-            panelPosition.moveSelectedTo(p.getX()+Step, p.getY()+Step);
-            
-        }
-        });
-        
-        barreOutils.btnBasMilieu.setOnClick(e->{
-            int Step=10;
-            PieceItemReadOnly it = controllerActif.trouverItemSelectionne();
-            if(it != null){
-            Point p =it.getPosition();
-            panelPosition.moveSelectedTo(p.getX(), p.getY()+Step);
-            
-        }
-        });*/
+        barreOutils.onDrain();
+
 
         barreOutils.onIrregularButtonClick(() -> {
 
@@ -514,6 +456,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     public void supprimerItem() {
         controllerActif.supprimerItemSelectionne();
+        props.afficherProprietesDrainSelectionne();
         props.afficherProprietesItemSelectionne();
         panelPosition.afficherCoordItemSelectionne();
         panelPosition.afficherAngleItemSelectionne();
@@ -541,6 +484,7 @@ public class MainWindow extends javax.swing.JFrame {
                     dragOffsetY = e.getY() - sel.getPosition().getY();
                 }
                 props.afficherProprietesItemSelectionne();
+                props.afficherProprietesDrainSelectionne();
                 panelPosition.afficherCoordItemSelectionne();
                 panelPosition.afficherAngleItemSelectionne();
                 currentCanvas.repaint();
@@ -653,15 +597,16 @@ public class MainWindow extends javax.swing.JFrame {
                         props.afficherProprietesPiece();
                         props.updateUndoRedoButtons();
                         props.afficherProprietesItemSelectionne();
+                        props.afficherProprietesDrainSelectionne();
                         panelPosition.afficherAngleItemSelectionne();
                         panelPosition.afficherCoordItemSelectionne();
                     });          
                 }
-
             }
         });
     }
 
+    
     private void disableButton() {
         if (tabs.getTabCount() == 0 || controllerActif == null) {
             UiUtils.setEnabledRecursively(barreOutils, false);

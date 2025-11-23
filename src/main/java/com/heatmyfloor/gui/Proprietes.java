@@ -6,6 +6,9 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.Point;
+
 
 
 /**
@@ -21,10 +24,13 @@ public class Proprietes extends JPanel {
     private JTextField distanceFils;
     private JTextField longueurFil;
     private MainWindow mainWindow;
+    private JTextField diametreDrain;
+    private JTextField PositionX;
+    private JTextField PositionY;
     
     private JButton undo;
     private JButton redo;
-    private boolean update = false;
+
 
     public Proprietes(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -51,6 +57,9 @@ public class Proprietes extends JPanel {
 
         // Meuble
         content.add(sectionMeuble());
+        content.add(Box.createVerticalStrut(10));
+        
+        content.add(sectionDrain());
         content.add(Box.createVerticalStrut(10));
 
         // Fil
@@ -188,7 +197,17 @@ public class Proprietes extends JPanel {
         mainWindow.controllerActif.redimensionnerPiece(L, H);
         updateUndoRedoButtons();
     }
+
+     public void resizeDrain(double diametre) {   
+
+        mainWindow.controllerActif.redimensionnerDrainSelectionne(diametre);
+    }
     
+    public void moveSelectedTo(double x, double y){
+        if(mainWindow.controllerActif.estPositionDrainValide(x,y)){
+           mainWindow.controllerActif.deplacerDrain(x,y);
+        }
+    }
     
     private JComponent sectionMembrane() {
         SectionPanel s = new SectionPanel("Membrane");
@@ -227,7 +246,28 @@ public class Proprietes extends JPanel {
         }
         updateUndoRedoButtons();
     }
+    
+    public void afficherProprietesDrainSelectionne() {
+        if(mainWindow.controllerActif.trouverItemSelectionne() != null){
+            
+            double diametre =  mainWindow.controllerActif.trouverDrainSelectionne().getDiametre();
+            double positionX = mainWindow.controllerActif.trouverDrainSelectionne().getPosition().getX();
+            double positionY = mainWindow.controllerActif.trouverDrainSelectionne().getPosition().getY();
+            
+            
 
+            
+//            diametreDrain.setText(String.format("%.2f", Util.enUnite(diametre, u)));
+//           PositionX.setText(String.format("%.2f", Util.enUnite(positionX, u))); 
+//            PositionY.setText(String.format("%.2f", Util.enUnite(positionY, u)));
+//        }else{
+//            diametreDrain.setText("");
+//            PositionX.setText("");
+//            PositionY.setText("");
+
+        }
+        
+    }
      
     public void dimensionItemListener() { 
         ActionListener apply = (e  -> {
@@ -253,6 +293,48 @@ public class Proprietes extends JPanel {
         hauteurItem.addActionListener(apply);
     }
     
+
+//    public void proprieteDrainListener() { 
+//        ActionListener apply = (e  -> {
+//
+//            if ( diametreDrain == null || PositionX == null || PositionY == null) return;
+//            Double diametre = parseNumber(diametreDrain.getText());
+//            Double posX = parseNumber(PositionX.getText());
+//            Double posY = parseNumber(PositionY.getText());
+//            
+//            
+//            if ( diametre == null||posX == null || posY==null ) {
+//                return;
+//            }
+//
+//            resizeDrain(diametre);
+//            moveSelectedTo(posX, posY);
+//            SwingUtilities.invokeLater(() -> {
+//                mainWindow.currentCanvas.repaint();
+//                mainWindow.currentCanvas.requestFocusInWindow();
+//            });                        
+//        });
+//
+//        largeurItem.addActionListener(apply);
+//        hauteurItem.addActionListener(apply);
+//    }
+    
+    private JComponent sectionDrain() {
+       SectionPanel s = new SectionPanel("Drain");
+
+        diametreDrain= text("");
+        PositionX= text("");
+        PositionY= text("");
+
+        
+        s.addRow("diametre :", diametreDrain);
+        s.addRow("x :", PositionX);
+        s.addRow("y :", PositionY);
+
+//        addActionListener(e ->afficherProprietesDrainSelectionne());
+        return s; 
+    }
+
     
     public void resizeItemSelected(double L, double H) {   
         if (L <= 0 || H <= 0) return;

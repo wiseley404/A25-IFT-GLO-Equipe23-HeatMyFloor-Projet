@@ -128,6 +128,7 @@ public Dimension getPreferredSize() {
         super.paintComponent(g);
         
         Graphics2D g2 = (Graphics2D) g;
+        
 
         g2.translate(originePx.getX(), originePx.getY());
         g2.scale(zoom, zoom);

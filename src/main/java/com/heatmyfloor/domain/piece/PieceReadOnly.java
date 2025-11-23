@@ -4,7 +4,9 @@
  */
 package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.DrainReadOnly;
 import java.awt.Shape;
+import java.util.List;
 /**
  *
  * @author petit
@@ -22,5 +24,7 @@ public interface PieceReadOnly {
     Point getExtremiteBasDroite();
     Point getExtremiteHautMilieu();
     Point getExtremiteBasMilieu();
+    List<DrainReadOnly> getDrains();
+    
     
 }
