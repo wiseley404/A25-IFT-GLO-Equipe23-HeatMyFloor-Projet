@@ -184,6 +184,17 @@ public abstract class PieceItem implements PieceItemReadOnly, Serializable{
         return this.position;
     }
     
+    
+    
+    
+    @Override
+    public Point getCentre()
+    {
+        double x = this.getItemForme().getCenterX();
+        double y = this.getItemForme().getCenterY();
+        return new Point(x, y);
+    }
+    
     @Override
     public double getAngle(){
         return this.angle;

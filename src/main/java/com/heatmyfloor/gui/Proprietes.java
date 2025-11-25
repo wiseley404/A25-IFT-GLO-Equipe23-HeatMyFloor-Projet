@@ -201,12 +201,20 @@ public class Proprietes extends JPanel {
      public void resizeDrain(double diametre) {   
 
         mainWindow.controllerActif.redimensionnerDrainSelectionne(diametre);
+
+        
+       if(mainWindow.controllerActif.trouverDrainSelectionne() != null){
+           mainWindow.tabsErreur.addErrorMessage("Drain trouve");
+           mainWindow.controllerActif.redimensionnerDrainSelectionne(diametre);
+       }else{
+           mainWindow.tabsErreur.addErrorMessage("Drain non trouve");
+       }
+        
     }
     
     public void moveSelectedTo(double x, double y){
-        if(mainWindow.controllerActif.estPositionDrainValide(x,y)){
-           mainWindow.controllerActif.deplacerDrain(x,y);
-        }
+           mainWindow.controllerActif.deplacerDrainSelectionne(x,y);
+        
     }
     
     private JComponent sectionMembrane() {
@@ -249,7 +257,7 @@ public class Proprietes extends JPanel {
     
     public void afficherProprietesDrainSelectionne() {
         if(mainWindow.controllerActif.trouverItemSelectionne() != null){
-            
+           
             double diametre =  mainWindow.controllerActif.trouverDrainSelectionne().getDiametre();
             double positionX = mainWindow.controllerActif.trouverDrainSelectionne().getPosition().getX();
             double positionY = mainWindow.controllerActif.trouverDrainSelectionne().getPosition().getY();
@@ -319,6 +327,31 @@ public class Proprietes extends JPanel {
 //        hauteurItem.addActionListener(apply);
 //    }
     
+
+    public void proprieteDrainListener() { 
+        ActionListener apply = (e  -> {
+
+            if ( diametreDrain == null || PositionX == null || PositionY == null) return;
+
+            mainWindow.tabsErreur.addErrorMessage("Hello, je suis dans Listener");
+            //resizeDrain(diametre);
+            try{
+//                moveSelectedTo(posX, posY);
+            }catch (IllegalArgumentException error){
+                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
+            }
+            
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.repaint();
+                mainWindow.currentCanvas.requestFocusInWindow();
+            });                        
+        });
+
+        PositionX.addActionListener(apply);
+        PositionY.addActionListener(apply);
+        diametreDrain.addActionListener(apply);
+    }
+
     private JComponent sectionDrain() {
        SectionPanel s = new SectionPanel("Drain");
 

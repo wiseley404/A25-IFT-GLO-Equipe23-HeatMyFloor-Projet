@@ -117,6 +117,10 @@ public class Controller {
     public void changerStatutSelection(Point pos) {
         this.piece.changerStatutSelectionItem(pos);
     }
+    
+    public void changerStatutSelectionDrain(Point pos) {
+        this.piece.changerStatutSelectionDrain(pos);
+    }
 
     public void changerAngleItemSelectionne(double nouvAngle) {
         this.historique.sauvegarder(piece);
@@ -134,6 +138,11 @@ public class Controller {
                 .stream()
                 .map(pieceItem -> (PieceItemReadOnly) pieceItem)
                 .collect(Collectors.toList());
+    }
+    
+    public PieceItem trouverItemSurPoint(Point p){
+        this.historique.sauvegarder(piece);
+        return this.piece.trouverItemSurPoint(p);
     }
 
     public PieceReadOnly getPiece() {
@@ -161,7 +170,7 @@ public class Controller {
 
     public void ajouterDrain(Point position) {
         this.historique.sauvegarder(piece);
-        double diametre = 40;
+        double diametre = 80;
         double rayon = diametre / 2.0;
         Point point = new Point(position.getX() - rayon, position.getY() - rayon);
 
@@ -180,16 +189,17 @@ public class Controller {
         this.piece.repositionnerDrainSelectionne(nouvPosition,item);
         //Appel a la methode en dessous
     }*/
-    public void deplacerDrain(double x, double y) {
-
+    public void deplacerDrainSelectionne(double x, double y) {
+        this.historique.sauvegarder(piece);
+        this.piece.repositionnerDrainSelectionne(new Point(x, y));
     }
 
     public void deplacerDrainSelectionne(Point delta) {
         this.historique.sauvegarder(piece);
-        //Appelez votre methode en dessous
+        this.piece.deplacerDrainSelectionne(delta);
     }
 
-    public Drain trouverDrainSelectionne() {
+    public DrainReadOnly trouverDrainSelectionne() {
         this.historique.sauvegarder(piece);
         return this.piece.trouverDrainSelectionne();
     }

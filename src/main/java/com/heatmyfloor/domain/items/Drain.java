@@ -22,6 +22,7 @@ public class Drain implements DrainReadOnly, Serializable {
     private Point position;
     private final double distanceAvecFil;
     private boolean estSelectionne;
+    private MeubleAvecDrain meuble;
     
     
     //Constructeur
@@ -62,6 +63,7 @@ public class Drain implements DrainReadOnly, Serializable {
     @Override
     @JsonIgnore
     public Ellipse2D getForme(){
+        
        Ellipse2D drainForme = new Ellipse2D.Double(
                this.getPosition().getX(), this.getPosition().getY(),
                this.diametre, this.diametre);
@@ -73,7 +75,8 @@ public class Drain implements DrainReadOnly, Serializable {
         return getForme().contains(pos.getX(), pos.getY());
     }
     
-    public void changerStatutSelection(){}
+    public void changerStatutSelection(){
+    this.estSelectionne = !this.estSelectionne;}
 
     @Override
     public double getDiametre() {
@@ -100,17 +103,26 @@ public class Drain implements DrainReadOnly, Serializable {
         return this.estSelectionne;
     }
     
+    public MeubleAvecDrain getMeuble(){
+        return this.meuble;
+    }
+    
+    public void setMeuble(MeubleAvecDrain meuble){
+        this.meuble = meuble;
+    }
+    
     public void setDiametre(double nouvDiametre){
        
         this.diametre=nouvDiametre;
     }
     
     public void setPosition(Point nouvPosition){
-        
+       this.position = nouvPosition; 
     }
     
     public void setEstSelectionne(boolean StatutSelection){
-        
+         this.estSelectionne = StatutSelection;
+    
     }
     
     

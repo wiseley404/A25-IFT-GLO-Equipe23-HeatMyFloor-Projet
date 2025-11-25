@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.gui.UiUtils.ToastType;
 import com.heatmyfloor.domain.piece.PieceItem;
@@ -306,6 +308,7 @@ public class MainWindow extends javax.swing.JFrame {
         props.dimensionItemListener();
         props.dimensionPieceListener();
         props.updateUndoRedoButtons();
+        props.proprieteDrainListener();
         center.add(props, BorderLayout.WEST);
         center.add(tabs, BorderLayout.CENTER);
 
@@ -466,76 +469,110 @@ public class MainWindow extends javax.swing.JFrame {
 
     public void sourisListener() {
 
-        currentCanvas.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                var pWorld = toWorld(currentCanvas, e);
-                controllerActif.changerStatutSelection(pWorld);
+    // --- Sélection au clic ---
+    currentCanvas.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            Point pWorld = toWorld(currentCanvas, e);
 
-                currentCanvas.requestFocus();//ajout
-                Point cliqueSouris = new Point(e.getX(), e.getY());
-                controllerActif.changerStatutSelection(cliqueSouris);
+            // Sélectionne l’item (meuble ou autre)
+            controllerActif.changerStatutSelection(pWorld);
+            controllerActif.changerStatutSelectionDrain(pWorld); 
 
-                //Ajout
-                PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
-                if (sel != null) {
-
-                    dragOffsetX = e.getX() - sel.getPosition().getX();
-                    dragOffsetY = e.getY() - sel.getPosition().getY();
-                }
-                props.afficherProprietesItemSelectionne();
-                props.afficherProprietesDrainSelectionne();
-                panelPosition.afficherCoordItemSelectionne();
-                panelPosition.afficherAngleItemSelectionne();
-                currentCanvas.repaint();
-
-            }
-        });
-
-        currentCanvas.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                positionSouris = toWorld(currentCanvas, e);
-
-                List<PieceItemReadOnly> items = controllerActif.getItemsList();
-
-                PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
-                PieceItemReadOnly itemSurvole = null;
-
-                for (int i = items.size() - 1; i >= 0; i--) {
-                    PieceItemReadOnly item = items.get(i);
-                    if (item.contientLePoint(positionSouris)) {
-                        itemSurvole = item;
-                        break;
+            PieceItem sel = (PieceItem) controllerActif.trouverItemSelectionne();
+            if (sel != null) {
+                if (sel instanceof MeubleAvecDrain meuble) {
+                    Drain drain = meuble.trouverDrainSelectionne();
+                    if (drain != null) {
+                        // Offset relatif au drain
+                        dragOffsetX = pWorld.getX() - drain.getPosition().getX();
+                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();
+                    } else {
+                        // Offset relatif au meuble
+                        dragOffsetX = pWorld.getX() - sel.getPosition().getX();
+                        dragOffsetY = pWorld.getY() - sel.getPosition().getY();
                     }
-                }
-
-                if (ancienItemSurvole != itemSurvole) {
-                    currentCanvas.setItemSurvole(itemSurvole);
-                    currentCanvas.repaint();
+                } else {
+                    // Item classique
+                    dragOffsetX = pWorld.getX() - sel.getPosition().getX();
+                    dragOffsetY = pWorld.getY() - sel.getPosition().getY();
                 }
             }
 
-            @Override
-            public void mouseDragged(MouseEvent e) {
+            props.afficherProprietesItemSelectionne();
+            panelPosition.afficherCoordItemSelectionne();
+            panelPosition.afficherAngleItemSelectionne();
+            SwingUtilities.invokeLater(() -> {
+            props.afficherProprietesDrainSelectionne();
+             });
+            currentCanvas.repaint();
+        }
+    });
 
-                PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
-                if (sel == null) {
-                    return;
+    // --- Survol souris ---
+    currentCanvas.addMouseMotionListener(new MouseMotionAdapter() {
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            Point pWorld = toWorld(currentCanvas, e);
+
+            List<PieceItemReadOnly> items = controllerActif.getItemsList();
+            PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
+            PieceItemReadOnly itemSurvole = null;
+
+            for (int i = items.size() - 1; i >= 0; i--) {
+                PieceItemReadOnly item = items.get(i);
+                if (item.contientLePoint(pWorld)) {
+                    itemSurvole = item;
+                    break;
                 }
+            }
 
-                double newX = e.getX() - dragOffsetX;
-                double newY = e.getY() - dragOffsetY;
-
-                panelPosition.moveSelectedTo(newX, newY);
-
-                panelPosition.afficherCoordItemSelectionne();
+            if (ancienItemSurvole != itemSurvole) {
+                currentCanvas.setItemSurvole(itemSurvole);
                 currentCanvas.repaint();
+            }
+        }
 
+        // --- Drag pour déplacer meuble ou drain ---
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            PieceItem selObj = (PieceItem) controllerActif.trouverItemSelectionne();
+            if (selObj == null) return;
+
+            Point pWorld = toWorld(currentCanvas, e);
+            double targetX = pWorld.getX() - dragOffsetX;
+            double targetY = pWorld.getY() - dragOffsetY;
+
+            if (selObj instanceof MeubleAvecDrain meuble) {
+                Drain drain = meuble.trouverDrainSelectionne();
+                if (drain != null) {
+                    
+                    double dx = targetX - drain.getPosition().getX();
+                    double dy = targetY - drain.getPosition().getY();
+                    meuble.deplacerDrainSelectionne(new Point(dx, dy));
+
+                    
+
+                    
+                } else {
+                    // Déplacement du meuble entier
+                    panelPosition.moveSelectedTo(targetX, targetY);
+                    
+                }
+            } else {
+               
+                panelPosition.moveSelectedTo(targetX, targetY);
+                
             }
 
-        });
-    }
+            panelPosition.afficherCoordItemSelectionne();
+            props.afficherProprietesDrainSelectionne();
+            currentCanvas.repaint();
+        }
+    });
+}
+
+
 
     public void clavierListener() {
 

@@ -3,6 +3,7 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.piece.Piece;
@@ -291,7 +292,6 @@ public class PositionPanel extends JPanel {
     public void positionListener() {
         ActionListener apply = (e -> {
             if (xPosition == null || yPosition == null)return;
-
             try{
                 double x = Util.enPixels(xPosition.getText());
                 double y = Util.enPixels(yPosition.getText());

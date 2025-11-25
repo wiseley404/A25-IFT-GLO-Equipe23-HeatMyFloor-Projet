@@ -410,9 +410,9 @@ public class BarreOutils extends JPanel {
     public void onDrain() {
         btnDrain.setOnClick(e -> {
 
-            Point position = mainWindow.controllerActif.getPiece().getCentre();
+            Point position = mainWindow.controllerActif.trouverItemSelectionne().getCentre();
             mainWindow.controllerActif.ajouterDrain(position);
-            mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.props.afficherProprietesDrainSelectionne();
             mainWindow.currentCanvas.repaint();
         });
     }

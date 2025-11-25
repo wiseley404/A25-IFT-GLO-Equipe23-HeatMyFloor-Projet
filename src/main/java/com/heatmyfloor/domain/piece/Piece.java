@@ -22,6 +22,7 @@ import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 public abstract class Piece implements PieceReadOnly, Serializable {
 
     private List<PieceItem> itemsList;
+    private List<Drain> drainList;
     private Graphe graphe;
     private List<Mur> murs;
     private double largeur;
@@ -33,6 +34,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         this.graphe = new Graphe();
         this.murs = new ArrayList<>();
         this.position = new Point();
+        this.drainList = new ArrayList<>();
     }
 
     public Piece(double largeur, double hauteur, List<Mur> murs) {
@@ -42,6 +44,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         this.largeur = largeur;
         this.hauteur = hauteur;
         this.position = new Point();
+        this.drainList = new ArrayList<>();
     }
 
     @Override
@@ -97,6 +100,13 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         if (this.contientLePoint(item.getPosition())) {
             item.setEstSelectionne(true);
             this.itemsList.add(item);
+            
+            if(item instanceof MeubleAvecDrain meuble){
+                List<Drain> drains = meuble.getDrainList();
+                for(Drain d : drains){
+                    this.drainList.add(d);
+                }    
+            }
         }
     }
 
@@ -118,9 +128,45 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         if (!itemTrouve) {
             for (PieceItem item : itemsList) {
                 item.setEstSelectionne(false);
+                if(item instanceof MeubleAvecDrain meuble){
+                    for(Drain d : meuble.getDrainList()){
+                        d.setEstSelectionne(false);
+                    }
+                }
             }
         }
     }
+    public void changerStatutSelectionDrain(Point position) {
+        Drain drain = this.trouverDrainSelectionne();
+        MeubleAvecDrain meuble = drain.getMeuble();
+        if (meuble != null) {
+            boolean drainTrouve = false;
+            for (Drain d : meuble.getDrainList()) {
+                if (d.contientLePoint(position)) {
+                    
+                    for (Drain autre : meuble.getDrainList()) {
+                        autre.setEstSelectionne(false);
+                    }
+                    d.setEstSelectionne(true);
+                    drainTrouve = true;
+                    break;
+                }
+            }
+
+            if (drainTrouve) {
+                
+                meuble.setEstSelectionne(false);
+            } else {
+                
+                meuble.setEstSelectionne(true);
+                for (Drain autre : meuble.getDrainList()) {
+                    autre.setEstSelectionne(false);
+                }
+            }
+        }
+    }
+
+
 
     public void changerAngleItemSelectionne(double nouvAngle) {
         PieceItem item = this.trouverItemSelectionne();
@@ -148,17 +194,32 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         }
     }
 
-    public void ajouterDrain(Point position) {
-
+    public void ajouterDrain(Drain drain) {
+        PieceItem item = this.trouverItemSelectionne();
+        if(item != null && item instanceof MeubleAvecDrain meuble){
+            meuble.ajouterDrain(drain);
+        }
     }
 
     public void repositionnerDrainSelectionne(Point nouvPosition) {
-
+        PieceItem item = this.trouverItemSelectionne();
+        if (item instanceof MeubleAvecDrain meuble) {
+            Drain drain = meuble.trouverDrainSelectionne();
+            if (drain != null && estPositionDrainValide(nouvPosition.getX(), nouvPosition.getY())) {
+                drain.setPosition(nouvPosition);
+            }else{
+                throw new IllegalArgumentException("Position du drain Invalide");
+            }
+        }
     }
 
     public void deplacerDrainSelectionne(Point delta) {
+    PieceItem item = this.trouverItemSelectionne();
+    if (!(item instanceof MeubleAvecDrain meuble)) return;
 
-    }
+    meuble.deplacerDrainSelectionne(delta);
+}
+
 
     public void deplacerDrain(double facteurX, double facteurY) {
     }
@@ -276,20 +337,41 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     public void deplacerItemSelectionne(Point nouvPosition) {
 
-        if (nouvPosition == null) {
-            return;
-        }
+         if (nouvPosition == null) {
+        return;
+    }
 
-        for (PieceItem it : itemsList) {
-            if (it.estSelectionne()) {
+    for (PieceItem it : itemsList) {
+        if (it.estSelectionne()) {
 
-                //valide la position
-                if (estPositionItemValide(nouvPosition)) {
-                    it.setPosition(nouvPosition);
+            // Ancienne position
+            Point oldPos = it.getPosition();
+
+            // Delta du mouvement
+            Point delta = new Point(
+                nouvPosition.getX() - oldPos.getX(),
+                nouvPosition.getY() - oldPos.getY()
+            );
+
+            // Vérifie si la position est valide
+            if (estPositionItemValide(nouvPosition)) {
+
+                // Déplace l’item principal
+                it.translater(delta);
+
+                // SI c’est un meuble avec drain → déplacer aussi le drain
+                if (it instanceof MeubleAvecDrain mad) {
+                    Drain drain = mad.trouverDrainSelectionne();
+
+                    // si le drain est sélectionné automatiquement → il suit
+                    if (drain != null) {
+                        drain.translater(delta);
+                    }
                 }
-                break;
             }
+            break;
         }
+    }
     }
 
     public void redimensionner(double nouvLarg, double nouvHaut) {
@@ -370,7 +452,23 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public List<PieceItem> getItemsList() {
         return this.itemsList;
     }
+    
+    public List<Drain> getDrainList(){
+        return this.drainList;
+    }
+    
+    public void setDrainList(){
+        List<PieceItem> items = this.getItemsList();
+        for(PieceItem item : items){
+            if(item instanceof MeubleAvecDrain meuble){
+                for(Drain d : meuble.getDrainList()){
+                    this.drainList.add(d);
+                }
+            }
+        }
+    }
 
+    
     public Graphe getGraphe() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
@@ -427,29 +525,12 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     }
 
-    public void ajouterDrain(Drain d) {
-
-        // Un drain n’a pas de sélection, on ignore cette partie
-        // Vérifier que le drain entre entièrement dans la pièce
-        //if (this.contientLePoint(d.getPosition())) {
-        this.listeDrains.add(d);
-
-    }
-    private List<Drain> listeDrains = new ArrayList<>();
-
-    @Override
-    public List<DrainReadOnly> getDrains() {
-        return Collections.unmodifiableList(listeDrains);
-    }
-
-    public List<Drain> getDrainsModifiables() {
-        return listeDrains; // liste interne modifiable
-    }
 
     public Drain trouverDrainSelectionne() {
-        PieceItem item = this.trouverItemSelectionne();
-        if (item instanceof MeubleAvecDrain meuble) {
-            return meuble.trouverDrainSelectionne();
+        for(Drain d : this.drainList){
+            if(d.estSelectionne()){
+                return d;
+            }
         }
         return null;
     }
@@ -469,4 +550,15 @@ public abstract class Piece implements PieceReadOnly, Serializable {
             drain.translater(delta);
     }
      */
+    public PieceItem trouverItemSurPoint(Point p) {
+    List<PieceItem> items = getItemsList(); // ou itemsList
+    for (int i = items.size() - 1; i >= 0; i--) { // du dessus vers le dessous
+        PieceItem item = items.get(i);
+        if (item.contientLePoint(p)) { // vérifie si le point est à l’intérieur du meuble
+            return item;
+        }
+    }
+    return null; // aucun item trouvé
+}
+
 }

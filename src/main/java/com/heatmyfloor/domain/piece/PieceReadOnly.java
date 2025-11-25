@@ -24,7 +24,6 @@ public interface PieceReadOnly {
     Point getExtremiteBasDroite();
     Point getExtremiteHautMilieu();
     Point getExtremiteBasMilieu();
-    List<DrainReadOnly> getDrains();
     
     
 }

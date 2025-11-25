@@ -14,6 +14,7 @@ public interface PieceItemReadOnly {
     double getHauteur();
     double getLargeur();
     Point getPosition();
+    Point getCentre();
     Rectangle2D getItemForme();
     boolean contientLePoint(Point position);
     double getAngle();

@@ -5,6 +5,7 @@
 package com.heatmyfloor.gui.drawer;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Controller;
@@ -101,7 +102,7 @@ public class PieceDrawer {
             g2.rotate(angleRad, item.getItemForme().getCenterX(), item.getItemForme().getCenterY());
             
             if(item.estSelectionne()){
-                dessinerContourSelection(g2, contourAvecPadding);
+                dessinerContourSelectionItem(g2, contourAvecPadding);
             }
                         
             if (currentCanvas.getItemSurvole() == item && !item.estSelectionne()){
@@ -127,8 +128,12 @@ public class PieceDrawer {
                                          null);
             }
             
-            if(item instanceof MeubleAvecDrain  ){
-               dessinerDrains(g2, (MeubleAvecDrain) item); 
+            if(item instanceof MeubleAvecDrain  meuble){
+               dessinerDrains(g2, meuble);
+               Drain drainSelectionne = meuble.trouverDrainSelectionne();
+               if(drainSelectionne != null){
+                   this.dessinerContourSelectionDrain(g2, drainSelectionne);
+               }
             }
             g2.setTransform(transfParDefaut);
             
@@ -140,11 +145,13 @@ public class PieceDrawer {
             panelPosition.afficherCoordItemSelectionne();
             panelPosition.afficherAngleItemSelectionne();
         }
-        
+        if (controller.trouverItemSelectionne()!= null && controller.trouverDrainSelectionne()!= null){
+            props.afficherProprietesDrainSelectionne();
+        }
     }
     
     
-    private void dessinerContourSelection(Graphics2D g2, Rectangle2D contourAvecPadding){
+    private void dessinerContourSelectionItem(Graphics2D g2, Rectangle2D contourAvecPadding){
         g2.setColor(Color.BLUE);
         g2.draw(contourAvecPadding);
 
@@ -180,5 +187,16 @@ public class PieceDrawer {
         g2.setStroke(new BasicStroke(2f));
         g2.draw(d.getForme());
       }
+    }
+    
+    private void dessinerContourSelectionDrain(Graphics2D g2, Drain drain){
+        Rectangle2D drainContour = drain.getForme().getBounds2D();
+        int padding = 5;
+        Rectangle2D drainContourAvecPadding = new Rectangle2D.Double(drainContour.getX() - padding,
+                                                              drainContour.getY() - padding,
+                                                              drainContour.getWidth() + 2*padding,
+                                                              drainContour.getHeight() + 2*padding);
+        g2.setColor(Color.BLUE);
+        g2.draw(drainContourAvecPadding);
     }
 }

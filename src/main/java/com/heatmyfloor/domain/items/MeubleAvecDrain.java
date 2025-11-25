@@ -39,17 +39,38 @@ public class MeubleAvecDrain extends PieceItem {
         this.type = type;
     }
     
-    public MeubleAvecDrain() {
-        super();
-        this.distanceAvecFil = 0.0;
-    }
-    
     
     //Méthodes
     
     public void ajouterDrain(Drain drain){
+        for(Drain d : drainList)
+        {
+            d.setEstSelectionne(false);
+        }
+        drain.setEstSelectionne(true);
         this.drainList.add(drain);
+        drain.setMeuble(this);
     }
+    
+    @Override
+    public void translater(double facteurX, double facteurY) {
+    // Déplacer le meuble (hérité de PieceItem)
+    super.translater(facteurX, facteurY);
+
+    // Déplacer les drains du meuble
+        for (Drain d : drainList) {
+            d.translater(facteurX, facteurY);
+         }
+    }
+    
+    @Override
+        public void translater(Point delta) {
+            // Déplace le meuble
+            super.translater(delta);
+            for (Drain d : drainList) {
+                    d.translater(delta);
+                }
+        }
     
     public Drain trouverDrain(UUID idDrain){
         
@@ -65,10 +86,42 @@ public class MeubleAvecDrain extends PieceItem {
         return null;
     }
     
-    public void repositionnerDrainSelectionne(Point nouvPos){}
+    public void repositionnerDrainSelectionne(Point nouvPos){
+      Drain d = this.trouverDrainSelectionne();
+    if (d != null) {
+        
+        d.setPosition(nouvPos);
+    }   
+    }
     public void deplacerDrain(double facteurX, double facteurY){}
-    public void deplacerDrainSelectionne(Point delta){}
     
+   
+    public void deplacerDrainSelectionne(Point delta) {
+        Drain drain = this.trouverDrainSelectionne();
+        if (drain == null) return;
+
+        double newX = drain.getPosition().getX() + delta.getX();
+        double newY = drain.getPosition().getY() + delta.getY();
+
+        // Coordonnées du meuble
+        double xMin = this.getPosition().getX();
+        double yMin = this.getPosition().getY();
+        double xMax = xMin + this.getLargeur();
+        double yMax = yMin + this.getHauteur();
+
+        double radius = drain.getDiametre() / 2;
+
+        // Vérifie que le drain reste au moins partiellement sur le meuble
+        boolean partiellementSurMeuble =
+            (newX + radius > xMin) && (newX - radius < xMax) &&
+            (newY + radius > yMin) && (newY - radius < yMax);
+
+        if (partiellementSurMeuble) {
+            drain.setPosition(new Point(newX, newY));
+        }
+    }
+
+   
     public boolean estPositionDrainValide(Point pos){
         throw new UnsupportedOperationException("estPositionDrainValide non implémentée");
     }
@@ -80,18 +133,36 @@ public class MeubleAvecDrain extends PieceItem {
     public void redimensionnerDrainSelectionne(double nouvDiametre){
         Drain drain = this.trouverDrainSelectionne();
         if (drain != null) {
-          double ancien=  drain.getDiametre();
-          double facteur = nouvDiametre / ancien;
+          //double ancien=  drain.getDiametre();
+          //double facteur = nouvDiametre / ancien;
           drain.setDiametre(nouvDiametre);
           
           drain.setDiametre(nouvDiametre);
-          drain.translater(facteur, facteur);
+          //drain.translater(facteur, facteur);
         }
     }
-    public void redimensionnerDrainSelectionne(Point delta){}
+    
+    @Override
+public void redimensionner(double facteurX, double facteurY) {
+    super.redimensionner(facteurX, facteurY);
+
+    // repositionner drain pour qu’il reste centré
+    for (Drain d : drainList) {
+        double nouvX = this.getItemForme().getCenterX() - d.getDiametre() / 2;
+        double nouvY = this.getItemForme().getCenterY() - d.getDiametre() / 2;
+        d.setPosition(new Point(nouvX, nouvY));
+    }
+}
+    public void redimensionnerDrainSelectionne(Point delta){
+    
+    }
     public void redimensionnerDrain(double facteur){}
     
-    public void supprimerDrainSelectionne(){}
+    public void supprimerDrainSelectionne(){
+      Drain d = this.trouverDrainSelectionne();
+    if (d != null) {
+        drainList.remove(d);
+    }}
 
     
     public List<Drain> getDrainList(){
@@ -107,8 +178,14 @@ public class MeubleAvecDrain extends PieceItem {
     public TypeAvecDrain getType(){
         return this.type;
     }
-    public void setDiametre(double nouvDiametre){
-        this.drain.setDiametre(nouvDiametre);
-    }
     
+    public Drain trouverDrainSousPoint(Point pos) {
+    for (Drain d : drainList) {
+        if (d.contientLePoint(pos)) {
+            return d;
+        }
+    }
+    return null;
+}
+
 }
