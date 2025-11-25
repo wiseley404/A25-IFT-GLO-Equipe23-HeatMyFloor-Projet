@@ -12,7 +12,7 @@ package com.heatmyfloor.domain;
 public class Util {
     public static final double PIXEL_PAR_POUCE;
     static{
-     PIXEL_PAR_POUCE = 7;
+     PIXEL_PAR_POUCE = 4.5;
     }
 
     public static final double POUCES_PAR_PIED = 12.0;

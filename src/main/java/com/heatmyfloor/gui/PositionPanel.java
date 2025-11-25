@@ -36,13 +36,15 @@ public class PositionPanel extends JPanel {
 
         JPanel coords = new JPanel();
         coords.setLayout(new BoxLayout(coords, BoxLayout.Y_AXIS));
-        coords.add(new JLabel("Position"));
+        coords.setBorder(BorderFactory.createTitledBorder("Position"));
         JPanel xy = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
 
         xPosition = new JTextField("", 6);
+        xPosition.setMargin(new Insets(2, 2, 2, 4));
         xy.add(new JLabel("X :"));
         xy.add(xPosition);
         yPosition = new JTextField("", 6);
+        yPosition.setMargin(new Insets(2, 2, 2, 4));
         xy.add(new JLabel("Y :"));
         xy.add(yPosition);
         coords.add(xy);
@@ -90,7 +92,7 @@ public class PositionPanel extends JPanel {
 
         JPanel rot = new JPanel();
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
-        rot.add(new JLabel("Rotation"));
+        rot.setBorder(BorderFactory.createTitledBorder("Rotation"));
 
         JPanel rotChamp = new JPanel();
         rotChamp.setLayout(new BoxLayout(rotChamp, BoxLayout.X_AXIS));
@@ -115,7 +117,7 @@ public class PositionPanel extends JPanel {
         rotChamp.add(rotationButton);
         rot.add(rotChamp);
         inner.add(rot);
-
+        
         add(inner, BorderLayout.CENTER);
 
         HG.addActionListener(e -> {
@@ -127,17 +129,13 @@ public class PositionPanel extends JPanel {
                 // Récupérer la pièce associée
                 PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
 
-                Point hautGauche = piece.getExtremiteHautGauche();
-
-                 
-                
-                            Point delta = new Point(
+                Point hautGauche = piece.getExtremiteHautGauche();       
+                   Point delta = new Point(
                    hautGauche.getX() - Pos.getX(),
                    hautGauche.getY() - Pos.getY()
                );
                             
-               its.setPosition(hautGauche);
-               
+               its.setPosition(hautGauche);       
                mainWindow.currentCanvas.repaint();              
             }
         });
@@ -224,21 +222,32 @@ public class PositionPanel extends JPanel {
     }
 
     public void afficherCoordItemSelectionne() {
+        if(mainWindow.controllerActif == null){
+            xPosition.setText("");
+            yPosition.setText("");
+            return;
+        }
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
             double xItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX();
             double yItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY();
             xPosition.setText(Util.formatImperial(Util.enPouces(xItem)));
             yPosition.setText(Util.formatImperial(Util.enPouces(yItem)));
         } else {
-            double xPiece = mainWindow.controllerActif.getPiece().getPosition().getX();
-            double yPiece = mainWindow.controllerActif.getPiece().getPosition().getY();
-            xPosition.setText(Util.formatImperial(Util.enPouces(xPiece)));
-            yPosition.setText(Util.formatImperial(Util.enPouces(yPiece)));
+            if(mainWindow.controllerActif.getPiece() != null){
+                double xPiece = mainWindow.controllerActif.getPiece().getPosition().getX();
+                double yPiece = mainWindow.controllerActif.getPiece().getPosition().getY();
+                xPosition.setText(Util.formatImperial(Util.enPouces(xPiece)));
+                yPosition.setText(Util.formatImperial(Util.enPouces(yPiece))); 
+            }
         }
     }
 
     
     public void afficherAngleItemSelectionne() {
+        if(mainWindow.controllerActif == null){
+            degRotation.setText("");
+            return;
+        }
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
             degRotation.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getAngle() + "°"));
         } else {
@@ -257,8 +266,9 @@ public class PositionPanel extends JPanel {
 
             try {
                 mainWindow.controllerActif.changerAngleItemSelectionne(angle);
-            } catch (IllegalArgumentException event) {
-                mainWindow.tabsErreur.addErrorMessage(event.getMessage());
+            } catch (IllegalArgumentException error) {
+                mainWindow.tabsErreur.clearMessages();
+                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
             }
 
             SwingUtilities.invokeLater(() -> {
@@ -273,8 +283,9 @@ public class PositionPanel extends JPanel {
             }
             try {
                 mainWindow.controllerActif.pivoterItemSelectionne();
-            } catch (IllegalArgumentException event) {
-                mainWindow.tabsErreur.addErrorMessage(event.getMessage());
+            } catch (IllegalArgumentException error) {
+                mainWindow.tabsErreur.clearMessages();
+                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
             }
             mainWindow.currentCanvas.repaint();
         });
@@ -288,6 +299,7 @@ public class PositionPanel extends JPanel {
                 double y = Util.enPixels(yPosition.getText());
                 moveSelectedTo(x, y);
             }catch(IllegalArgumentException error){
+                mainWindow.tabsErreur.clearMessages();
                 mainWindow.tabsErreur.addErrorMessage(error.getMessage());
             }
             
@@ -312,10 +324,9 @@ public class PositionPanel extends JPanel {
             mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce ou la position est déja occupée.");
             if (mainWindow.controllerActif.estPositionValide(p)) {
                 mainWindow.tabsErreur.clearMessages();
-
                 mainWindow.controllerActif.deplacerItemSelectionne(p);
             } else {
-
+                mainWindow.tabsErreur.clearMessages();
                 mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce.");
             }
         }

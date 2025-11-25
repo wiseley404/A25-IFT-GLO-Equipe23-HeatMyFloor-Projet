@@ -11,7 +11,7 @@ public final class TableauErreur extends JPanel {
     private final List<JLabel> messages;
 
     public TableauErreur() {
-        setPreferredSize(new Dimension(700, 180)); // 🔹 plus large et plus haut
+        setPreferredSize(new Dimension(700, 160)); // 🔹 plus large et plus haut
         setBorder(BorderFactory.createMatteBorder(10, 1, 0, 0, new Color(230, 230, 230)));
         setLayout(new BorderLayout());
         setBackground(Color.white);

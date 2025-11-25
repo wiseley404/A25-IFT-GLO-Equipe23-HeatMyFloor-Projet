@@ -21,7 +21,6 @@ public class BarreOutils extends JPanel {
     public ButtonCard btnExporter;
     public ButtonCard btnEnregistrer;
     public ButtonCard btnRectangle;
-//    private ButtonCard btnDrain;
     private ButtonCard btnIrregulier;
     private ButtonCard btnMenuSansDrain;
     private ButtonCard btnMenuAvecDrain;
@@ -44,10 +43,10 @@ public class BarreOutils extends JPanel {
         this.mainWindow = mainWindow;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 200, 160)));
-        setOpaque(true);
-        setBackground(Color.white);
+       setOpaque(true);
+       setBackground(Color.white);
 
-        addButton();
+       addButton();
 
     }
 
@@ -143,11 +142,9 @@ public class BarreOutils extends JPanel {
 
         //Formes
         btnRectangle = card("Rectangle", "/Icons/Rectangle.png");
-//        btnDrain = card("Drain", "/Icons/Drain.png");
         btnIrregulier = card("Irregulière", "/Icons/Polygone.png");
         addGroup(ribbon, gc, col++, makeGroup("Formes",
                 btnRectangle,
-//                btnDrain,
                 btnIrregulier
         ), 2);
         addSep(ribbon, gc, col++);

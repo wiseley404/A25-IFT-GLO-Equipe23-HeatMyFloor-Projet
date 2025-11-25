@@ -6,8 +6,6 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
-import com.heatmyfloor.domain.items.Drain;
-import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 
@@ -151,21 +149,25 @@ public class Proprietes extends JPanel {
         largeurPiece = text("");
         hauteurPiece = text("");
         
-        s.addRow("Largeur", largeurPiece);
-        s.addRow("Hauteur", hauteurPiece);  
+        s.addRow("Largeur  :", largeurPiece);
+        s.addRow("Hauteur  :", hauteurPiece);  
         return s;
     }
     
     public void afficherProprietesPiece() {
-            double largPx = mainWindow.controllerActif.getPiece().getLargeur();
-            double hautPx = mainWindow.controllerActif.getPiece().getHauteur();
+        double largPx = mainWindow.controllerActif.getPiece().getLargeur();
+        double hautPx = mainWindow.controllerActif.getPiece().getHauteur();
 
-            double largIn = Util.enPouces(largPx);
-            double hautIn = Util.enPouces(hautPx);
+        double largIn = Util.enPouces(largPx);
+        double hautIn = Util.enPouces(hautPx);
+        if(mainWindow.controllerActif.getPiece() != null){
             largeurPiece.setText(Util.formatImperial(largIn));
             hauteurPiece.setText(Util.formatImperial(hautIn));
-            updateUndoRedoButtons();
-     
+        }else{
+            largeurPiece.setText("");
+            hauteurPiece.setText("");
+        }
+        updateUndoRedoButtons();
     } 
 
     
@@ -228,7 +230,7 @@ public class Proprietes extends JPanel {
         hauteurItem = text("");
         
         s.addRow("Largeur :", largeurItem);
-        s.addRow("Hauteur  :", hauteurItem);
+        s.addRow("Hauteur :", hauteurItem);
         return s;
     }
     
@@ -250,7 +252,7 @@ public class Proprietes extends JPanel {
         updateUndoRedoButtons();
     }
     
-    public void afficherProprietesDrainSelectionne() {
+    public void afficherProprietesDrainSelectionne() { 
        PieceItemReadOnly item =  mainWindow.controllerActif.trouverItemSelectionne();
         if(item != null && item instanceof MeubleAvecDrain m){    
            double diametre =  Util.enPouces(m.getDrain().getDiametre());
@@ -333,12 +335,12 @@ public class Proprietes extends JPanel {
     private JComponent sectionDrain() {
        SectionPanel s = new SectionPanel("Drain");
         diametreDrain= text("");
-        PositionX= text("");
-        PositionY= text("");
-    
+        PositionX = text("");
+        PositionY = text("");
+
         s.addRow("Diamètre :", diametreDrain);
-        s.addRow("X        :", PositionX);
-        s.addRow("Y        :", PositionY);
+        s.addRow("Abscisse :", PositionX);
+        s.addRow("Ordonnée :", PositionY);
         return s; 
     }
 
@@ -355,7 +357,7 @@ public class Proprietes extends JPanel {
         distanceFils = text("");
         longueurFil = text("");
         s.addRow("Distance Fils :", distanceFils);
-        s.addRow("Longueur      :", longueurFil);
+        s.addRow("Longueur       :", longueurFil);
         s.addSpacer(8);
         s.addFull(button("Générer un chemin"));
         return s;
@@ -427,7 +429,8 @@ public class Proprietes extends JPanel {
         add(field, c2);
         row++;
     }
-
+    
+    
     /**
      * Ajoute un composant sur toute la largeur (ex: bouton)
      */

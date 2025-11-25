@@ -24,9 +24,9 @@ public class MeubleAvecDrain extends PieceItem {
     //Constructeur   
     public MeubleAvecDrain(double largeur, double hauteur, Point pos, TypeAvecDrain type){
         super(largeur, hauteur, pos, type.getImage());
-        this.drain = new Drain(30.0,
-                new Point(pos.getX() + (largeur/2) - 15,
-                          pos.getY() + (hauteur/2) - 15
+        this.drain = new Drain(20.0,
+                new Point(pos.getX() + (largeur/2) - 10,
+                          pos.getY() + (hauteur/2) - 10
                 )
         );    
         this.distanceAvecFil = 0.0;
@@ -38,13 +38,28 @@ public class MeubleAvecDrain extends PieceItem {
     @Override
     public void translater(double facteurX, double facteurY) {
         super.translater(facteurX, facteurY);
-        this.drain.translater(facteurX, facteurY);
+        // repositionner drain pour qu’il reste centré
+        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
+        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
+        repositionnerDrain(new Point(nouvX, nouvY)); 
     }
     
     @Override
     public void translater(Point delta) {
         super.translater(delta);
-        this.drain.translater(delta);
+        // repositionner drain pour qu’il reste centré
+        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
+        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
+        repositionnerDrain(new Point(nouvX, nouvY)); 
+    }
+    
+    @Override
+    public void setPosition(Point nouvPosition){
+        super.setPosition(nouvPosition);
+        // repositionner drain pour qu’il reste centré
+        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
+        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
+        repositionnerDrain(new Point(nouvX, nouvY)); 
     }
     
     public Drain trouverDrain(UUID idDrain){    
@@ -96,7 +111,10 @@ public class MeubleAvecDrain extends PieceItem {
     }
     
     public void redimensionnerDrain(double nouvDiametre){
-         drain.setDiametre(nouvDiametre);
+        if(nouvDiametre >= this.getHauteur() || nouvDiametre >= this.getLargeur()){
+            throw new IllegalArgumentException("Le diamètre du drain depasse les dimensions du meuble");
+        }
+        drain.setDiametre(nouvDiametre);
          // repositionner drain pour qu’il reste centré
         double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
         double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
@@ -115,8 +133,11 @@ public class MeubleAvecDrain extends PieceItem {
     
      @Override
      public void setDimension(double nouvLarg, double nouvHaut) {
-         super.setDimension(nouvLarg, nouvHaut);
-         drain.setDiametre(nouvHaut);
+        super.setDimension(nouvLarg, nouvHaut);
+         // repositionner drain pour qu’il reste centré
+        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
+        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
+        drain.setPosition(new Point(nouvX, nouvY));
      }
     
 

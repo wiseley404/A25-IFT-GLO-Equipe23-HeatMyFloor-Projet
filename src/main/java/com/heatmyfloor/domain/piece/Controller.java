@@ -31,7 +31,7 @@ public class Controller {
     private Path cheminFichier;
 
     public Controller() {
-        this.piece = new PieceRectangulaire(500, 300);
+        this.piece = new PieceRectangulaire(540, 540);
         this.stockage = new PieceFichierStockage();
         this.historique = new PieceHistorique();
     }
@@ -44,7 +44,6 @@ public class Controller {
 
     public void ajouterMeubleAvecDrain(Point position, TypeAvecDrain type) {
         this.historique.sauvegarder(piece);
-        piece.getItemsList().removeIf(item -> item instanceof MeubleAvecDrain);
         this.piece.ajouterItem(new MeubleAvecDrain(120, 70, position, type));
     }
 

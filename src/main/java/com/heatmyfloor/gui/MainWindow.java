@@ -14,9 +14,7 @@ import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
-import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.gui.UiUtils.ToastType;
-import com.heatmyfloor.domain.piece.PieceItem;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -32,7 +30,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -134,7 +131,7 @@ public class MainWindow extends javax.swing.JFrame {
                 Component comp = sp.getViewport().getView();
                 if(comp instanceof Canvas canvas){
                     controllerActif = controllers.get(canvas);
-                    controllerActif.setPiece(new PieceRectangulaire(500, 300));
+                    controllerActif.setPiece(new PieceRectangulaire(1000, 500));
                     currentCanvas = canvas;
 
                     double largeur = controllerActif.getPiece().getLargeur();
@@ -395,7 +392,7 @@ public class MainWindow extends javax.swing.JFrame {
         String title;
         if (ctrl == null) {
             title = "Projet " + i++;
-            controllerActif = new Controller(new PieceRectangulaire(900, 400));
+            controllerActif = new Controller();
             controllerActif.SetProjetNom(title);
         } else {
             controllerActif = ctrl;
@@ -481,15 +478,14 @@ public class MainWindow extends javax.swing.JFrame {
             if (sel != null) {
                 if (sel instanceof MeubleAvecDrain meuble) {
                     Drain drain = meuble.getDrain();
-//                    if (drain != null) {
-//                        // Offset relatif au drain
-//                        dragOffsetX = pWorld.getX() - drain.getPosition().getX();
-//                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();
-//                    } else {
-//                        // Offset relatif au meuble
-//                        dragOffsetX = pWorld.getX() - sel.getPosition().getX();
-//                        dragOffsetY = pWorld.getY() - sel.getPosition().getY();
-//                    }
+                   if (drain != null) {
+                        // Offset relatif au drain
+                        dragOffsetX = pWorld.getX() - drain.getPosition().getX();
+                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();                    } else {
+                       // Offset relatif au meuble
+                       dragOffsetX = pWorld.getX() - sel.getPosition().getX();
+                       dragOffsetY = pWorld.getY() - sel.getPosition().getY();
+                   }
                 } else {
                     // Item classique
                     dragOffsetX = pWorld.getX() - sel.getPosition().getX();

@@ -403,9 +403,6 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         }
         return null; 
     }
-
-    void ajouterItem(Zone zone) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
 
 }
