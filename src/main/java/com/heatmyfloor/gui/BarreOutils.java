@@ -161,7 +161,7 @@ public class BarreOutils extends JPanel {
         //Autres
         btnThermostat = card("Thermostat", "/Icons/Thermostat.png");
         btnElementChauffant = card("A. Chauffants", "/Icons/ElementChauffant.png");
-        btnMenuZones = card("Zones", "/Icons/zone.png");
+        btnMenuZones = card("Zones", "/Icons/Zone.png");
         addGroup(ribbon, gc, col++, makeGroup("Autres",
                 btnThermostat,
                 btnElementChauffant,

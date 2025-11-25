@@ -210,7 +210,7 @@ public class Proprietes extends JPanel {
     }
      
     public void moveSelectedTo(double x, double y){
-        if(x <= 0 && y <= 0) return;
+        if(x < 0 && y < 0) return;
         mainWindow.controllerActif.deplacerDrain(x,y);   
     }
     

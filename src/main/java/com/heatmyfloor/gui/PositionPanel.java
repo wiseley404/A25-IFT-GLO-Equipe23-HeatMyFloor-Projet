@@ -222,11 +222,6 @@ public class PositionPanel extends JPanel {
     }
 
     public void afficherCoordItemSelectionne() {
-        if(mainWindow.controllerActif == null){
-            xPosition.setText("");
-            yPosition.setText("");
-            return;
-        }
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
             double xItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX();
             double yItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY();
@@ -244,10 +239,6 @@ public class PositionPanel extends JPanel {
 
     
     public void afficherAngleItemSelectionne() {
-        if(mainWindow.controllerActif == null){
-            degRotation.setText("");
-            return;
-        }
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
             degRotation.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getAngle() + "°"));
         } else {
@@ -278,9 +269,6 @@ public class PositionPanel extends JPanel {
         });
 
         rotationButton.addActionListener(e -> {
-            if (mainWindow.currentCanvas == null) {
-                return;
-            }
             try {
                 mainWindow.controllerActif.pivoterItemSelectionne();
             } catch (IllegalArgumentException error) {
@@ -299,7 +287,7 @@ public class PositionPanel extends JPanel {
                 double y = Util.enPixels(yPosition.getText());
                 moveSelectedTo(x, y);
             }catch(IllegalArgumentException error){
-                mainWindow.tabsErreur.clearMessages();
+                //mainWindow.tabsErreur.clearMessages();
                 mainWindow.tabsErreur.addErrorMessage(error.getMessage());
             }
             
@@ -320,15 +308,11 @@ public class PositionPanel extends JPanel {
             mainWindow.controllerActif.repositionnerPiece(p);
 
         } else if (mainWindow.controllerActif.estPositionValide(p)) {
-
-            mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce ou la position est déja occupée.");
-            if (mainWindow.controllerActif.estPositionValide(p)) {
-                mainWindow.tabsErreur.clearMessages();
-                mainWindow.controllerActif.deplacerItemSelectionne(p);
-            } else {
-                mainWindow.tabsErreur.clearMessages();
-                mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce.");
-            }
+            mainWindow.tabsErreur.clearMessages();
+            mainWindow.controllerActif.deplacerItemSelectionne(p);
+        } else {
+            mainWindow.tabsErreur.clearMessages();
+            mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce.");
         }
     }
 

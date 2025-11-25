@@ -249,10 +249,6 @@ public abstract class Piece implements PieceReadOnly, Serializable {
                 // Vérifie si la position est valide
                 if (estPositionItemValide(nouvPosition)) {
                     it.translater(delta);
-                    if (it instanceof MeubleAvecDrain mad) {
-                        Drain drain = mad.getDrain();
-                            drain.translater(delta);
-                    }
                 }
                 break;
             }
