@@ -261,6 +261,7 @@ public class Controller {
     public PieceItemReadOnly determinerElementDeClic(double xPouce, double yPouce) {
         return this.piece.trouverCible(xPouce, yPouce);
     }
+<<<<<<< HEAD
 
     public void SetProjetNom(String nom) {
         this.nom_ptojet = nom;
@@ -306,4 +307,17 @@ public class Controller {
         this.piece = (Piece) data.get("piece");
     }
 
+=======
+    public boolean peutAnnuler(){
+        return historique != null && historique.peutAnnuler();
+        
+    }
+    
+    public boolean peutRetablir(){
+        return historique != null && historique.peutRetablir();
+        
+    }
+    
+    
+>>>>>>> 9837347 (modifications)
 }

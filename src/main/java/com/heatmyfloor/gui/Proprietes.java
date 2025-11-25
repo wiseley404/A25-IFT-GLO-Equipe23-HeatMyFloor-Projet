@@ -6,7 +6,6 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
-import com.heatmyfloor.domain.Util.Unite;
 
 
 /**
@@ -25,9 +24,8 @@ public class Proprietes extends JPanel {
     
     private JButton undo;
     private JButton redo;
-    private JComboBox<Unite> unitePiece;
-    private JComboBox<Unite> uniteItem;
-    
+    private boolean update = false;
+
     public Proprietes(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         setPreferredSize(new Dimension(300, 0));
@@ -65,7 +63,7 @@ public class Proprietes extends JPanel {
         sp.setBorder(null);
         sp.getViewport().setOpaque(false);
         add(sp, BorderLayout.CENTER);
-        
+
     }
 
 
@@ -110,47 +108,12 @@ public class Proprietes extends JPanel {
         undo.addActionListener(e -> undoListener());
         redo.addActionListener(e -> redoListener());
 
-        //PARAMETRES
-        JButton gear = new JButton("⚙");
-        gear.setFocusable(false);
-        gear.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        gear.setOpaque(false);
-        gear.setContentAreaFilled(false);
-        gear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        gear.setToolTipText("Paramètres / Unités");
-
-        // MENU DÉROULANT POUR LES UNITÉS
-        gear.addActionListener(e -> {
-
-            JPopupMenu menu = new JPopupMenu();
-
-            JMenuItem titre = new JMenuItem("Choisir l’unité par défaut");
-            titre.setEnabled(false);
-            titre.setFont(titre.getFont().deriveFont(Font.BOLD));
-            menu.add(titre);
-            menu.add(new JSeparator());
-            for (Unite u : Unite.values()) {
-                JMenuItem item = new JMenuItem(u.name());
-                item.addActionListener(ev -> {
-                    if (unitePiece != null) unitePiece.setSelectedItem(u);
-                    if (uniteItem != null) uniteItem.setSelectedItem(u);
-
-                    afficherProprietesPiece();
-                    afficherProprietesItemSelectionne();
-                });
-
-                menu.add(item);
-            }
-
-            // Affiche le menu sous le bouton principal
-            menu.show(gear, 0, gear.getHeight());
-        }); 
-         
-         espaceBoutton.add(gear);
          bar.add(title, BorderLayout.WEST);
          bar.add(espaceBoutton, BorderLayout.EAST);
+         updateUndoRedoButtons();
          return bar;
     }
+
     
     public void undoListener(){
         mainWindow.controllerActif.annulerModif();
@@ -158,6 +121,7 @@ public class Proprietes extends JPanel {
         afficherProprietesItemSelectionne();
         mainWindow.panelPosition.afficherAngleItemSelectionne();
         mainWindow.panelPosition.afficherCoordItemSelectionne();
+        updateUndoRedoButtons();
     }
     
     public void redoListener(){
@@ -166,6 +130,7 @@ public class Proprietes extends JPanel {
         afficherProprietesItemSelectionne();
         mainWindow.panelPosition.afficherAngleItemSelectionne();
         mainWindow.panelPosition.afficherCoordItemSelectionne();
+        updateUndoRedoButtons();
     }
 
     
@@ -174,63 +139,56 @@ public class Proprietes extends JPanel {
         largeurPiece = text("");
         hauteurPiece = text("");
         
-        unitePiece = new JComboBox<>(Unite.values());
-        unitePiece.setSelectedItem(Unite.POUCE);
-        
         s.addRow("Largeur", largeurPiece);
         s.addRow("Hauteur", hauteurPiece);  
-        s.addRow("Unité", unitePiece); 
-        unitePiece.addActionListener(e -> afficherProprietesPiece());
-
         return s;
     }
     
     public void afficherProprietesPiece() {
-        
-        double largPx = mainWindow.controllerActif.getPiece().getLargeur();
-        double hautPx = mainWindow.controllerActif.getPiece().getHauteur();
-        
-        Unite u = (unitePiece != null)
-                ? (Unite) unitePiece.getSelectedItem()
-                : Unite.POUCE;
-        largeurPiece.setText(String.format("%.2f", Util.enUnite(largPx, u)));
-        hauteurPiece.setText(String.format("%.2f", Util.enUnite(hautPx, u)));
-    }
+            double largPx = mainWindow.controllerActif.getPiece().getLargeur();
+            double hautPx = mainWindow.controllerActif.getPiece().getHauteur();
+
+            double largIn = Util.enPouces(largPx);
+            double hautIn = Util.enPouces(hautPx);
+            largeurPiece.setText(Util.formatImperial(largIn));
+            hauteurPiece.setText(Util.formatImperial(hautIn));
+            updateUndoRedoButtons();
+     
+    } 
+
     
     public void dimensionPieceListener() { 
         ActionListener apply = (e  -> {
+          if (largeurPiece == null || hauteurPiece == null) return;
 
-            if ( largeurPiece == null || hauteurPiece == null) return;
-            Double largeur = parseNumber(largeurPiece.getText());
-            Double hauteur  = parseNumber(hauteurPiece.getText());
-            
-            if ( largeur == null || hauteur == null) {
-                return;
-            }
+           try{      
+                double largeur = Util.enPixels(largeurPiece.getText());
+                double hauteur = Util.enPixels(hauteurPiece.getText()); 
+                resizePiece(largeur, hauteur);
+                updateUndoRedoButtons();
+           }catch(IllegalArgumentException error){
+               mainWindow.tabsErreur.clearMessages();
+               mainWindow.tabsErreur.addErrorMessage(error.getMessage());
+           }
 
-            resizePiece(largeur, hauteur);  
             SwingUtilities.invokeLater(() -> {
-                mainWindow.currentCanvas.repaint();
-                mainWindow.currentCanvas.requestFocusInWindow();
-            });                    
-        });
+                   mainWindow.currentCanvas.revalidate();;
+                   mainWindow.currentCanvas.repaint();
+                   mainWindow.currentCanvas.requestFocusInWindow();
+            });  
+        }); 
+
             largeurPiece.addActionListener(apply);
             hauteurPiece.addActionListener(apply);
     }
     
+    
     public void resizePiece(double L, double H) {   
         if (L <= 0 || H <= 0) return;
-        
-        Unite u = (unitePiece != null)
-                ? (Unite) unitePiece.getSelectedItem()
-                : Unite.POUCE;
-                
-        
-        double Lpx = Util.enPixels(L, u);
-        double Hpx = Util.enPixels(H, u);
-        
-        mainWindow.controllerActif.redimensionnerPiece(Lpx, Hpx);
+        mainWindow.controllerActif.redimensionnerPiece(L, H);
+        updateUndoRedoButtons();
     }
+    
     
     private JComponent sectionMembrane() {
         SectionPanel s = new SectionPanel("Membrane");
@@ -247,13 +205,8 @@ public class Proprietes extends JPanel {
         largeurItem = text("");
         hauteurItem = text("");
         
-        uniteItem = new JComboBox<>(Unite.values());
-        uniteItem.setSelectedItem(Unite.POUCE);
-        
         s.addRow("Largeur :", largeurItem);
         s.addRow("Hauteur  :", hauteurItem);
-        s.addRow("Unité", uniteItem);
-        uniteItem.addActionListener(e -> afficherProprietesItemSelectionne());
         return s;
     }
     
@@ -262,33 +215,34 @@ public class Proprietes extends JPanel {
             
             double largPx = mainWindow.controllerActif.trouverItemSelectionne().getLargeur();
             double hautPx = mainWindow.controllerActif.trouverItemSelectionne().getHauteur();
-            
-            Unite u = (uniteItem != null)
-                ? (Unite) uniteItem.getSelectedItem()
-                : Unite.POUCE;
-            
-            largeurItem.setText(String.format("%.2f", Util.enUnite(largPx, u)));
-            hauteurItem.setText(String.format("%.2f", Util.enUnite(hautPx, u))); 
+
+            double largIn = Util.enPouces(largPx);
+            double hautIn = Util.enPouces(hautPx);
+            largeurItem.setText(Util.formatImperial(largIn));
+            hauteurItem.setText(Util.formatImperial(hautIn));
+        
         }else{
             largeurItem.setText("");
             hauteurItem.setText("");
         }
-        
+        updateUndoRedoButtons();
     }
 
      
     public void dimensionItemListener() { 
         ActionListener apply = (e  -> {
 
-            if ( largeurItem == null || hauteurItem == null) return;
-            Double largeur = parseNumber(largeurItem.getText());
-            Double hauteur  = parseNumber(hauteurItem.getText());
-            
-            if ( largeur == null || hauteur == null) {
-                return;
+            if (largeurItem == null || hauteurItem == null) return;
+            try{
+                double largeur = Util.enPixels(largeurItem.getText());
+                double hauteur = Util.enPixels(hauteurItem.getText());
+                resizeItemSelected(largeur, hauteur); 
+                updateUndoRedoButtons();
+            }catch(IllegalArgumentException error){
+                mainWindow.tabsErreur.clearMessages();
+                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
             }
 
-            resizeItemSelected(largeur, hauteur);  
             SwingUtilities.invokeLater(() -> {
                 mainWindow.currentCanvas.repaint();
                 mainWindow.currentCanvas.requestFocusInWindow();
@@ -299,56 +253,13 @@ public class Proprietes extends JPanel {
         hauteurItem.addActionListener(apply);
     }
     
+    
     public void resizeItemSelected(double L, double H) {   
         if (L <= 0 || H <= 0) return;
-        
-        Unite u = (uniteItem != null)
-            ? (Unite) uniteItem.getSelectedItem()
-            : Unite.POUCE;
-        
-        double Lpx = Util.enPixels(L, u);
-        double Hpx = Util.enPixels(H, u);  
-        mainWindow.controllerActif.redimensionnerItemSelectionne(Lpx, Hpx);
+        mainWindow.controllerActif.redimensionnerItemSelectionne(L, H);
+        updateUndoRedoButtons();
     }
      
-    private Double parseNumber(String s) {
-      if (s == null) return null;
-
-    s = s.replaceAll("[^0-9./ ]", "").trim();
-
-    if (s.isEmpty()) return null;
-
-    try {
-        // CAS 1 : Fraction simple "a/b"
-        if (s.matches("[0-9]+\\s*/\\s*[0-9]+")) {
-            String[] parts = s.split("/");
-            double a = Double.parseDouble(parts[0].trim());
-            double b = Double.parseDouble(parts[1].trim());
-            if (b == 0) return null;
-            return a / b;
-        }
-
-        // CAS 2 : Fraction mixte "a b/c"
-        if (s.matches("[0-9]+\\s+[0-9]+\\s*/\\s*[0-9]+")) {
-            String[] parts = s.split("\\s+");
-            double entier = Double.parseDouble(parts[0]);
-            String frac = parts[1];
-            String[] fracParts = frac.split("/");
-            double b = Double.parseDouble(fracParts[0]);
-            double c = Double.parseDouble(fracParts[1]);
-            if (c == 0) return null;
-            return entier + (b / c);
-        }
-
-        // CAS 3 : Nombre normal (décimal)
-        return Double.parseDouble(s);
-
-    } catch (Exception e) {
-        return null;
-    }
-}
-       
-
 
     private JComponent sectionFil() {
         SectionPanel s = new SectionPanel("Fil");
@@ -471,4 +382,17 @@ public class Proprietes extends JPanel {
     }
   }
 
+    public void updateUndoRedoButtons(){
+        if (mainWindow == null || mainWindow.controllerActif == null){
+            undo.setEnabled(false);
+            redo.setEnabled(false);
+            return;
+        }
+        
+        boolean canUndo = mainWindow.controllerActif.peutAnnuler();
+        boolean canRedo = mainWindow.controllerActif.peutRetablir();
+        
+        undo.setEnabled(canUndo);
+        redo.setEnabled(canRedo);
+    }
 }

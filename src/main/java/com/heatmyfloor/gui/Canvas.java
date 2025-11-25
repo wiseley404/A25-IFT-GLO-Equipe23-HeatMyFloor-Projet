@@ -7,6 +7,7 @@ import java.io.Serializable;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.piece.PieceReadOnly;
 
 public class Canvas extends JPanel implements Serializable {
 
@@ -97,6 +98,20 @@ public class Canvas extends JPanel implements Serializable {
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
+<<<<<<< HEAD
+=======
+    
+@Override
+public Dimension getPreferredSize() {
+    if (mainWindow.controllerActif != null && mainWindow.controllerActif.getPiece() != null) {
+        PieceReadOnly piece = mainWindow.controllerActif.getPiece();
+        double margeX = mainWindow.controllerActif.getPiece().getPosition().getX();
+        double margeY = mainWindow.controllerActif.getPiece().getPosition().getY();
+        return new Dimension((int)(margeX + piece.getLargeur() + margeX), (int)(margeY + piece.getHauteur() + margeY));
+    }
+    return new Dimension(800, 500); // Taille par défaut
+}
+>>>>>>> 9837347 (modifications)
 
     @Override
     protected void paintComponent(Graphics g) {

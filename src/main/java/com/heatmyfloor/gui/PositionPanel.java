@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.Point;
 import java.awt.event.ActionListener;
-
+import com.heatmyfloor.domain.Util;
 /**
  *
  * @author tatow
@@ -83,16 +83,19 @@ public class PositionPanel extends JPanel {
 
     public void afficherCoordItemSelectionne() {
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
-            double x = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX();
-            double y = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY();
-            xPosition.setText(String.format("%.2f", x));
-            yPosition.setText(String.format("%.2f", y));
+            double xItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX();
+            double yItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY();
+            xPosition.setText(Util.formatImperial(Util.enPouces(xItem)));
+            yPosition.setText(Util.formatImperial(Util.enPouces(yItem)));
         } else {
-            xPosition.setText(String.valueOf(mainWindow.controllerActif.getPiece().getPosition().getX()));
-            yPosition.setText(String.valueOf(mainWindow.controllerActif.getPiece().getPosition().getY()));
+            double xPiece = mainWindow.controllerActif.getPiece().getPosition().getX();
+            double yPiece = mainWindow.controllerActif.getPiece().getPosition().getY();
+            xPosition.setText(Util.formatImperial(Util.enPouces(xPiece)));
+            yPosition.setText(Util.formatImperial(Util.enPouces(yPiece)));
         }
     }
 
+    
     public void afficherAngleItemSelectionne() {
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
             degRotation.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getAngle() + "°"));
@@ -137,14 +140,16 @@ public class PositionPanel extends JPanel {
 
     public void positionListener() {
         ActionListener apply = (e -> {
-            if (xPosition == null || yPosition == null) {
-                return;
-            }
-            Double x = parseNumber(xPosition.getText());
-            Double y = parseNumber(yPosition.getText());
+            if (xPosition == null || yPosition == null)return;
 
-            //déplace l'item selectionné
-            moveSelectedTo(x, y);
+            try{
+                double x = Util.enPixels(xPosition.getText());
+                double y = Util.enPixels(yPosition.getText());
+                moveSelectedTo(x, y);
+            }catch(IllegalArgumentException error){
+                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
+            }
+            
             SwingUtilities.invokeLater(() -> {
                 mainWindow.currentCanvas.repaint();//maj l'affichage
                 mainWindow.currentCanvas.requestFocusInWindow();
@@ -170,40 +175,5 @@ public class PositionPanel extends JPanel {
             mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce ou la position est déja occupée.");
         }
     }
-
-    private Double parseNumber(String s) {
-    if (s == null) return null;
-
-    s = s.replaceAll("[^0-9./ ]", "").trim();
-
-    if (s.isEmpty()) return null;
-    try {
-        // CAS 1 : Fraction simple "a/b"
-        if (s.matches("[0-9]+\\s*/\\s*[0-9]+")) {
-            String[] parts = s.split("/");
-            double a = Double.parseDouble(parts[0].trim());
-            double b = Double.parseDouble(parts[1].trim());
-            if (b == 0) return null;
-            return a / b;
-        }
-
-        // CAS 2 : Fraction "a b/c"
-        if (s.matches("[0-9]+\\s+[0-9]+\\s*/\\s*[0-9]+")) {
-            String[] parts = s.split("\\s+");
-            double entier = Double.parseDouble(parts[0]);
-            String frac = parts[1];
-            String[] fracParts = frac.split("/");
-            double b = Double.parseDouble(fracParts[0]);
-            double c = Double.parseDouble(fracParts[1]);
-            if (c == 0) return null;
-            return entier + (b / c);
-        }
-
-        // CAS 3 : Nombre normal (décimal)
-        return Double.parseDouble(s);
-
-    } catch (Exception e) {
-        return null;
-    }
-    }
+   
 }

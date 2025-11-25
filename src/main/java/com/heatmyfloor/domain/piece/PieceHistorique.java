@@ -40,6 +40,14 @@ public class PieceHistorique {
         this.redoPile.clear();
     }
     
+    public boolean peutAnnuler(){
+        return !undoPile.isEmpty();
+    }
+    
+    public boolean peutRetablir(){
+        return !redoPile.isEmpty();
+    }
+    
     
     public Piece annuler(Piece pieceActuelle){
         if(!undoPileEstVide()){

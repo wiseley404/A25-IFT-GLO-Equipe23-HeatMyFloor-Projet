@@ -126,6 +126,7 @@ public class MainWindow extends javax.swing.JFrame {
         //
         //action pour le bouton rectangle
         barreOutils.onRectangleClick(() -> {
+<<<<<<< HEAD
             Component componaint = tabs.getSelectedComponent();
             if (componaint instanceof Canvas canvas) {
                 controllerActif = controllers.get(canvas);
@@ -142,6 +143,28 @@ public class MainWindow extends javax.swing.JFrame {
                 currentCanvas.nettoyerModeDessin();
                 currentCanvas.repaint();
                 props.afficherProprietesPiece();
+=======
+            Component component = tabs.getSelectedComponent();
+            if (component instanceof JScrollPane sp) {
+                Component comp = sp.getViewport().getView();
+                if(comp instanceof Canvas canvas){
+                    controllerActif = controllers.get(canvas);
+                    controllerActif.setPiece(new PieceRectangulaire(500, 300));
+                    currentCanvas = canvas;
+
+                    double largeur = controllerActif.getPiece().getLargeur();
+                    double hauteur = controllerActif.getPiece().getHauteur();
+                    double x = (currentCanvas.getWidth() - largeur) / 2;
+                    double y = (currentCanvas.getHeight() - hauteur) / 2;
+                    controllerActif.centrerPiece(new Point(x,y));
+                    panelPosition.afficherCoordItemSelectionne();
+
+                    currentCanvas.nettoyerModeDessin();
+                    currentCanvas.repaint();
+                    props.afficherProprietesPiece();
+                    props.updateUndoRedoButtons();
+                }
+>>>>>>> 9837347 (modifications)
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
                         "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -156,12 +179,15 @@ public class MainWindow extends javax.swing.JFrame {
 
         barreOutils.onIrregularButtonClick(() -> {
 
-            Component componaint = tabs.getSelectedComponent();
-            if (componaint instanceof Canvas canvas) {
-                controllerActif = controllers.get(canvas);
-                controllerActif.setPiece(new PieceIrreguliere());
-                currentCanvas = canvas;
-                currentCanvas.dessinerFormeIrreguliere();
+            Component component = tabs.getSelectedComponent();
+            if (component instanceof JScrollPane sp) {
+                Component comp = sp.getViewport().getView();
+                if(comp instanceof Canvas canvas){
+                    controllerActif = controllers.get(canvas);
+                    controllerActif.setPiece(new PieceIrreguliere());
+                    currentCanvas = canvas;
+                    currentCanvas.dessinerFormeIrreguliere();
+                }
             } else {
                 UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun projet ouvert.");
             }
@@ -294,6 +320,7 @@ public class MainWindow extends javax.swing.JFrame {
         props = new Proprietes(this);
         props.dimensionItemListener();
         props.dimensionPieceListener();
+        props.updateUndoRedoButtons();
         center.add(props, BorderLayout.WEST);
         center.add(tabs, BorderLayout.CENTER);
 
@@ -369,6 +396,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void addNewProjet() {
+<<<<<<< HEAD
         addNewProjet(null);
     }
 
@@ -387,11 +415,21 @@ public class MainWindow extends javax.swing.JFrame {
             title = controllerActif.GetProjetNom();
         }
 
+=======
+        String title = "Projet " + i++;
+        controllerActif = new Controller(new PieceRectangulaire(900, 400));
+        Canvas canvas = new Canvas();
+        canvas.setMainWindow(this);
+        currentCanvas = canvas;     
+>>>>>>> 9837347 (modifications)
         controllers.put(currentCanvas, controllerActif);
+        JScrollPane sp = new JScrollPane(currentCanvas, 
+        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tabs.addTab(title, currentCanvas);
-        tabs.setSelectedComponent(currentCanvas);
-        int idx = tabs.indexOfComponent(currentCanvas);
+        tabs.addTab(title, sp);
+        tabs.setSelectedComponent(sp);
+        int idx = tabs.indexOfComponent(sp);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
 
@@ -406,6 +444,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         props.afficherProprietesPiece();
+        props.updateUndoRedoButtons();
         sourisListener();
 
         currentCanvas.addKeyListener(new KeyAdapter() {
@@ -444,6 +483,7 @@ public class MainWindow extends javax.swing.JFrame {
         panelPosition.afficherCoordItemSelectionne();
         panelPosition.afficherAngleItemSelectionne();
         currentCanvas.repaint();
+        props.updateUndoRedoButtons();
     }
 
     public void sourisListener() {
@@ -568,16 +608,21 @@ public class MainWindow extends javax.swing.JFrame {
     private void tabListener() {
         tabs.addChangeListener(e -> {
             Component component = tabs.getSelectedComponent();
-            if (component instanceof Canvas canvas) {
-                currentCanvas = canvas;
-                this.controllerActif = controllers.get(canvas);
+            if (component instanceof JScrollPane sp) {
+                Component comp = sp.getViewport().getView();
+                if(comp instanceof Canvas canvas){
+                    currentCanvas = canvas;
+                    this.controllerActif = controllers.get(canvas);
 
-                SwingUtilities.invokeLater(() -> {
-                    props.afficherProprietesPiece();
-                    props.afficherProprietesItemSelectionne();
-                    panelPosition.afficherAngleItemSelectionne();
-                    panelPosition.afficherCoordItemSelectionne();
-                });
+                    SwingUtilities.invokeLater(() -> {
+                        props.afficherProprietesPiece();
+                        props.updateUndoRedoButtons();
+                        props.afficherProprietesItemSelectionne();
+                        panelPosition.afficherAngleItemSelectionne();
+                        panelPosition.afficherCoordItemSelectionne();
+                    });          
+                }
+
             }
         });
     }
@@ -648,8 +693,11 @@ public class MainWindow extends javax.swing.JFrame {
 
     public Canvas getSelectedCanvas() {
         Component comp = tabs.getSelectedComponent();
-        if (comp instanceof Canvas) {
-            return (Canvas) comp;
+        if (comp instanceof JScrollPane sp) {
+            Component component = sp.getViewport().getView();
+            if(component instanceof Canvas canvas){
+            return canvas;
+            }
         }
         return null;
     }

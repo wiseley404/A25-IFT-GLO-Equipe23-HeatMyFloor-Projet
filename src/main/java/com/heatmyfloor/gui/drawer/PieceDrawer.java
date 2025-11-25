@@ -75,6 +75,8 @@ public class PieceDrawer {
       g2.setColor(Color.ORANGE);
       g2.setStroke(new BasicStroke(1.5f));
       g2.draw(pieceRectangulaire);
+      
+      props.afficherProprietesPiece();
     }
     
        
