@@ -22,7 +22,6 @@ public class Drain implements DrainReadOnly, Serializable {
     private Point position;
     private final double distanceAvecFil;
     private boolean estSelectionne;
-    private MeubleAvecDrain meuble;
     
     
     //Constructeur
@@ -40,11 +39,11 @@ public class Drain implements DrainReadOnly, Serializable {
     
     @Override
     public void translater(Point delta) {
-    this.position = new Point(
-        this.position.getX() + delta.getX(),
-        this.position.getY() + delta.getY()
-    );
-}
+        this.position = new Point(
+            this.position.getX() + delta.getX(),
+            this.position.getY() + delta.getY()
+        );
+    }
 
     
     public void translater(double facteurX, double facteurY){
@@ -54,10 +53,12 @@ public class Drain implements DrainReadOnly, Serializable {
         );
     }
      
-    public void redimensionner(Point delta){}
+    public void redimensionner(Point delta){
+        this.setDiametre(diametre + delta.getX());
+    }
     
     public void redimensionner(double facteur){
-        
+        this.setDiametre(diametre * facteur);
     }
     
     @Override
@@ -103,16 +104,8 @@ public class Drain implements DrainReadOnly, Serializable {
         return this.estSelectionne;
     }
     
-    public MeubleAvecDrain getMeuble(){
-        return this.meuble;
-    }
-    
-    public void setMeuble(MeubleAvecDrain meuble){
-        this.meuble = meuble;
-    }
-    
-    public void setDiametre(double nouvDiametre){
-       
+
+    public void setDiametre(double nouvDiametre){   
         this.diametre=nouvDiametre;
     }
     

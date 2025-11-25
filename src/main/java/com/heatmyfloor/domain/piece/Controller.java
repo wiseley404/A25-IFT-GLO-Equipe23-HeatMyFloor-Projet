@@ -1,8 +1,6 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
-import com.heatmyfloor.domain.items.Drain;
-import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.items.Zone;
@@ -13,7 +11,6 @@ import com.heatmyfloor.domain.items.Thermostat;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.MeubleSansDrain;
 import com.heatmyfloor.infrastructure.file.PieceFichierStockage;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -99,10 +96,10 @@ public class Controller {
         this.piece.redimensionner(nouvLarg, nouvHaut);
     }
 
-//    public void redimensionnerDrain(double diametre, double x, double y) {
-//        this.historique.sauvegarder(piece);
-    ////        this.piece.redimensionnerDrain(diametre, x, y);
-//    }
+    public void redimensionnerDrain(double diametre) {
+       this.historique.sauvegarder(piece);
+        this.piece.redimensionnerDrain(diametre);
+    }
 
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHaut) {
         this.historique.sauvegarder(piece);
@@ -118,9 +115,6 @@ public class Controller {
         this.piece.changerStatutSelectionItem(pos);
     }
     
-    public void changerStatutSelectionDrain(Point pos) {
-        this.piece.changerStatutSelectionDrain(pos);
-    }
 
     public void changerAngleItemSelectionne(double nouvAngle) {
         this.historique.sauvegarder(piece);
@@ -168,60 +162,26 @@ public class Controller {
         }
     }
 
-    public void ajouterDrain(Point position) {
-        this.historique.sauvegarder(piece);
-        double diametre = 80;
-        double rayon = diametre / 2.0;
-        Point point = new Point(position.getX() - rayon, position.getY() - rayon);
-
-        this.piece.ajouterDrain(new Drain(diametre, point));
-        //Appel a la methode en dessous 
-
-    }
 
     public boolean estPositionDrainValide(double x, double y) {
         this.historique.sauvegarder(piece);
         return this.piece.estPositionDrainValide(x, y);
     }
-
-    /*public void repositionnerDrainSelectionne(Point nouvPosition,PieceItem item){
+    
+    public void deplacerDrain(double x, double y) {
         this.historique.sauvegarder(piece);
-        this.piece.repositionnerDrainSelectionne(nouvPosition,item);
-        //Appel a la methode en dessous
-    }*/
-    public void deplacerDrainSelectionne(double x, double y) {
-        this.historique.sauvegarder(piece);
-        this.piece.repositionnerDrainSelectionne(new Point(x, y));
+        this.piece.repositionnerDrain(x, y);
     }
 
-    public void deplacerDrainSelectionne(Point delta) {
+    public void deplacerDrain(Point delta) {
         this.historique.sauvegarder(piece);
-        this.piece.deplacerDrainSelectionne(delta);
+        this.piece.deplacerDrain(delta);
     }
 
-    public DrainReadOnly trouverDrainSelectionne() {
-        this.historique.sauvegarder(piece);
-        return this.piece.trouverDrainSelectionne();
-    }
 
-    /*public Drain trouverDrainPourItem(PieceItem item){
+    public void redimensionnerDrain(Point delta) {
         this.historique.sauvegarder(piece);
-        return this.piece.trouverDrainPourItem(item);
-    }*/
-
-    public void redimensionnerDrainSelectionne(double nouvDiametre) {
-        this.historique.sauvegarder(piece);
-        this.piece.redimensionnerDrainSelectionne(nouvDiametre);
-    }
-
-    public void redimensionnerDrainSelectionne(Point delta) {
-        this.historique.sauvegarder(piece);
-        //Appelez votre methode en dessous
-    }
-
-    public void supprimerDrainSelectionne() {
-        this.historique.sauvegarder(piece);
-        //Appelez votre methode en dessous
+        this.piece.deplacerDrain(delta);
     }
 
     public void genererGraphe(double distIntersections) {
@@ -359,8 +319,6 @@ public class Controller {
     public boolean peutRetablir(){
         return historique != null && historique.peutRetablir();
         
-    }
-    
-    
+    }  
 
 }

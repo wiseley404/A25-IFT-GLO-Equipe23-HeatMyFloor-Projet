@@ -21,19 +21,13 @@ public class BarreOutils extends JPanel {
     public ButtonCard btnExporter;
     public ButtonCard btnEnregistrer;
     public ButtonCard btnRectangle;
-    private ButtonCard btnDrain;
+//    private ButtonCard btnDrain;
     private ButtonCard btnIrregulier;
     private ButtonCard btnMenuSansDrain;
     private ButtonCard btnMenuAvecDrain;
     private ButtonCard btnThermostat;
     private ButtonCard btnElementChauffant;
     private ButtonCard btnMenuZones;
-    //public ButtonCard btnHautGauche;
-    // public ButtonCard btnBasGauche;
-    //public ButtonCard btnHautDroit;
-    //public ButtonCard btnBasDroit;
-    //public ButtonCard btnHautMilieu;
-    //public ButtonCard btnBasMilieu;
 
     private FormeIrregulierPanel dessinPanel;
     public ButtonCard btnZoomIn;
@@ -149,13 +143,13 @@ public class BarreOutils extends JPanel {
 
         //Formes
         btnRectangle = card("Rectangle", "/Icons/Rectangle.png");
-        btnDrain = card("Drain", "/Icons/Drain.png");
+//        btnDrain = card("Drain", "/Icons/Drain.png");
         btnIrregulier = card("Irregulière", "/Icons/Polygone.png");
         addGroup(ribbon, gc, col++, makeGroup("Formes",
                 btnRectangle,
-                btnDrain,
+//                btnDrain,
                 btnIrregulier
-        ), 3);
+        ), 2);
         addSep(ribbon, gc, col++);
 
         //Meubles
@@ -227,31 +221,6 @@ public class BarreOutils extends JPanel {
         btnZoom.addActionListener(e -> zoomListener());
         btnDezoom.addActionListener(e -> dezoomListener());
 
-//        add(ribbon, BorderLayout.CENTER);
-//        
-//                card("Thermostat", "/Icons/Thermostat.png"),
-//                card("Zones", "/Icons/zone.png"),
-//                card("Drain","/Icons/Drain.png"),
-//                card("ElementChauffant", "/Icons/ElementChauffant.png")
-//        ), 4);
-        //add(ribbon, BorderLayout.CENTER);
-        /*//deplacements
-        btnHautGauche= card("HautGauche","/Icons/HautGauche.jpg");
-        btnBasGauche = card("BasGauche","/Icons/BasGauche.jpg");
-        btnHautDroit=  card("HautDroit", "/Icons/HautDroit.jpg");
-        btnBasDroit = card("BasDroit", "/Icons/BasDroit.jpg");
-        btnHautMilieu = card("HautMilieu", "/Icons/HautMilieu.jpg");
-        btnBasMilieu = card("BasMilieu", "/Icons/BasMilieu.jpg");
-       
-        addGroup(ribbon, gc, col++, makeGroup("deplacements",
-                btnHautGauche,
-                btnBasGauche,
-                btnHautDroit,
-                btnBasDroit,
-                btnHautMilieu,
-                btnBasMilieu
-            ), 6
-        );*/
         JScrollPane scroller = new JScrollPane(
                 ribbon,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
@@ -404,17 +373,6 @@ public class BarreOutils extends JPanel {
     public void onOuvrirProjetClick(Runnable r) {
         btnOuvrir.setOnClick(e -> r.run());
 
-    }
-    
-    
-    public void onDrain() {
-        btnDrain.setOnClick(e -> {
-
-            Point position = mainWindow.controllerActif.trouverItemSelectionne().getCentre();
-            mainWindow.controllerActif.ajouterDrain(position);
-            mainWindow.props.afficherProprietesDrainSelectionne();
-            mainWindow.currentCanvas.repaint();
-        });
     }
     
 }

@@ -80,8 +80,8 @@ public class MainWindow extends javax.swing.JFrame {
     public Point positionSouris = new Point();
     public TableauErreur tabsErreur;
 
-    private double dragOffsetX = 0; //ajout
-    private double dragOffsetY = 0; //ajout
+    private double dragOffsetX = 0; 
+    private double dragOffsetY = 0; 
     private final int STEP = 5;
 
     public MainWindow() {
@@ -161,7 +161,6 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.onThermostatClicked();
         barreOutils.onElementChauffant();
         barreOutils.onZonesClicked();
-        barreOutils.onDrain();
 
 
         barreOutils.onIrregularButtonClick(() -> {
@@ -308,7 +307,8 @@ public class MainWindow extends javax.swing.JFrame {
         props.dimensionItemListener();
         props.dimensionPieceListener();
         props.updateUndoRedoButtons();
-        props.proprieteDrainListener();
+        props.diametreDrainListener();
+        props.positionDrainListener();
         center.add(props, BorderLayout.WEST);
         center.add(tabs, BorderLayout.CENTER);
 
@@ -476,22 +476,20 @@ public class MainWindow extends javax.swing.JFrame {
             Point pWorld = toWorld(currentCanvas, e);
 
             // Sélectionne l’item (meuble ou autre)
-            controllerActif.changerStatutSelection(pWorld);
-            controllerActif.changerStatutSelectionDrain(pWorld); 
-
-            PieceItem sel = (PieceItem) controllerActif.trouverItemSelectionne();
+            controllerActif.changerStatutSelection(pWorld); 
+            PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
             if (sel != null) {
                 if (sel instanceof MeubleAvecDrain meuble) {
-                    Drain drain = meuble.trouverDrainSelectionne();
-                    if (drain != null) {
-                        // Offset relatif au drain
-                        dragOffsetX = pWorld.getX() - drain.getPosition().getX();
-                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();
-                    } else {
-                        // Offset relatif au meuble
-                        dragOffsetX = pWorld.getX() - sel.getPosition().getX();
-                        dragOffsetY = pWorld.getY() - sel.getPosition().getY();
-                    }
+                    Drain drain = meuble.getDrain();
+//                    if (drain != null) {
+//                        // Offset relatif au drain
+//                        dragOffsetX = pWorld.getX() - drain.getPosition().getX();
+//                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();
+//                    } else {
+//                        // Offset relatif au meuble
+//                        dragOffsetX = pWorld.getX() - sel.getPosition().getX();
+//                        dragOffsetY = pWorld.getY() - sel.getPosition().getY();
+//                    }
                 } else {
                     // Item classique
                     dragOffsetX = pWorld.getX() - sel.getPosition().getX();
@@ -536,7 +534,7 @@ public class MainWindow extends javax.swing.JFrame {
         // --- Drag pour déplacer meuble ou drain ---
         @Override
         public void mouseDragged(MouseEvent e) {
-            PieceItem selObj = (PieceItem) controllerActif.trouverItemSelectionne();
+            PieceItemReadOnly selObj = controllerActif.trouverItemSelectionne();
             if (selObj == null) return;
 
             Point pWorld = toWorld(currentCanvas, e);
@@ -544,25 +542,17 @@ public class MainWindow extends javax.swing.JFrame {
             double targetY = pWorld.getY() - dragOffsetY;
 
             if (selObj instanceof MeubleAvecDrain meuble) {
-                Drain drain = meuble.trouverDrainSelectionne();
-                if (drain != null) {
-                    
+                Drain drain = meuble.getDrain();
+                if (drain.contientLePoint(pWorld)) {  
                     double dx = targetX - drain.getPosition().getX();
                     double dy = targetY - drain.getPosition().getY();
-                    meuble.deplacerDrainSelectionne(new Point(dx, dy));
-
-                    
-
-                    
-                } else {
+                    meuble.deplacerDrain(new Point(dx, dy));
+               } else {
                     // Déplacement du meuble entier
-                    panelPosition.moveSelectedTo(targetX, targetY);
-                    
+                    panelPosition.moveSelectedTo(targetX, targetY);   
                 }
             } else {
-               
-                panelPosition.moveSelectedTo(targetX, targetY);
-                
+                panelPosition.moveSelectedTo(targetX, targetY);     
             }
 
             panelPosition.afficherCoordItemSelectionne();

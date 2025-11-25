@@ -1,7 +1,6 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
-import com.heatmyfloor.domain.Rect2D;
 import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 

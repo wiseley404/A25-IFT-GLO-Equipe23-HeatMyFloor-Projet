@@ -8,6 +8,8 @@ import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
+import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 
 
 
@@ -59,6 +61,7 @@ public class Proprietes extends JPanel {
         content.add(sectionMeuble());
         content.add(Box.createVerticalStrut(10));
         
+        // Drain
         content.add(sectionDrain());
         content.add(Box.createVerticalStrut(10));
 
@@ -181,7 +184,7 @@ public class Proprietes extends JPanel {
            }
 
             SwingUtilities.invokeLater(() -> {
-                   mainWindow.currentCanvas.revalidate();;
+                   mainWindow.currentCanvas.revalidate();
                    mainWindow.currentCanvas.repaint();
                    mainWindow.currentCanvas.requestFocusInWindow();
             });  
@@ -199,22 +202,14 @@ public class Proprietes extends JPanel {
     }
 
      public void resizeDrain(double diametre) {   
-
-        mainWindow.controllerActif.redimensionnerDrainSelectionne(diametre);
-
-        
-       if(mainWindow.controllerActif.trouverDrainSelectionne() != null){
-           mainWindow.tabsErreur.addErrorMessage("Drain trouve");
-           mainWindow.controllerActif.redimensionnerDrainSelectionne(diametre);
-       }else{
-           mainWindow.tabsErreur.addErrorMessage("Drain non trouve");
-       }
-        
+        if(diametre <= 0) return;
+        mainWindow.controllerActif.redimensionnerDrain(diametre);
+        updateUndoRedoButtons();
     }
-    
+     
     public void moveSelectedTo(double x, double y){
-           mainWindow.controllerActif.deplacerDrainSelectionne(x,y);
-        
+        if(x <= 0 && y <= 0) return;
+        mainWindow.controllerActif.deplacerDrain(x,y);   
     }
     
     private JComponent sectionMembrane() {
@@ -256,30 +251,25 @@ public class Proprietes extends JPanel {
     }
     
     public void afficherProprietesDrainSelectionne() {
-        if(mainWindow.controllerActif.trouverItemSelectionne() != null){
-           
-            double diametre =  mainWindow.controllerActif.trouverDrainSelectionne().getDiametre();
-            double positionX = mainWindow.controllerActif.trouverDrainSelectionne().getPosition().getX();
-            double positionY = mainWindow.controllerActif.trouverDrainSelectionne().getPosition().getY();
-            
-            
-
-            
-//            diametreDrain.setText(String.format("%.2f", Util.enUnite(diametre, u)));
-//           PositionX.setText(String.format("%.2f", Util.enUnite(positionX, u))); 
-//            PositionY.setText(String.format("%.2f", Util.enUnite(positionY, u)));
-//        }else{
-//            diametreDrain.setText("");
-//            PositionX.setText("");
-//            PositionY.setText("");
-
-        }
-        
+       PieceItemReadOnly item =  mainWindow.controllerActif.trouverItemSelectionne();
+        if(item != null && item instanceof MeubleAvecDrain m){    
+           double diametre =  Util.enPouces(m.getDrain().getDiametre());
+           double positionX = Util.enPouces(m.getDrain().getPosition().getX());
+           double positionY = Util.enPouces(m.getDrain().getPosition().getY());
+       
+           diametreDrain.setText(Util.formatImperial(diametre));
+           PositionX.setText(Util.formatImperial(positionX)); 
+           PositionY.setText(Util.formatImperial(positionY));
+        }else{
+            diametreDrain.setText("");
+            PositionX.setText("");
+            PositionY.setText("");
+        } 
+        updateUndoRedoButtons();
     }
      
     public void dimensionItemListener() { 
         ActionListener apply = (e  -> {
-
             if (largeurItem == null || hauteurItem == null) return;
             try{
                 double largeur = Util.enPixels(largeurItem.getText());
@@ -302,45 +292,33 @@ public class Proprietes extends JPanel {
     }
     
 
-//    public void proprieteDrainListener() { 
-//        ActionListener apply = (e  -> {
-//
-//            if ( diametreDrain == null || PositionX == null || PositionY == null) return;
-//            Double diametre = parseNumber(diametreDrain.getText());
-//            Double posX = parseNumber(PositionX.getText());
-//            Double posY = parseNumber(PositionY.getText());
-//            
-//            
-//            if ( diametre == null||posX == null || posY==null ) {
-//                return;
-//            }
-//
-//            resizeDrain(diametre);
-//            moveSelectedTo(posX, posY);
-//            SwingUtilities.invokeLater(() -> {
-//                mainWindow.currentCanvas.repaint();
-//                mainWindow.currentCanvas.requestFocusInWindow();
-//            });                        
-//        });
-//
-//        largeurItem.addActionListener(apply);
-//        hauteurItem.addActionListener(apply);
-//    }
-    
-
-    public void proprieteDrainListener() { 
+    public void diametreDrainListener() { 
         ActionListener apply = (e  -> {
-
-            if ( diametreDrain == null || PositionX == null || PositionY == null) return;
-
-            mainWindow.tabsErreur.addErrorMessage("Hello, je suis dans Listener");
-            //resizeDrain(diametre);
+            if ( diametreDrain == null ) return;
             try{
-//                moveSelectedTo(posX, posY);
+                double diametre = Util.enPixels(diametreDrain.getText());
+                resizeDrain(diametre);
             }catch (IllegalArgumentException error){
                 mainWindow.tabsErreur.addErrorMessage(error.getMessage());
-            }
-            
+            }        
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.repaint();
+                mainWindow.currentCanvas.requestFocusInWindow();
+            });                        
+        });
+        diametreDrain.addActionListener(apply);
+    }
+    
+    public void positionDrainListener(){
+        ActionListener apply = (e  -> {
+            if(PositionX == null || PositionY == null)return;
+            try{
+                double posX = Util.enPixels(PositionX.getText());
+                double posY = Util.enPixels(PositionY.getText());
+                moveSelectedTo(posX, posY);
+            }catch (IllegalArgumentException error){
+                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
+            }        
             SwingUtilities.invokeLater(() -> {
                 mainWindow.currentCanvas.repaint();
                 mainWindow.currentCanvas.requestFocusInWindow();
@@ -349,22 +327,18 @@ public class Proprietes extends JPanel {
 
         PositionX.addActionListener(apply);
         PositionY.addActionListener(apply);
-        diametreDrain.addActionListener(apply);
     }
 
+    
     private JComponent sectionDrain() {
        SectionPanel s = new SectionPanel("Drain");
-
         diametreDrain= text("");
         PositionX= text("");
         PositionY= text("");
-
-        
-        s.addRow("diametre :", diametreDrain);
-        s.addRow("x :", PositionX);
-        s.addRow("y :", PositionY);
-
-//        addActionListener(e ->afficherProprietesDrainSelectionne());
+    
+        s.addRow("Diamètre :", diametreDrain);
+        s.addRow("X        :", PositionX);
+        s.addRow("Y        :", PositionY);
         return s; 
     }
 

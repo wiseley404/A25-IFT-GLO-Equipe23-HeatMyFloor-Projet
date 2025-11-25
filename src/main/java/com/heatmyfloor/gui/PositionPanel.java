@@ -49,24 +49,44 @@ public class PositionPanel extends JPanel {
 
         inner.add(coords);
 
-        JPanel trans = new JPanel(new GridLayout(2, 3, 6, 6));
-        trans.setBorder(BorderFactory.createTitledBorder("Translation"));
-        JButton HG = new JButton(new ImageIcon(getClass().getResource("/Icons/HautGauche.jpg")));
-        JButton BG = new JButton(new ImageIcon(getClass().getResource("/Icons/BasGauche.jpg")));
-        JButton HD = new JButton(new ImageIcon(getClass().getResource("/Icons/HautDroit.jpg")));
-        JButton BD = new JButton(new ImageIcon(getClass().getResource("/Icons/BasDroit.jpg")));
-        JButton HM = new JButton(new ImageIcon(getClass().getResource("/Icons/HautMilieu.jpg")));
-        JButton BM = new JButton(new ImageIcon(getClass().getResource("/Icons/BasMilieu.jpg")));
+               JPanel trans = new JPanel(new GridBagLayout());
 
+        trans.setBorder(BorderFactory.createTitledBorder("Translation"));
+
+        // Boutons Alignement
+        JButton HG = new JButton("↖"); 
+        JButton BG = new JButton("↙"); 
+        JButton HD = new JButton("↗"); 
+        JButton BD = new JButton("↘");  
+        JButton HM = new JButton("↑");  
+        JButton BM = new JButton("↓");  
+ 
         JButton[] boutons = {HG, HM, HD, BG, BM, BD};
         for (JButton bouton : boutons) {
-//            redimensionnerTailleImage(bouton, 40, 40);
+            bouton.setPreferredSize(new Dimension(25, 25));
+            bouton.setMaximumSize(new Dimension(25, 25));
+            bouton.setFont(new Font("Arial Unicode MS", Font.PLAIN, 22));
+            bouton.setFocusPainted(false); 
+            bouton.setFocusable(false);
+            bouton.setMargin(new Insets(0, 0, 0, 0));  
         }
-
-        for (JButton bouton : boutons) {
-            trans.add(bouton);
-        }
+ 
+        // Arrangement Boutons
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(2, 2, 2, 2);
+ 
+        // Ligne supérieure
+        gbc.gridx = 0; gbc.gridy = 0; trans.add(HG, gbc);
+        gbc.gridx = 1; gbc.gridy = 0; trans.add(HM, gbc);
+        gbc.gridx = 2; gbc.gridy = 0; trans.add(HD, gbc);
+ 
+        // Ligne inférieure
+        gbc.gridx = 0; gbc.gridy = 1; trans.add(BG, gbc);
+        gbc.gridx = 1; gbc.gridy = 1;  trans.add(BM, gbc);
+        gbc.gridx = 2; gbc.gridy = 1; trans.add(BD, gbc);
+ 
         inner.add(trans);
+ 
 
         JPanel rot = new JPanel();
         rot.setLayout(new BoxLayout(rot, BoxLayout.Y_AXIS));
@@ -118,10 +138,9 @@ public class PositionPanel extends JPanel {
                             
                its.setPosition(hautGauche);
                
-               inner.repaint();
-                           
+               mainWindow.currentCanvas.repaint();              
             }
-                   });
+        });
 
         HD.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
@@ -131,104 +150,76 @@ public class PositionPanel extends JPanel {
                 double meubleHauteur = it.getHauteur();
                 PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
                 Point extremite = piece.getExtremiteHautDroite();
-                
-
-
+ 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
                 double x = extremite.getX()- meubleLargeur;
                 double y = extremite.getY();
                 
                 ((PieceItem) it).setPosition(new Point(x, y));
-                 inner.repaint();
-
-
-
-                        
+                mainWindow.currentCanvas.repaint();             
         });
+        
         BM.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
                  // Dimensions du meuble
                 double meubleLargeur = it.getLargeur();
                 double meubleHauteur = it.getHauteur();
-                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
+                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); 
                 Point extremite = piece.getExtremiteBasMilieu();
-
 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
                 double x = extremite.getX() - (meubleLargeur/2.0);
                 double y = extremite.getY() - meubleHauteur;
 
-                
                 ((PieceItem) it).setPosition(new Point(x, y));
-                 inner.repaint();
-
-
-
-                        
+                 mainWindow.currentCanvas.repaint();                   
         }); 
+        
         BD.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
            
                  // Dimensions du meuble
                 double meubleLargeur = it.getLargeur();
                 double meubleHauteur = it.getHauteur();
-                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); // ou autre méthode pour accéder à la pièce
+                PieceReadOnly piece = mainWindow.controllerActif.getPiece(); 
                 Point extremite = piece.getExtremiteBasDroite();
-
-
 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
                 double x = extremite.getX()-meubleLargeur;
                 double y = extremite.getY()- meubleHauteur;
-
-                
+        
                 ((PieceItem) it).setPosition(new Point(x, y));
-                 inner.repaint();
-
-
-
+                mainWindow.currentCanvas.repaint();
         }); 
         
         BG.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
-           
-                
+                  
                 double meubleHauteur = it.getHauteur();
                 PieceReadOnly piece = mainWindow.controllerActif.getPiece(); 
                 Point extremite = piece.getExtremiteBasGauche();
-
 
                 // Coin haut-droite de la pièce, ajusté pour que le meuble reste dedans
                 double x =extremite.getX();
                 double y = extremite.getY()- meubleHauteur;
 
-                 ((PieceItem) it).setPosition(new Point(x, y));
-                 inner.repaint();
-
-
-
+                ((PieceItem) it).setPosition(new Point(x, y));
+                mainWindow.currentCanvas.repaint();
         });
     
         HM.addActionListener(e ->{
             PieceItemReadOnly it = mainWindow.controllerActif.trouverItemSelectionne();
-           
-                 
-                double meubleLargeur = it.getLargeur();
-                
+             
+                double meubleLargeur = it.getLargeur();           
                 PieceReadOnly piece = mainWindow.controllerActif.getPiece(); 
                 Point  extremite = piece.getExtremiteHautMilieu();
-
-
-                
+   
                 double x = extremite.getX() - (meubleLargeur / 2.0);
                 double y =  extremite.getY() ;
 
                  ((PieceItem) it).setPosition(new Point(x, y));
-                 inner.repaint();
-
-
-
+                mainWindow.currentCanvas.repaint();
         });
     }
 

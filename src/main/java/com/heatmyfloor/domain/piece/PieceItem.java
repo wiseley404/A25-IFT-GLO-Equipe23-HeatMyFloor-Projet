@@ -130,30 +130,6 @@ public abstract class PieceItem implements PieceItemReadOnly, Serializable{
         this.estSelectionne = statutSelection;
     }
     
-    public void positionnerAGauche(){
-
-    }
-    
-    
-    public void positionnerADroite(){
-        
-    }
-    
-    
-    public void positionnerEnHaut(){
-        
-    }
-    
-    
-    public void positionnerEnBas(){
-        
-    }
-    
-    
-    public void positionnerAuCentre(){
-        
-    }
-    
     
     public void setAngle(double angle){
         angle = angle % 360;
