@@ -88,7 +88,17 @@ public class Canvas extends JPanel implements Serializable {
     public Canvas() {
         setBackground(Color.white);
         setLayout(null);
-        setBorder(BorderFactory.createLineBorder(new Color(140, 140, 140), 2));
+        addMouseWheelListener(e -> {
+            int steps = e.getWheelRotation();
+            if (steps == 0) return;
+ 
+            double factor = Math.pow(1.1, Math.abs(steps));
+            if (steps > 0) {
+                factor = 1.0 / factor;
+            }
+ 
+            applyZoom(e.getX(), e.getY(), factor);
+        });
     }
 
     public MainWindow getMainWindow() {
@@ -98,8 +108,7 @@ public class Canvas extends JPanel implements Serializable {
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
-<<<<<<< HEAD
-=======
+
     
 @Override
 public Dimension getPreferredSize() {
@@ -111,7 +120,7 @@ public Dimension getPreferredSize() {
     }
     return new Dimension(800, 500); // Taille par défaut
 }
->>>>>>> 9837347 (modifications)
+
 
     @Override
     protected void paintComponent(Graphics g) {

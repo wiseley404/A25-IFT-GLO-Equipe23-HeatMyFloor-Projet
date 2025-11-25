@@ -126,24 +126,6 @@ public class MainWindow extends javax.swing.JFrame {
         //
         //action pour le bouton rectangle
         barreOutils.onRectangleClick(() -> {
-<<<<<<< HEAD
-            Component componaint = tabs.getSelectedComponent();
-            if (componaint instanceof Canvas canvas) {
-                controllerActif = controllers.get(canvas);
-                controllerActif.setPiece(new PieceRectangulaire(500, 300));
-                currentCanvas = canvas;
-
-                double largeur = controllerActif.getPiece().getLargeur();
-                double hauteur = controllerActif.getPiece().getHauteur();
-                double x = (currentCanvas.getWidth() - largeur) / 2;
-                double y = (currentCanvas.getHeight() - hauteur) / 2;
-                controllerActif.centrerPiece(new Point(x, y));
-                panelPosition.afficherCoordItemSelectionne();
-
-                currentCanvas.nettoyerModeDessin();
-                currentCanvas.repaint();
-                props.afficherProprietesPiece();
-=======
             Component component = tabs.getSelectedComponent();
             if (component instanceof JScrollPane sp) {
                 Component comp = sp.getViewport().getView();
@@ -164,7 +146,7 @@ public class MainWindow extends javax.swing.JFrame {
                     props.afficherProprietesPiece();
                     props.updateUndoRedoButtons();
                 }
->>>>>>> 9837347 (modifications)
+                
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
                         "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -396,7 +378,6 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void addNewProjet() {
-<<<<<<< HEAD
         addNewProjet(null);
     }
 
@@ -414,14 +395,7 @@ public class MainWindow extends javax.swing.JFrame {
             controllerActif = ctrl;
             title = controllerActif.GetProjetNom();
         }
-
-=======
-        String title = "Projet " + i++;
-        controllerActif = new Controller(new PieceRectangulaire(900, 400));
-        Canvas canvas = new Canvas();
-        canvas.setMainWindow(this);
-        currentCanvas = canvas;     
->>>>>>> 9837347 (modifications)
+   
         controllers.put(currentCanvas, controllerActif);
         JScrollPane sp = new JScrollPane(currentCanvas, 
         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
