@@ -7,7 +7,9 @@ import java.io.Serializable;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.PointMapper;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
+import java.util.function.Consumer;
 
 public class Canvas extends JPanel implements Serializable {
 
@@ -15,27 +17,37 @@ public class Canvas extends JPanel implements Serializable {
     private FormeIrregulierPanel dessinPanel;
     private PieceItemReadOnly itemSurvole;
     public PieceDrawer dessinateurPiece;
-    
+
     // Zoom
-    private double zoom = 1.0; 
+    private double zoom = 1.0;
     private Point originePx = new Point(0, 0);
-    
+
     private double clamp(double v) {
-        if (v > 1e12) return 1e12;
-        if (v < -1e12) return -1e12;
+        if (v > 1e12) {
+            return 1e12;
+        }
+        if (v < -1e12) {
+            return -1e12;
+        }
         return v;
     }
-    
+
     private void applyZoom(double mx, double my, double factor) {
-        if (factor == 0) return;
+        if (factor == 0) {
+            return;
+        }
 
         double oldZoom = zoom;
         double proposed = oldZoom * factor;
 
         // bornes infinies
         double newZoom = proposed;
-        if (newZoom < 1e-6) newZoom = 1e-6;
-        if (newZoom > 1e6)  newZoom = 1e6;
+        if (newZoom < 1e-6) {
+            newZoom = 1e-6;
+        }
+        if (newZoom > 1e6) {
+            newZoom = 1e6;
+        }
 
         double k = newZoom / oldZoom;
 
@@ -50,11 +62,11 @@ public class Canvas extends JPanel implements Serializable {
             mainWindow.updateZoomLabel();
         }
         repaint();
-        
+
     }
 
     public void zoomDepuisCentre(double factor) {
-        double mx = getWidth()  / 2.0;
+        double mx = getWidth() / 2.0;
         double my = getHeight() / 2.0;
         applyZoom(mx, my, factor);
     }
@@ -65,11 +77,19 @@ public class Canvas extends JPanel implements Serializable {
         repaint();
     }
 
+    public double getZoom() {
+        return zoom;
+    }
 
-    public double getZoom() { return zoom; }
-    public Point getOriginePx() { return originePx; }
-    public void resetZoom() { zoom = 1.0; originePx = new Point(0,0); }
-    
+    public Point getOriginePx() {
+        return originePx;
+    }
+
+    public void resetZoom() {
+        zoom = 1.0;
+        originePx = new Point(0, 0);
+    }
+
     /* Convertit un point de la souris (pixels écran) en coordonnées monde */
     public Point toWorld(double sx, double sy) {
         double x = (sx - originePx.getX()) / zoom;
@@ -83,20 +103,21 @@ public class Canvas extends JPanel implements Serializable {
         double y = wy * zoom + originePx.getY();
         return new Point(x, y);
     }
-    
-    
+
     public Canvas() {
         setBackground(Color.white);
         setLayout(null);
         addMouseWheelListener(e -> {
             int steps = e.getWheelRotation();
-            if (steps == 0) return;
- 
+            if (steps == 0) {
+                return;
+            }
+
             double factor = Math.pow(1.1, Math.abs(steps));
             if (steps > 0) {
                 factor = 1.0 / factor;
             }
- 
+
             applyZoom(e.getX(), e.getY(), factor);
         });
     }
@@ -109,24 +130,22 @@ public class Canvas extends JPanel implements Serializable {
         this.mainWindow = mainWindow;
     }
 
-    
-@Override
-public Dimension getPreferredSize() {
-    if (mainWindow.controllerActif != null && mainWindow.controllerActif.getPiece() != null) {
-        PieceReadOnly piece = mainWindow.controllerActif.getPiece();
-        double margeX = mainWindow.controllerActif.getPiece().getPosition().getX();
-        double margeY = mainWindow.controllerActif.getPiece().getPosition().getY();
-        return new Dimension((int)(margeX + piece.getLargeur() + margeX), (int)(margeY + piece.getHauteur() + margeY));
+    @Override
+    public Dimension getPreferredSize() {
+        if (mainWindow.controllerActif != null && mainWindow.controllerActif.getPiece() != null) {
+            PieceReadOnly piece = mainWindow.controllerActif.getPiece();
+            double margeX = mainWindow.controllerActif.getPiece().getPosition().getX();
+            double margeY = mainWindow.controllerActif.getPiece().getPosition().getY();
+            return new Dimension((int) (margeX + piece.getLargeur() + margeX), (int) (margeY + piece.getHauteur() + margeY));
+        }
+        return new Dimension(800, 500); // Taille par défaut
     }
-    return new Dimension(800, 500); // Taille par défaut
-}
-
 
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(255, 232, 200, 120));
         super.paintComponent(g);
-        
+
         Graphics2D g2 = (Graphics2D) g;
         
 
@@ -135,8 +154,7 @@ public Dimension getPreferredSize() {
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    
-        if (mainWindow != null){
+        if (mainWindow != null) {
             dessinateurPiece = new PieceDrawer(mainWindow);
             dessinateurPiece.dessiner(g2);
         }
@@ -168,7 +186,9 @@ public Dimension getPreferredSize() {
         revalidate();
         repaint();
         PieceIrreguliere pir = (PieceIrreguliere) mainWindow.controllerActif.getPiece();
-        pir.setSommets((java.util.List<com.heatmyfloor.domain.Point>) (Point) dessinPanel.getPoints());
+        dessinPanel.setOnFormeTerminee(points -> {
+            pir.setSommets(PointMapper.toDomainList(points));
+        });
     }
-    
+
 }

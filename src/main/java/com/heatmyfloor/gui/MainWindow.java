@@ -217,6 +217,8 @@ public class MainWindow extends javax.swing.JFrame {
                 controllerActif = new Controller();
                 controllerActif.ouvrirProjet(fichier);
                 controllers.put(currentCanvas, controllerActif);
+                
+//                if(controllerActif.getPiece().
 
                 Canvas canvas = new Canvas();
                 canvas.setMainWindow(this);

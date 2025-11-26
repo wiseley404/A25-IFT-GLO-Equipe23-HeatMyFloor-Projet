@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -19,6 +20,7 @@ public class FormeIrregulierPanel extends JPanel {
     private final List<Point> points = new ArrayList<>();
     private Point pointActuel = null;
     private boolean modeDessin = false;
+    private Consumer<List<Point>> onFormeTerminee;
 
     public FormeIrregulierPanel() {
 
@@ -27,9 +29,12 @@ public class FormeIrregulierPanel extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (e.getClickCount() == 2 && points.size() > 2) {
                     modeDessin = false;
                     repaint();
+                    if (onFormeTerminee != null) {
+                        onFormeTerminee.accept(points);
+                    }
                 } else if (modeDessin) {
                     points.add(e.getPoint());
                     repaint();
@@ -95,6 +100,7 @@ public class FormeIrregulierPanel extends JPanel {
 
                 g2.setColor(Color.BLACK);
                 g2.drawPolygon(polygon);
+
             }
         }
 
@@ -105,5 +111,9 @@ public class FormeIrregulierPanel extends JPanel {
         }
 
         g2.dispose();
+    }
+
+    public void setOnFormeTerminee(Consumer<List<Point>> listener) {
+        this.onFormeTerminee = listener;
     }
 }
