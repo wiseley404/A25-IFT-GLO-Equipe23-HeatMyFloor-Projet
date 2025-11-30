@@ -17,12 +17,13 @@ public class PieceRectangulaire extends Piece {
     }
 
     public PieceRectangulaire(double largeur, double hauteur){   
-        super(largeur, hauteur, creerMurs(largeur, hauteur));
+        super(largeur, hauteur, null);
+        this.setMurs(creerMurs(largeur, hauteur, this.getPosition()));
     }
     
-    public static List<Mur> creerMurs(double largeur, double hauteur){
+    public static List<Mur> creerMurs(double largeur, double hauteur, Point position){
         Rectangle2D pieceContour = new Rectangle2D.Double(
-                                    0, 0, largeur, hauteur
+                                    position.getX(), position.getY(), largeur, hauteur
                                    ).getBounds2D();
         Point a = new Point(pieceContour.getX(), pieceContour.getY());
         Point b = new Point(pieceContour.getX()+ largeur, pieceContour.getY());
@@ -36,6 +37,32 @@ public class PieceRectangulaire extends Piece {
                 new Mur(d, b)
               );        
     }
+    
+    @Override
+    public void mettreAJourMurs(){
+        double x = this.getPosition().getX();
+        double y = this.getPosition().getY();
+        double larg = this.getLargeur();
+        double haut = this.getHauteur();
+        
+        Point a = new Point(x, y);
+        Point b = new Point(x + larg, y);
+        Point c = new Point(x, y + haut);
+        Point d = new Point(x + larg, y + haut);
+        
+        this.getMurs().get(0).setPosition(a, b);
+        this.getMurs().get(1).setPosition(a, c);
+        this.getMurs().get(2).setPosition(c, d);
+        this.getMurs().get(3).setPosition(d, b);
+    }
+    
+    
+    @Override
+    public void setPosition(Point position){
+        super.setPosition(position);
+        this.setMurs(creerMurs(this.getLargeur(), this.getHauteur(), this.getPosition()));
+    }
+    
      @JsonIgnore
     public Rectangle2D getForme(){
         Rectangle2D pieceForme = new Rectangle2D.Double(

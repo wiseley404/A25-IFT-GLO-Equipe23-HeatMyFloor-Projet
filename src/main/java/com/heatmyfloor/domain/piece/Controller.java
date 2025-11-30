@@ -55,16 +55,22 @@ public class Controller {
     public void ajouterElementChauffant(Point position) {
         this.historique.sauvegarder(piece);
         this.piece.ajouterItem(new ElementChauffant(150, 50, position));
+        this.piece.positionnerSurMurItemSelectionne((Mur)getMursList().getLast());
     }
 
     public void ajouterThermostat(Point position) {
         this.historique.sauvegarder(piece);
         this.piece.ajouterItem(new Thermostat(70, 50, position));
+        this.piece.positionnerSurMurItemSelectionne((Mur)getMursList().get(1));
     }
 
     public void ajouterZone(Point position, TypeZone type) {
         this.historique.sauvegarder(piece);
         this.piece.ajouterItem(new Zone(150, 70, position, type));
+    }
+    
+    public void positionnerSurMurItemSelectionne(MurReadOnly mur){
+        this.piece.positionnerSurMurItemSelectionne((Mur) mur);
     }
 
     public void repositionnerPiece(Point position) {
@@ -133,6 +139,12 @@ public class Controller {
                 .collect(Collectors.toList());
     }
     
+    public List<MurReadOnly> getMursList(){
+            return this.piece.getMurs()
+            .stream()
+            .map(mur -> (MurReadOnly) mur)
+            .collect(Collectors.toList());
+    }
     public PieceItem trouverItemSurPoint(Point p){
         this.historique.sauvegarder(piece);
         return this.piece.trouverItemSurPoint(p);

@@ -5,6 +5,8 @@
 package com.heatmyfloor.domain.items;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.piece.Mur;
+import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceItem;
 
 /**
@@ -12,7 +14,7 @@ import com.heatmyfloor.domain.piece.PieceItem;
  * @author petit
  */
 public class ElementChauffant extends PieceItem {
-
+    private Mur mur;
     //Constructeur
     public ElementChauffant(double largeur, double hauteur, Point pos) {
         super(largeur, hauteur, pos, "/images/elementChauffant.png");
@@ -22,4 +24,16 @@ public class ElementChauffant extends PieceItem {
         super();
     }
 
+    public void positionnerSurMur(Mur mur, Piece piece){
+        mur.positionnerItem(this, piece);
+        this.mur = mur;
+    }
+    
+    public void setMur(Mur mur){
+        this.mur = mur;
+    }
+    
+    public Mur getMur(){
+        return this.mur;
+    }
 }

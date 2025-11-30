@@ -3,7 +3,9 @@ package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
+import com.heatmyfloor.domain.items.Thermostat;
 import com.heatmyfloor.domain.items.Zone;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,8 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     @Override
     public abstract boolean contientLaForme(Shape itemRotation);
+    
+    public abstract void mettreAJourMurs();
 
     private List<Point> sommets;
 
@@ -90,6 +94,29 @@ public abstract class Piece implements PieceReadOnly, Serializable {
             item.setEstSelectionne(true);
             this.itemsList.add(item);
         } 
+    }
+    
+        public void positionnerSurMurItemSelectionne(Mur mur){
+        PieceItem item = this.trouverItemSelectionne();
+        Point anciennePosition = item.getPosition();
+        double ancienAngle = item.getAngle();
+
+        if(item instanceof ElementChauffant){
+            ((ElementChauffant)item).positionnerSurMur(mur, this);
+            if(!this.contientLaForme(item.getRotationForme())){
+                item.setPosition(anciennePosition);
+                item.setAngle(ancienAngle);
+                ((ElementChauffant) item).setMur(null);
+                
+            }    
+        }else if(item instanceof Thermostat){
+            ((Thermostat)item).positionnerSurMur(mur, this);
+            if(!this.contientLaForme(item.getRotationForme())){
+                item.setPosition(anciennePosition);
+                item.setAngle(ancienAngle);
+                ((Thermostat) item).setMur(null);
+            }  
+        }
     }
 
     public void changerStatutSelectionItem(Point position) {
@@ -324,7 +351,20 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     }
 
     public void setPosition(Point nouvPosition) {
+        //double facteurX = nouvPosition.getX() - this.position.getX();
+        //double facteurY = nouvPosition.getY() - this.position.getY();
         this.position = nouvPosition;
+        //mettreAJourMurs();
+        for(PieceItem item : itemsList){
+            
+            if(item instanceof Thermostat th){
+                th.positionnerSurMur(th.getMur(), this);
+            }else if(item instanceof ElementChauffant ec){
+                ec.positionnerSurMur(ec.getMur(), this);
+            }else{
+                //item.translater(new Point(facteurX, facteurY));
+            }
+        }
     }
 
     public List<PieceItem> getItemsList() {
@@ -337,7 +377,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     }
 
     public List<Mur> getMurs() {
-        throw new UnsupportedOperationException("Méthode non implémentée !");
+        return this.murs;
     }
 
     @Override
@@ -400,5 +440,8 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         return null; 
     }
     
+    public void setMurs(List<Mur> murs){
+        this.murs = murs;
+    }
 
 }

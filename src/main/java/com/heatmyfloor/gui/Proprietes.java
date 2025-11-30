@@ -6,8 +6,13 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
+import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
+import com.heatmyfloor.domain.items.Thermostat;
+import com.heatmyfloor.domain.piece.MurReadOnly;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -30,6 +35,8 @@ public class Proprietes extends JPanel {
     
     private JButton undo;
     private JButton redo;
+    private Map<String, MurReadOnly> mursMap = new HashMap();;
+    private JComboBox<String> murItem;
 
 
     public Proprietes(MainWindow mainWindow) {
@@ -228,10 +235,65 @@ public class Proprietes extends JPanel {
 
         largeurItem = text("");
         hauteurItem = text("");
+        murItem = new JComboBox<>();
         
         s.addRow("Largeur :", largeurItem);
         s.addRow("Hauteur :", hauteurItem);
+        s.addRow("Mur     :", murItem);
+        murItem.addActionListener(e -> positionnerSurMurItemSelectionne());
         return s;
+    }
+    
+        public void afficherMurItemSelectionne(){
+        murItem.removeAllItems();
+        mursMap.clear();
+        
+        PieceItemReadOnly item = mainWindow.controllerActif.trouverItemSelectionne();
+        if(item == null){
+            murItem.setEnabled(false);
+        }
+        if(item instanceof Thermostat || item instanceof ElementChauffant){
+            java.util.List<MurReadOnly> mursList = mainWindow.controllerActif.getMursList();
+            for(int i = 0; i < mursList.size(); i++){
+                String nomMur = "Mur " + (i+1);
+                murItem.addItem(nomMur);
+                mursMap.put(nomMur, mursList.get(i));
+            } 
+        
+        
+            MurReadOnly murActuel = null;
+            if(item instanceof Thermostat){
+                murActuel = ((Thermostat)item).getMur();
+            }else if(item instanceof ElementChauffant){
+                murActuel =((ElementChauffant)item).getMur();
+            }
+
+            if(murActuel != null){
+                for(int i = 0; i < mursList.size(); i ++){
+                    if(mursList.get(i).equals(murActuel)){
+                        murItem.setSelectedItem("Mur " + (i+1));
+                        break;
+                    }
+                }
+            }else{
+                murItem.setSelectedItem("Aucun");
+            }
+            murItem.setEnabled(true);
+        }else{
+            murItem.setEnabled(false);
+        }
+    }
+    
+    public void positionnerSurMurItemSelectionne(){
+        String choix = (String)murItem.getSelectedItem();
+        if(choix == null){
+            return;
+        }
+        MurReadOnly murChoisi = mursMap.get(choix);
+        if(murChoisi != null){
+            mainWindow.controllerActif.positionnerSurMurItemSelectionne(murChoisi);
+            mainWindow.currentCanvas.repaint();
+        }
     }
     
     public void afficherProprietesItemSelectionne() {

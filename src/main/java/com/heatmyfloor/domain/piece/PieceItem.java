@@ -4,6 +4,8 @@ package com.heatmyfloor.domain.piece;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.heatmyfloor.domain.Point;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 import java.io.Serializable;
@@ -121,9 +123,10 @@ public abstract class PieceItem implements PieceItemReadOnly, Serializable{
     
     @Override
     public boolean contientLePoint(Point position){
-        return this.getItemForme().contains(position.getX(), position.getY());
-
-    
+        if(this.angle == 0){
+            return this.getItemForme().contains(position.getX(), position.getY());
+        }
+        return this.getRotationForme().contains(position.getX(), position.getY());
     }    
     
     public void setEstSelectionne(boolean statutSelection){
@@ -160,7 +163,18 @@ public abstract class PieceItem implements PieceItemReadOnly, Serializable{
         return this.position;
     }
     
-    
+    public Shape getRotationForme(){
+        Rectangle2D itemForme = this.getItemForme();
+        double centreX = itemForme.getCenterX();
+        double centreY = itemForme.getCenterY();
+        double angleRadian = Math.toRadians(angle);
+        
+        AffineTransform t = new AffineTransform();
+        t.rotate(angleRadian, centreX, centreY);
+        
+        Shape itemRotation = t.createTransformedShape(itemForme);
+        return itemRotation;
+    }
     
     
     @Override

@@ -31,6 +31,11 @@ public class PieceIrreguliere extends Piece {
         return this.sommets;
     }   
     
+    @Override
+    public void mettreAJourMurs(){
+        this.setMurs(creerMurs(this.sommets));
+    }
+    
     public static List<Mur> creerMurs(List<Point> sommets){
         List<Mur> murs = new ArrayList<>();
         for (int i=1; i <= sommets.size(); i++){

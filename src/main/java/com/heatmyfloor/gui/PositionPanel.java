@@ -107,7 +107,8 @@ public class PositionPanel extends JPanel {
 
         rotChamp.add(degRotation);
 
-        rotationButton = new JButton("⟳");
+        rotationButton = new JButton("↷");
+        rotationButton.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
         rotationButton.setPreferredSize(new Dimension(30, 27));
         rotationButton.setMaximumSize(new Dimension(30, 27));
         rotationButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));

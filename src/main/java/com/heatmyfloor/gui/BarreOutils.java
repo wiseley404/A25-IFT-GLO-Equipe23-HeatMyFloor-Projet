@@ -313,6 +313,7 @@ public class BarreOutils extends JPanel {
             Point position = mainWindow.controllerActif.getPiece().getCentre();
             mainWindow.controllerActif.ajouterThermostat(position);
             mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.props.afficherMurItemSelectionne();
             mainWindow.currentCanvas.repaint();
         });
     }
@@ -322,6 +323,7 @@ public class BarreOutils extends JPanel {
             Point position = mainWindow.controllerActif.getPiece().getCentre();
             mainWindow.controllerActif.ajouterElementChauffant(position);
             mainWindow.props.afficherProprietesItemSelectionne();
+            mainWindow.props.afficherMurItemSelectionne();
             mainWindow.currentCanvas.repaint();
         });
     }

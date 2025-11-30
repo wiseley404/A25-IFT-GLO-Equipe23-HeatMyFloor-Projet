@@ -409,6 +409,7 @@ public class MainWindow extends javax.swing.JFrame {
         int idx = tabs.indexOfComponent(sp);
         tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
         tabs.setSelectedIndex(idx);
+        props.afficherMurItemSelectionne();
 
         SwingUtilities.invokeLater(() -> {
             double largeur = controllerActif.getPiece().getLargeur();
@@ -444,11 +445,10 @@ public class MainWindow extends javax.swing.JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
 
-                    controllerActif.supprimerItemSelectionne();
-                    props.afficherProprietesItemSelectionne();
-                    panelPosition.afficherCoordItemSelectionne();
-                    panelPosition.afficherAngleItemSelectionne();
-                    currentCanvas.repaint();
+                    SwingUtilities.invokeLater(() -> {
+                        supprimerItem();
+                        currentCanvas.repaint();
+                    });
                 }
             }
         });
@@ -458,10 +458,10 @@ public class MainWindow extends javax.swing.JFrame {
         controllerActif.supprimerItemSelectionne();
         props.afficherProprietesDrainSelectionne();
         props.afficherProprietesItemSelectionne();
+        props.afficherMurItemSelectionne();
         panelPosition.afficherCoordItemSelectionne();
         panelPosition.afficherAngleItemSelectionne();
-        currentCanvas.repaint();
-        props.updateUndoRedoButtons();
+        props.updateUndoRedoButtons();    
     }
 
     public void sourisListener() {
@@ -481,7 +481,8 @@ public class MainWindow extends javax.swing.JFrame {
                    if (drain != null) {
                         // Offset relatif au drain
                         dragOffsetX = pWorld.getX() - drain.getPosition().getX();
-                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();                    } else {
+                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();
+                   }else {
                        // Offset relatif au meuble
                        dragOffsetX = pWorld.getX() - sel.getPosition().getX();
                        dragOffsetY = pWorld.getY() - sel.getPosition().getY();
@@ -618,6 +619,7 @@ public class MainWindow extends javax.swing.JFrame {
 
                     SwingUtilities.invokeLater(() -> {
                         props.afficherProprietesPiece();
+                        props.afficherMurItemSelectionne();
                         props.updateUndoRedoButtons();
                         props.afficherProprietesItemSelectionne();
                         props.afficherProprietesDrainSelectionne();
