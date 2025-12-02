@@ -58,7 +58,7 @@ public class PieceDrawer {
             dessinerPieceItems(g);
 
         } else {
-            currentCanvas.dessinerFormeIrreguliere();
+//            currentCanvas.dessinerFormeIrreguliere();
             dessinerPieceItems(g);
         }
 

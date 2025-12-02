@@ -175,7 +175,7 @@ public class Canvas extends JPanel implements Serializable {
         }
     }
 
-    public void dessinerFormeIrreguliere() {
+    void dessinerFormeIrreguliere() {
         nettoyerModeDessin();
         dessinPanel = new FormeIrregulierPanel();
         dessinPanel.setOpaque(false);
@@ -184,13 +184,11 @@ public class Canvas extends JPanel implements Serializable {
 
         add(dessinPanel);
         revalidate();
+        repaint();
         PieceIrreguliere pir = (PieceIrreguliere) mainWindow.controllerActif.getPiece();
         dessinPanel.setOnFormeTerminee(points -> {
             pir.setSommets(PointMapper.toDomainList(points));
         });
-        
-                repaint();
-
     }
 
 }
