@@ -43,10 +43,10 @@ public class BarreOutils extends JPanel {
         this.mainWindow = mainWindow;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 200, 160)));
-       setOpaque(true);
-       setBackground(Color.white);
+        setOpaque(true);
+        setBackground(Color.white);
 
-       addButton();
+        addButton();
 
     }
 
@@ -325,6 +325,9 @@ public class BarreOutils extends JPanel {
             mainWindow.props.afficherProprietesItemSelectionne();
             mainWindow.props.afficherMurItemSelectionne();
             mainWindow.currentCanvas.repaint();
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.requestFocusInWindow();
+            });
         });
     }
 
@@ -373,5 +376,5 @@ public class BarreOutils extends JPanel {
         btnOuvrir.setOnClick(e -> r.run());
 
     }
-    
+
 }

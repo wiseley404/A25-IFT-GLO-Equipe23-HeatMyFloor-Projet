@@ -47,7 +47,6 @@ public class PieceIrreguliere extends Piece {
     }
     
     
-    @JsonIgnore
     public static Path2D getForme(List<Point> sommets){
         Path2D polygone = new Path2D.Double();
         boolean sommetDepart = true;
@@ -63,7 +62,6 @@ public class PieceIrreguliere extends Piece {
         return polygone;
     }
     
-    @JsonIgnore
     public static Rectangle2D getContour(List<Point> sommets){
         return getForme(sommets).getBounds2D();
     }

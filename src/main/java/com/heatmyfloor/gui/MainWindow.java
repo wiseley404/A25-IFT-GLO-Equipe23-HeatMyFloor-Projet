@@ -77,8 +77,8 @@ public class MainWindow extends javax.swing.JFrame {
     public Point positionSouris = new Point();
     public TableauErreur tabsErreur;
 
-    private double dragOffsetX = 0; 
-    private double dragOffsetY = 0; 
+    private double dragOffsetX = 0;
+    private double dragOffsetY = 0;
     private final int STEP = 5;
 
     public MainWindow() {
@@ -129,7 +129,7 @@ public class MainWindow extends javax.swing.JFrame {
             Component component = tabs.getSelectedComponent();
             if (component instanceof JScrollPane sp) {
                 Component comp = sp.getViewport().getView();
-                if(comp instanceof Canvas canvas){
+                if (comp instanceof Canvas canvas) {
                     controllerActif = controllers.get(canvas);
                     controllerActif.setPiece(new PieceRectangulaire(1000, 500));
                     currentCanvas = canvas;
@@ -138,7 +138,7 @@ public class MainWindow extends javax.swing.JFrame {
                     double hauteur = controllerActif.getPiece().getHauteur();
                     double x = (currentCanvas.getWidth() - largeur) / 2;
                     double y = (currentCanvas.getHeight() - hauteur) / 2;
-                    controllerActif.centrerPiece(new Point(x,y));
+                    controllerActif.centrerPiece(new Point(x, y));
                     panelPosition.afficherCoordItemSelectionne();
 
                     currentCanvas.nettoyerModeDessin();
@@ -146,7 +146,7 @@ public class MainWindow extends javax.swing.JFrame {
                     props.afficherProprietesPiece();
                     props.updateUndoRedoButtons();
                 }
-                
+
             } else {
                 JOptionPane.showMessageDialog(this, "Aucun projet ouvert.",
                         "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -159,13 +159,12 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.onElementChauffant();
         barreOutils.onZonesClicked();
 
-
         barreOutils.onIrregularButtonClick(() -> {
 
             Component component = tabs.getSelectedComponent();
             if (component instanceof JScrollPane sp) {
                 Component comp = sp.getViewport().getView();
-                if(comp instanceof Canvas canvas){
+                if (comp instanceof Canvas canvas) {
                     controllerActif = controllers.get(canvas);
                     controllerActif.setPiece(new PieceIrreguliere());
                     currentCanvas = canvas;
@@ -200,47 +199,6 @@ public class MainWindow extends javax.swing.JFrame {
                 UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
             }
 
-        });
-
-        barreOutils.onOuvrirProjetClick(() -> {
-
-            Path fichier;
-            fichier = UiUtils.choisirFichierJson(this);
-            if (fichier == null) {
-
-                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun fichier Json nà été sélectionné.");
-                return;
-            }
-
-            try {
-
-                controllerActif = new Controller();
-                controllerActif.ouvrirProjet(fichier);
-                controllers.put(currentCanvas, controllerActif);
-                
-//                if(controllerActif.getPiece().
-
-                Canvas canvas = new Canvas();
-                canvas.setMainWindow(this);
-                currentCanvas = canvas;
-                tabs.addTab(controllerActif.GetProjetNom(), currentCanvas);
-                tabs.setSelectedComponent(currentCanvas);
-                int idx = tabs.indexOfComponent(currentCanvas);
-                tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
-                tabs.setSelectedIndex(idx);
-
-                SwingUtilities.invokeLater(() -> {
-                    currentCanvas.repaint();
-                });
-                props.afficherProprietesPiece();
-                sourisListener();
-                suppressionListener();
-                disableButton();
-
-                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
-            } catch (RuntimeException e) {
-                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
-            }
         });
 
         barreOutils.onExportPngClick(() -> {
@@ -400,11 +358,11 @@ public class MainWindow extends javax.swing.JFrame {
             controllerActif = ctrl;
             title = controllerActif.GetProjetNom();
         }
-   
+
         controllers.put(currentCanvas, controllerActif);
-        JScrollPane sp = new JScrollPane(currentCanvas, 
-        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane sp = new JScrollPane(currentCanvas,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         tabs.addTab(title, sp);
         tabs.setSelectedComponent(sp);
@@ -463,105 +421,111 @@ public class MainWindow extends javax.swing.JFrame {
         props.afficherMurItemSelectionne();
         panelPosition.afficherCoordItemSelectionne();
         panelPosition.afficherAngleItemSelectionne();
-        props.updateUndoRedoButtons();    
+        props.updateUndoRedoButtons();
     }
 
     public void sourisListener() {
 
-    // --- Sélection au clic ---
-    currentCanvas.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            Point pWorld = toWorld(currentCanvas, e);
+        // --- Sélection au clic ---
+        currentCanvas.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Point pWorld = toWorld(currentCanvas, e);
 
-            // Sélectionne l’item (meuble ou autre)
-            controllerActif.changerStatutSelection(pWorld); 
-            PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
-            if (sel != null) {
-                if (sel instanceof MeubleAvecDrain meuble) {
-                    Drain drain = meuble.getDrain();
-                   if (drain != null) {
-                        // Offset relatif au drain
-                        dragOffsetX = pWorld.getX() - drain.getPosition().getX();
-                        dragOffsetY = pWorld.getY() - drain.getPosition().getY();
-                   }else {
-                       // Offset relatif au meuble
-                       dragOffsetX = pWorld.getX() - sel.getPosition().getX();
-                       dragOffsetY = pWorld.getY() - sel.getPosition().getY();
-                   }
-                } else {
-                    // Item classique
-                    dragOffsetX = pWorld.getX() - sel.getPosition().getX();
-                    dragOffsetY = pWorld.getY() - sel.getPosition().getY();
+                // Sélectionne l’item (meuble ou autre)
+                controllerActif.changerStatutSelection(pWorld);
+                PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
+                if (sel != null) {
+                    if (sel instanceof MeubleAvecDrain meuble) {
+                        Drain drain = meuble.getDrain();
+                        if (drain != null) {
+                            // Offset relatif au drain
+                            dragOffsetX = pWorld.getX() - drain.getPosition().getX();
+                            dragOffsetY = pWorld.getY() - drain.getPosition().getY();
+                        } else {
+                            // Offset relatif au meuble
+                            dragOffsetX = pWorld.getX() - sel.getPosition().getX();
+                            dragOffsetY = pWorld.getY() - sel.getPosition().getY();
+                        }
+                    } else {
+                        // Item classique
+                        dragOffsetX = pWorld.getX() - sel.getPosition().getX();
+                        dragOffsetY = pWorld.getY() - sel.getPosition().getY();
+
+                    }
+
+                    props.afficherProprietesItemSelectionne();
+                    panelPosition.afficherCoordItemSelectionne();
+                    panelPosition.afficherAngleItemSelectionne();
+                    SwingUtilities.invokeLater(() -> {
+                        props.afficherProprietesDrainSelectionne();
+                    });
+                    currentCanvas.repaint();
                 }
             }
-
-            props.afficherProprietesItemSelectionne();
-            panelPosition.afficherCoordItemSelectionne();
-            panelPosition.afficherAngleItemSelectionne();
-            SwingUtilities.invokeLater(() -> {
-            props.afficherProprietesDrainSelectionne();
-             });
-            currentCanvas.repaint();
         }
-    });
+        );
 
-    // --- Survol souris ---
-    currentCanvas.addMouseMotionListener(new MouseMotionAdapter() {
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            Point pWorld = toWorld(currentCanvas, e);
+        // --- Survol souris ---
+        currentCanvas.addMouseMotionListener(
+                new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e
+            ) {
+                Point pWorld = toWorld(currentCanvas, e);
 
-            List<PieceItemReadOnly> items = controllerActif.getItemsList();
-            PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
-            PieceItemReadOnly itemSurvole = null;
+                List<PieceItemReadOnly> items = controllerActif.getItemsList();
+                PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
+                PieceItemReadOnly itemSurvole = null;
 
-            for (int i = items.size() - 1; i >= 0; i--) {
-                PieceItemReadOnly item = items.get(i);
-                if (item.contientLePoint(pWorld)) {
-                    itemSurvole = item;
-                    break;
+                for (int i = items.size() - 1; i >= 0; i--) {
+                    PieceItemReadOnly item = items.get(i);
+                    if (item.contientLePoint(pWorld)) {
+                        itemSurvole = item;
+                        break;
+                    }
+                }
+
+                if (ancienItemSurvole != itemSurvole) {
+                    currentCanvas.setItemSurvole(itemSurvole);
+                    currentCanvas.repaint();
                 }
             }
 
-            if (ancienItemSurvole != itemSurvole) {
-                currentCanvas.setItemSurvole(itemSurvole);
+            // --- Drag pour déplacer meuble ou drain ---
+            @Override
+            public void mouseDragged(MouseEvent e
+            ) {
+                PieceItemReadOnly selObj = controllerActif.trouverItemSelectionne();
+                if (selObj == null) {
+                    return;
+                }
+
+                Point pWorld = toWorld(currentCanvas, e);
+                double targetX = pWorld.getX() - dragOffsetX;
+                double targetY = pWorld.getY() - dragOffsetY;
+
+                if (selObj instanceof MeubleAvecDrain meuble) {
+                    Drain drain = meuble.getDrain();
+                    if (drain.contientLePoint(pWorld)) {
+                        double dx = targetX - drain.getPosition().getX();
+                        double dy = targetY - drain.getPosition().getY();
+                        meuble.deplacerDrain(new Point(dx, dy));
+                    } else {
+                        // Déplacement du meuble entier
+                        panelPosition.moveSelectedTo(targetX, targetY);
+                    }
+                } else {
+                    panelPosition.moveSelectedTo(targetX, targetY);
+                }
+
+                panelPosition.afficherCoordItemSelectionne();
+                props.afficherProprietesDrainSelectionne();
                 currentCanvas.repaint();
             }
         }
-
-        // --- Drag pour déplacer meuble ou drain ---
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            PieceItemReadOnly selObj = controllerActif.trouverItemSelectionne();
-            if (selObj == null) return;
-
-            Point pWorld = toWorld(currentCanvas, e);
-            double targetX = pWorld.getX() - dragOffsetX;
-            double targetY = pWorld.getY() - dragOffsetY;
-
-            if (selObj instanceof MeubleAvecDrain meuble) {
-                Drain drain = meuble.getDrain();
-                if (drain.contientLePoint(pWorld)) {  
-                    double dx = targetX - drain.getPosition().getX();
-                    double dy = targetY - drain.getPosition().getY();
-                    meuble.deplacerDrain(new Point(dx, dy));
-               } else {
-                    // Déplacement du meuble entier
-                    panelPosition.moveSelectedTo(targetX, targetY);   
-                }
-            } else {
-                panelPosition.moveSelectedTo(targetX, targetY);     
-            }
-
-            panelPosition.afficherCoordItemSelectionne();
-            props.afficherProprietesDrainSelectionne();
-            currentCanvas.repaint();
-        }
-    });
-}
-
-
+        );
+    }
 
     public void clavierListener() {
 
@@ -615,7 +579,7 @@ public class MainWindow extends javax.swing.JFrame {
             Component component = tabs.getSelectedComponent();
             if (component instanceof JScrollPane sp) {
                 Component comp = sp.getViewport().getView();
-                if(comp instanceof Canvas canvas){
+                if (comp instanceof Canvas canvas) {
                     currentCanvas = canvas;
                     this.controllerActif = controllers.get(canvas);
 
@@ -627,13 +591,12 @@ public class MainWindow extends javax.swing.JFrame {
                         props.afficherProprietesDrainSelectionne();
                         panelPosition.afficherAngleItemSelectionne();
                         panelPosition.afficherCoordItemSelectionne();
-                    });          
+                    });
                 }
             }
         });
     }
 
-    
     private void disableButton() {
         if (tabs.getTabCount() == 0 || controllerActif == null) {
             UiUtils.setEnabledRecursively(barreOutils, false);
@@ -694,6 +657,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void closeTabAt(int idx) {
+        this.controllers.remove(currentCanvas, controllerActif);
         tabs.removeTabAt(idx);
         disableButton();
     }
@@ -702,8 +666,8 @@ public class MainWindow extends javax.swing.JFrame {
         Component comp = tabs.getSelectedComponent();
         if (comp instanceof JScrollPane sp) {
             Component component = sp.getViewport().getView();
-            if(component instanceof Canvas canvas){
-            return canvas;
+            if (component instanceof Canvas canvas) {
+                return canvas;
             }
         }
         return null;
@@ -812,7 +776,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void enregistrerProjet(Path fichierSauvegarde) {
         if (controllerActif.GetCheminFichier() == null) {
-             fichierSauvegarde= UiUtils.choisirDossierSauvegarde(MainWindow.this);
+            fichierSauvegarde = UiUtils.choisirDossierSauvegarde(MainWindow.this);
             if (fichierSauvegarde == null) {
 
                 UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
@@ -928,7 +892,16 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void sauvegarderSession() {
         try {
-            Path fichierSession = Paths.get("sauvegardes", "autosaves.json");
+            Path dossier = Paths.get("sauvegardes");
+            Path fichierSession = dossier.resolve("autosaves.json");
+
+            if (Files.notExists(dossier)) {
+                Files.createDirectories(dossier);
+            }
+
+            if (Files.notExists(fichierSession)) {
+                Files.createFile(fichierSession);
+            }
 
             FileOutputStream fo = new FileOutputStream(fichierSession.toFile(), false);
             ObjectOutputStream out = new ObjectOutputStream(fo);
@@ -995,9 +968,8 @@ public class MainWindow extends javax.swing.JFrame {
         actionMap.put("saveSession", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 Path fichierSauvegarde = null;
-               
 
                 enregistrerProjet(fichierSauvegarde);
             }
