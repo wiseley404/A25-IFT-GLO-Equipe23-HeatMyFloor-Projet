@@ -74,7 +74,9 @@ public class Util {
         return roundTo32nd(totalInches)*PIXEL_PAR_POUCE;
     }
 
-            
+    public static double enPixels(double inches){
+        return inches*PIXEL_PAR_POUCE;
+    }     
 
     private static double roundTo32nd(double inches) {
         double step = 1.0 / 32.0;
@@ -85,7 +87,7 @@ public class Util {
     public static double enPouces(double enPixels){
         return enPixels/PIXEL_PAR_POUCE;
     }
-
+    
     
     public static String formatImperial(double inches) {
         inches = roundTo32nd(inches);

@@ -1,6 +1,7 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Util;
 import java.awt.geom.Line2D;
 import java.util.UUID;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class Mur implements Serializable, MurReadOnly {
         this.fin = fin;
         this.debut = debut;
         this.id = UUID.randomUUID();
-        this.distanceAvecFil = 3;
+        this.distanceAvecFil = Util.enPixels(3);
     }
 
     public Mur() {

@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceItem;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 /**
  *
@@ -17,6 +20,7 @@ public class Graphe implements Serializable{
     private List<Intersection> intersections;
     private Chemin cheminActuel;
     private double distanceIntersection;
+    private double rayonIntersection = 5;
     private List<Fil> aretes;
     
     public Graphe(double distanceIntersection){
@@ -35,47 +39,68 @@ public class Graphe implements Serializable{
     public boolean estIntersectionValide(Intersection intersection, Piece piece){
         Point position = intersection.getCoordonees();
         List<PieceItem> items = piece.getItemsList();
-        
-        boolean valide =  false;
-        if (piece.contientLePoint(position)){
-            for(PieceItem item : items){
-                double posXMin = item.getPosition().getX();
-                double posXMax = posXMin + item.getLargeur();
-                double posYMin = item.getPosition().getY();
-                double posYMax = posYMin + item.getHauteur();
-                
-                boolean respecteContrainteX = posXMin >= position.getX() + item.getDistanceAvecFil() || position.getX() >= posXMax + item.getDistanceAvecFil();
-                boolean respecteContrainteY = posYMin >= position.getY() + item.getDistanceAvecFil() || position.getY() >= posYMax + item.getDistanceAvecFil();
-                if(!item.contientLePoint(position) && respecteContrainteX && respecteContrainteY){
-                    valide = true;
-                }
+
+        if (!piece.contientLePoint(position)){
+            return false;
+        }
+        for(PieceItem item : items){
+            double distance = item.getDistanceAvecFil();
+            double posXMin = item.getPosition().getX() - distance ;
+            double posYMin = item.getPosition().getY() - distance ;
+
+            double largeur = item.getLargeur() + 2*distance;
+            double hauteur = item.getHauteur() + 2*distance;
+            Rectangle2D espaceInterdite = new Rectangle2D.Double(posXMin ,
+                                                                 posYMin ,
+                                                                 largeur,
+                                                                 hauteur
+                                        );
+            //Avec rotation
+            double centreX = item.getCentre().getX();
+            double centreY = item.getCentre().getY();
+            double angleRad = Math.toRadians(item.getAngle());
+            
+            AffineTransform transf = new AffineTransform();
+            transf.rotate(angleRad, centreX, centreY);
+            Shape espaceInterditeTournee = transf.createTransformedShape(espaceInterdite);
+            
+            Rectangle2D intersectionContour = new Rectangle2D.Double(position.getX(),
+                                                                position.getY(),
+                                                                2*rayonIntersection,
+                                                                2*rayonIntersection
+                                              );
+
+            if(espaceInterditeTournee.intersects(intersectionContour)){
+                return false;
             }
         }
-        return valide;
+        return true;
     }
+    
     
     public List<Intersection> ListIntersectionsValide(Piece piece){
         
-       List<Intersection> intersectionsValide = new ArrayList<>();
-       double xMin = piece.getPosition().getX() + 3;
-       double xMax = xMin + piece.getLargeur() - 3;
-       double yMin = piece.getPosition().getY() + 3;
-       double yMax = yMin + piece.getHauteur() - 3;
-       
-       while(yMin < yMax){
-           Intersection intersect = new Intersection(new Point(xMin, yMin));
-           if(this.estIntersectionValide(intersect, piece)){
-               intersectionsValide.add(intersect);
-           }
-           if(xMin < xMax){
-               xMin  = xMin + this.distanceIntersection; 
-           }else{
-               xMin = piece.getPosition().getX() + 3;
-               yMin = yMin + this.distanceIntersection;
-           }    
-           
-       }
-       return intersectionsValide;
+        List<Intersection> intersectionsValide = new ArrayList<>();
+        if(this.distanceIntersection <= 0) return intersectionsValide;
+        
+        double distanceFilAvecMur = piece.getMurs().getFirst().getDistanceAvecFil();
+        
+        double xMin = piece.getPosition().getX() + distanceFilAvecMur;
+        double xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
+        double yMin = piece.getPosition().getY() + distanceFilAvecMur;
+        double yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
+        
+        double distance = this.distanceIntersection + rayonIntersection;
+        for(double y = yMin; y < yMax; y+= distance){
+            for(double x = xMin; x < xMax; x += distance){
+                 Intersection intersect = new Intersection(new Point(x, y));
+                 if(this.estIntersectionValide(intersect, piece)){
+                     intersectionsValide.add(intersect);
+                 }
+            }       
+        }
+        this.intersections = intersectionsValide;
+        return intersectionsValide;
     } 
     
     
@@ -95,6 +120,10 @@ public class Graphe implements Serializable{
     
     public Chemin mettreAjoutChemin(){
         return null;
+    }
+    
+    public double getRayonIntersection(){
+        return this.rayonIntersection;
     }
     
   }

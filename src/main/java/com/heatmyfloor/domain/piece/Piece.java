@@ -44,7 +44,10 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     @Override
     public abstract boolean contientLePoint(Point position);
-
+    
+    @Override
+    public abstract Shape getForme();
+    
     @Override
     public abstract boolean contientLaForme(Shape itemRotation);
 
@@ -337,6 +340,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         return this.hauteur;
     }
     
+    @Override
     public Graphe getGraphe(){
         return this.graphe;
     }
@@ -374,14 +378,6 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public List<PieceItem> getItemsList() {
         return this.itemsList;
     }
-<<<<<<< HEAD
-
-    public Graphe getGraphe() {
-        throw new UnsupportedOperationException("Méthode non implémentée !");
-    }
-=======
-   
->>>>>>> f940920 (Ajout graphe)
 
     public List<Mur> getMurs() {
         return this.murs;

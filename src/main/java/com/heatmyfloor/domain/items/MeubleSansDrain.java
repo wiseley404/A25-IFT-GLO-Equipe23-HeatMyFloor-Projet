@@ -5,6 +5,7 @@
 package com.heatmyfloor.domain.items;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.piece.PieceItem;
 
 /**
@@ -20,7 +21,7 @@ public class MeubleSansDrain extends PieceItem {
     //Constructeur
     public MeubleSansDrain(double largeur, double hauteur, Point pos, TypeSansDrain type) {
         super(largeur, hauteur, pos, type.getImage());
-        this.distanceAvecFil = 3.0;
+        this.distanceAvecFil = Util.enPixels(3.0);
         this.type = type;
     }
 

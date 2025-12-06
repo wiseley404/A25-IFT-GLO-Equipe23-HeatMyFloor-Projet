@@ -7,6 +7,7 @@ package com.heatmyfloor.domain.items;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.UUID;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Util;
 import java.awt.geom.Ellipse2D;
 import java.io.Serializable;
 /**
@@ -30,7 +31,7 @@ public class Drain implements DrainReadOnly, Serializable {
         this.id = UUID.randomUUID();
         this.diametre = diam;
         this.position = pos;
-        this.distanceAvecFil = 6.0;
+        this.distanceAvecFil = Util.enPixels(6.0);
         this.estSelectionne = true;
     }
     

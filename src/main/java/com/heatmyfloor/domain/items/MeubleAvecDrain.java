@@ -6,6 +6,7 @@ package com.heatmyfloor.domain.items;
 
 import java.util.UUID;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.piece.PieceItem;
 import java.awt.geom.Rectangle2D;
 
@@ -29,7 +30,7 @@ public class MeubleAvecDrain extends PieceItem {
                           pos.getY() + (hauteur/2) - 10
                 )
         );    
-        this.distanceAvecFil = 3.0;
+        this.distanceAvecFil = Util.enPixels(3.0);
         this.type = type;
     }
     

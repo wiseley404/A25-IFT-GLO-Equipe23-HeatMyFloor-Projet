@@ -49,6 +49,10 @@ public class PieceIrreguliere extends Piece {
         return murs;
     }
     
+    @Override
+    public Path2D getForme(){
+        return getForme(this.sommets);
+    }
     
     public static Path2D getForme(List<Point> sommets){
         Path2D polygone = new Path2D.Double();

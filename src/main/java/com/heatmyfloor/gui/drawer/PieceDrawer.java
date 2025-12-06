@@ -11,11 +11,7 @@ import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Controller;
-<<<<<<< HEAD
-import com.heatmyfloor.domain.piece.PieceIrreguliere;
-=======
 import com.heatmyfloor.domain.piece.Piece;
->>>>>>> f940920 (Ajout graphe)
 import com.heatmyfloor.gui.MainWindow;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
@@ -78,7 +74,6 @@ public class PieceDrawer {
         double hauteur = controller.getPiece().getHauteur();
         var pos = controller.getPiece().getPosition();
 
-<<<<<<< HEAD
         Rectangle2D pieceRectangulaire = new Rectangle2D.Double(pos.getX(), pos.getY(), largeur, hauteur);
 
         g2.setColor(new Color(255, 232, 200, 120));
@@ -87,29 +82,21 @@ public class PieceDrawer {
         g2.setStroke(new BasicStroke(1.5f));
         g2.draw(pieceRectangulaire);
 
+        Graphe graphe = controller.getPiece().getGraphe();
+        if(graphe != null){
+            List<Intersection> intersectionsValide = graphe.ListIntersectionsValide((Piece)controller.getPiece());
+            for(Intersection intersect : intersectionsValide){
+                Point point = intersect.getCoordonees();
+                int x = (int) point.getX();
+                int y = (int) point.getY();
+                int rayon = (int) graphe.getRayonIntersection();
+                g2.fillOval(x, y, rayon*2, rayon*2);
+            }
+        }
+
         props.afficherProprietesPiece();
-=======
-      g2.setColor(new Color(255, 232, 200, 120));
-      g2.fill(pieceRectangulaire);
-      g2.setColor(Color.ORANGE);
-      g2.setStroke(new BasicStroke(1.5f));
-      g2.draw(pieceRectangulaire);
-      
-      Graphe graphe = controller.getPiece().getGraphe();
-      if(graphe != null){
-          List<Intersection> intersectionsValide = graphe.ListIntersectionsValide((Piece)controller.getPiece());
-          for(Intersection intersect : intersectionsValide){
-              Point point = intersect.getCoordonees();
-              int x = (int) point.getX();
-              int y = (int) point.getY();
-              int rayon = 5;
-              g2.fillOval(x-rayon, y-rayon, rayon*2, rayon*2);
-          }
+
       }
-      
-      props.afficherProprietesPiece();
->>>>>>> f940920 (Ajout graphe)
-    }
 
     public void dessinerPieceItems(Graphics g) {
 
