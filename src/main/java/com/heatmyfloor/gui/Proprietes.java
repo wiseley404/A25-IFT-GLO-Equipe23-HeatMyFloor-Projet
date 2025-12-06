@@ -6,6 +6,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
+import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.Thermostat;
@@ -33,6 +34,7 @@ public class Proprietes extends JPanel {
     private JTextField PositionX;
     private JTextField PositionY;
     
+    private JButton grapheButton;
     private JButton undo;
     private JButton redo;
     private Map<String, MurReadOnly> mursMap = new HashMap();;
@@ -80,6 +82,7 @@ public class Proprietes extends JPanel {
         sp.setBorder(null);
         sp.getViewport().setOpaque(false);
         add(sp, BorderLayout.CENTER);
+        
 
     }
 
@@ -226,8 +229,23 @@ public class Proprietes extends JPanel {
         distanceIntersections = text("");
         s.addRow("Intersections :", distanceIntersections);
         s.addSpacer(8);
-        s.addFull(button("Générer un Graphe"));
+        grapheButton = button("Générer un Graphe");
+        s.addFull(grapheButton);
         return s;
+    }
+    
+    public  void grapheListener(){
+        ActionListener listener = (e -> {
+            double distance = Util.enPixels(this.distanceIntersections.getText());
+            mainWindow.controllerActif.configurerGraphe(new Graphe(distance)); 
+            SwingUtilities.invokeLater(() -> {
+                mainWindow.currentCanvas.revalidate();
+                mainWindow.currentCanvas.repaint();
+                mainWindow.currentCanvas.requestFocusInWindow();
+          });
+        });
+        grapheButton.addActionListener(listener);
+
     }
 
     private JComponent sectionMeuble() {

@@ -15,6 +15,7 @@ import com.heatmyfloor.domain.piece.PieceItem;
  */
 public class ElementChauffant extends PieceItem {
     private Mur mur;
+    private double distanceAvecFil = 8.0;
     //Constructeur
     public ElementChauffant(double largeur, double hauteur, Point pos) {
         super(largeur, hauteur, pos, "/images/elementChauffant.png");
@@ -35,5 +36,10 @@ public class ElementChauffant extends PieceItem {
     
     public Mur getMur(){
         return this.mur;
+    }
+    
+    @Override
+    public double getDistanceAvecFil() {
+        return this.distanceAvecFil;
     }
 }

@@ -16,4 +16,7 @@ public class Intersection implements Serializable{
     }
     public void deplacer(Point nouvPos){}
     
+    public Point getCoordonees(){
+        return this.coordonnees;
+    }
 }

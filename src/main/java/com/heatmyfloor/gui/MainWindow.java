@@ -265,6 +265,7 @@ public class MainWindow extends javax.swing.JFrame {
         props = new Proprietes(this);
         props.dimensionItemListener();
         props.dimensionPieceListener();
+        props.grapheListener();
         props.updateUndoRedoButtons();
         props.diametreDrainListener();
         props.positionDrainListener();

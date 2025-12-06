@@ -20,7 +20,7 @@ public class MeubleSansDrain extends PieceItem {
     //Constructeur
     public MeubleSansDrain(double largeur, double hauteur, Point pos, TypeSansDrain type) {
         super(largeur, hauteur, pos, type.getImage());
-        this.distanceAvecFil = 0.0;
+        this.distanceAvecFil = 3.0;
         this.type = type;
     }
 
@@ -29,6 +29,7 @@ public class MeubleSansDrain extends PieceItem {
     }
 
     //Méthode
+    @Override
     public double getDistanceAvecFil() {
         return this.distanceAvecFil;
     }

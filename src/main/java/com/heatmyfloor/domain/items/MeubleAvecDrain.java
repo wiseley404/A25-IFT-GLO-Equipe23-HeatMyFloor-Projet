@@ -29,7 +29,7 @@ public class MeubleAvecDrain extends PieceItem {
                           pos.getY() + (hauteur/2) - 10
                 )
         );    
-        this.distanceAvecFil = 0.0;
+        this.distanceAvecFil = 3.0;
         this.type = type;
     }
     
@@ -150,7 +150,7 @@ public class MeubleAvecDrain extends PieceItem {
         return this.drain;
     }
     
-    
+    @Override
     public double getDistanceAvecFil(){
         return this.distanceAvecFil;
     }

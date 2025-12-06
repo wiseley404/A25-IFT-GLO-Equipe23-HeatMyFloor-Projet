@@ -15,6 +15,7 @@ import com.heatmyfloor.domain.piece.PieceItem;
  */
 public class Thermostat extends PieceItem {
     private Mur mur;
+    private double distanceAvecFil = 3.0;
     //Constructeur
     
     public Thermostat(double largeur, double hauteur, Point pos){
@@ -36,5 +37,10 @@ public class Thermostat extends PieceItem {
     
     public Mur getMur(){
         return this.mur;
+    }
+    
+    @Override
+    public double getDistanceAvecFil() {
+        return this.distanceAvecFil;
     }
 }

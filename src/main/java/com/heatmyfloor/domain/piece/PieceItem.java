@@ -59,6 +59,7 @@ public abstract class PieceItem implements PieceItemReadOnly, Serializable{
         
     }
     
+    public double getDistanceAvecFil(){return 0.0;}
     
     public void translater(double facteurX, double facteurY){
         

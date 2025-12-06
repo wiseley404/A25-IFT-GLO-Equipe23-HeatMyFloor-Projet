@@ -336,6 +336,14 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public double getHauteur() {
         return this.hauteur;
     }
+    
+    public Graphe getGraphe(){
+        return this.graphe;
+    }
+    
+    public void setGraphe(Graphe graphe){
+        this.graphe = graphe;
+    }
 
     public void setHauteur(double nouvHaut) {
         this.hauteur = nouvHaut;
@@ -366,10 +374,14 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public List<PieceItem> getItemsList() {
         return this.itemsList;
     }
+<<<<<<< HEAD
 
     public Graphe getGraphe() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
+=======
+   
+>>>>>>> f940920 (Ajout graphe)
 
     public List<Mur> getMurs() {
         return this.murs;

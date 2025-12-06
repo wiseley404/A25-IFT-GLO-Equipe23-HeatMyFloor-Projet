@@ -20,7 +20,7 @@ public class Drain implements DrainReadOnly, Serializable {
     private UUID id;
     private double diametre;
     private Point position;
-    private final double distanceAvecFil;
+    private  double distanceAvecFil;
     private boolean estSelectionne;
     
     
@@ -30,7 +30,7 @@ public class Drain implements DrainReadOnly, Serializable {
         this.id = UUID.randomUUID();
         this.diametre = diam;
         this.position = pos;
-        this.distanceAvecFil = 0.0;
+        this.distanceAvecFil = 6.0;
         this.estSelectionne = true;
     }
     
@@ -116,6 +116,10 @@ public class Drain implements DrainReadOnly, Serializable {
     public void setEstSelectionne(boolean StatutSelection){
          this.estSelectionne = StatutSelection;
     
+    }
+    
+    public void setDistanceAvecFil(double distanceAvecFil) {
+         this.distanceAvecFil = distanceAvecFil;
     }
     
     

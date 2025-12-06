@@ -4,6 +4,7 @@
  */
 package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.graphe.Graphe;
 import java.awt.Shape;
 import java.util.List;
 /**
@@ -13,6 +14,7 @@ import java.util.List;
 public interface PieceReadOnly {
     double getLargeur();
     double getHauteur();
+    Graphe getGraphe();
     Point getPosition();
     Point getCentre();
     List<Point> getSommets();

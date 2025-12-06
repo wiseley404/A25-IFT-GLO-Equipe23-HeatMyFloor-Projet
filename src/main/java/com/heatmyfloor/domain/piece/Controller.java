@@ -1,6 +1,7 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.items.TypeAvecDrain;
 import com.heatmyfloor.domain.items.TypeSansDrain;
 import com.heatmyfloor.domain.items.Zone;
@@ -157,6 +158,10 @@ public class Controller {
     public void setPiece(Piece piece) {
         this.historique.sauvegarder(piece);
         this.piece = piece;
+    }
+    
+    public void configurerGraphe(Graphe graphe){
+        this.piece.setGraphe(graphe);
     }
 
     public void annulerModif() {
