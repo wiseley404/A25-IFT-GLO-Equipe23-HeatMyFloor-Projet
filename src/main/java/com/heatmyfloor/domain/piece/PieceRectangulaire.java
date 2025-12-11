@@ -90,4 +90,9 @@ public class PieceRectangulaire extends Piece {
         return this.getForme().contains(itemRotation.getBounds2D());
     }
 
+    @Override
+    public TypePiece getType() {
+        return TypePiece.RECTANGULAIRE;
+    }
+
 }

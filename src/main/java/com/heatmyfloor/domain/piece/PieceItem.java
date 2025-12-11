@@ -14,13 +14,6 @@ import java.io.Serializable;
  * @author petit
  */
 
-
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = "@class"
-)
-
 public abstract class PieceItem implements PieceItemReadOnly, Serializable{
     private final UUID id;
     private double largeur;

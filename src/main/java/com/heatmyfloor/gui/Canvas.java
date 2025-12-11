@@ -147,7 +147,6 @@ public class Canvas extends JPanel implements Serializable {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
-        
 
         g2.translate(originePx.getX(), originePx.getY());
         g2.scale(zoom, zoom);
@@ -188,6 +187,33 @@ public class Canvas extends JPanel implements Serializable {
         PieceIrreguliere pir = (PieceIrreguliere) mainWindow.controllerActif.getPiece();
         dessinPanel.setOnFormeTerminee(points -> {
             pir.setSommets(PointMapper.toDomainList(points));
+        });
+    }
+
+    void dessinerFormeIrreguliere(PieceReadOnly piece) {
+        // Supprime un ancien panel si existant
+
+        if (!(piece instanceof PieceIrreguliere pir)) {
+            throw new IllegalArgumentException("La pièce n'est pas irrégulière !");
+        }
+        nettoyerModeDessin();
+
+        dessinPanel = new FormeIrregulierPanel(com.heatmyfloor.domain.PointMapper.toAwtList(pir.getSommets()));
+        dessinPanel.setOpaque(false);
+        dessinPanel.setBounds(0, 0, getWidth(), getHeight());
+        dessinPanel.activerModeDessin(true);
+        add(dessinPanel);
+        revalidate();
+        repaint();
+
+        dessinPanel.getPoints().clear();
+        for (com.heatmyfloor.domain.Point p : pir.getSommets()) {
+            dessinPanel.getPoints().add(com.heatmyfloor.domain.PointMapper.toAwt(new Point((int) p.getX(), (int) p.getY())));
+        }
+
+        dessinPanel.setOnFormeTerminee(points -> {
+            pir.setSommets(com.heatmyfloor.domain.PointMapper.toDomainList(points));
+            repaint();
         });
     }
 

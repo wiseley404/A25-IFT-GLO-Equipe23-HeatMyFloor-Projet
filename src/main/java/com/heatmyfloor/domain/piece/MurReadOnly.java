@@ -18,4 +18,5 @@ public interface MurReadOnly {
     UUID getId();
     double getAngle();
     Point getCentre();
+    double getLongueur();
 }

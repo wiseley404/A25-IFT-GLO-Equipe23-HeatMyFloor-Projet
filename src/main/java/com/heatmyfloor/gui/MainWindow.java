@@ -14,6 +14,8 @@ import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
+import com.heatmyfloor.domain.piece.PieceReadOnly;
+import com.heatmyfloor.domain.piece.TypePiece;
 import com.heatmyfloor.gui.UiUtils.ToastType;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -372,11 +374,20 @@ public class MainWindow extends javax.swing.JFrame {
         props.afficherMurItemSelectionne();
 
         SwingUtilities.invokeLater(() -> {
-            double largeur = controllerActif.getPiece().getLargeur();
-            double hauteur = controllerActif.getPiece().getHauteur();
-            double x = (currentCanvas.getWidth() - largeur) / 2;
-            double y = (currentCanvas.getHeight() - hauteur) / 2;
-            controllerActif.centrerPiece(new Point(x, y));
+
+            PieceReadOnly piece = controllerActif.getPiece();
+
+            if (piece.getType() == TypePiece.RECTANGULAIRE) {
+                double largeur = controllerActif.getPiece().getLargeur();
+                double hauteur = controllerActif.getPiece().getHauteur();
+                double x = (currentCanvas.getWidth() - largeur) / 2;
+                double y = (currentCanvas.getHeight() - hauteur) / 2;
+                controllerActif.centrerPiece(new Point(x, y));
+            }
+            else{
+                currentCanvas.dessinerFormeIrreguliere(piece);
+            }
+
             panelPosition.afficherCoordItemSelectionne();
             currentCanvas.repaint();
         });

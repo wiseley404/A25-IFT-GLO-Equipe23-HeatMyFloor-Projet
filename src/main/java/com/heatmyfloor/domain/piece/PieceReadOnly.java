@@ -22,6 +22,7 @@ public interface PieceReadOnly {
     Point getExtremiteBasDroite();
     Point getExtremiteHautMilieu();
     Point getExtremiteBasMilieu();
+    TypePiece getType();
     
     
 }

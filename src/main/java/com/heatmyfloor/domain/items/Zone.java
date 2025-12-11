@@ -5,11 +5,14 @@
 package com.heatmyfloor.domain.items;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.PieceItem;
+import com.heatmyfloor.domain.piece.TypePiece;
 /**
  *
  * @author petit
  */
 public class Zone extends PieceItem{
+
+   
     
     public enum TypeZone{
         INTERDITE("/images/zoneInterdite.png"),

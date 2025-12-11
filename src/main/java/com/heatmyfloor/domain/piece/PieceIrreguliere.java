@@ -1,6 +1,5 @@
 package com.heatmyfloor.domain.piece;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.heatmyfloor.domain.Point;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -83,5 +82,10 @@ public class PieceIrreguliere extends Piece {
     
     public void setSommets(List<Point> sommets){
         this.sommets = sommets;
+    }
+
+    @Override
+    public TypePiece getType() {
+        return TypePiece.IRREGULIERE;
     }
 }

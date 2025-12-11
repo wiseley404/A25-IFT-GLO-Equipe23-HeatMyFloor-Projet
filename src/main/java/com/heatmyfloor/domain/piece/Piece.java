@@ -2,11 +2,9 @@ package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.graphe.Graphe;
-import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.Thermostat;
-import com.heatmyfloor.domain.items.Zone;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +12,7 @@ import java.io.Serializable;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+
 /**
  *
  * @author Wily
@@ -48,10 +47,12 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     @Override
     public abstract boolean contientLaForme(Shape itemRotation);
-    
+
     public abstract void mettreAJourMurs();
 
     private List<Point> sommets;
+    
+    public abstract TypePiece getType();
 
     @Override
     public Point getCentre() {
@@ -85,37 +86,37 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         double cy = (minY + maxY) / 2.0;
         return new Point(cx, cy);
     }
-    
-    public void ajouterItem(PieceItem item){
-        for(PieceItem i : itemsList){
+
+    public void ajouterItem(PieceItem item) {
+        for (PieceItem i : itemsList) {
             i.setEstSelectionne(false);
         }
-        if(this.contientLePoint(item.getPosition())){
+        if (this.contientLePoint(item.getPosition())) {
             item.setEstSelectionne(true);
             this.itemsList.add(item);
-        } 
+        }
     }
-    
-        public void positionnerSurMurItemSelectionne(Mur mur){
+
+    public void positionnerSurMurItemSelectionne(Mur mur) {
         PieceItem item = this.trouverItemSelectionne();
         Point anciennePosition = item.getPosition();
         double ancienAngle = item.getAngle();
 
-        if(item instanceof ElementChauffant){
-            ((ElementChauffant)item).positionnerSurMur(mur, this);
-            if(!this.contientLaForme(item.getRotationForme())){
+        if (item instanceof ElementChauffant) {
+            ((ElementChauffant) item).positionnerSurMur(mur, this);
+            if (!this.contientLaForme(item.getRotationForme())) {
                 item.setPosition(anciennePosition);
                 item.setAngle(ancienAngle);
                 ((ElementChauffant) item).setMur(null);
-                
-            }    
-        }else if(item instanceof Thermostat){
-            ((Thermostat)item).positionnerSurMur(mur, this);
-            if(!this.contientLaForme(item.getRotationForme())){
+
+            }
+        } else if (item instanceof Thermostat) {
+            ((Thermostat) item).positionnerSurMur(mur, this);
+            if (!this.contientLaForme(item.getRotationForme())) {
                 item.setPosition(anciennePosition);
                 item.setAngle(ancienAngle);
                 ((Thermostat) item).setMur(null);
-            }  
+            }
         }
     }
 
@@ -140,7 +141,6 @@ public abstract class Piece implements PieceReadOnly, Serializable {
             }
         }
     }
-
 
     public void changerAngleItemSelectionne(double nouvAngle) {
         PieceItem item = this.trouverItemSelectionne();
@@ -170,22 +170,27 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     public void deplacerDrain(Point delta) {
         PieceItem item = this.trouverItemSelectionne();
-        if (!(item instanceof MeubleAvecDrain meuble)) return;
+        if (!(item instanceof MeubleAvecDrain meuble)) {
+            return;
+        }
         meuble.deplacerDrain(delta);
     }
 
-    public void repositionnerDrain(double x , double y) {
+    public void repositionnerDrain(double x, double y) {
         PieceItem item = this.trouverItemSelectionne();
-        if (!(item instanceof MeubleAvecDrain meuble)) return;
+        if (!(item instanceof MeubleAvecDrain meuble)) {
+            return;
+        }
         meuble.repositionnerDrain(new Point(x, y));
     }
 
     public void deplacerDrain(double facteurX, double facteurY) {
         PieceItem item = this.trouverItemSelectionne();
-        if (!(item instanceof MeubleAvecDrain meuble)) return;
+        if (!(item instanceof MeubleAvecDrain meuble)) {
+            return;
+        }
         meuble.deplacerDrain(facteurX, facteurY);
     }
- 
 
     public void redimensionnerDrain(double nouvDiametre) {
         PieceItem item = trouverItemSelectionne();
@@ -263,14 +268,16 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     }
 
     public void deplacerItemSelectionne(Point nouvPosition) {
-        if (nouvPosition == null) return;
+        if (nouvPosition == null) {
+            return;
+        }
         for (PieceItem it : itemsList) {
             if (it.estSelectionne()) {
                 Point oldPos = it.getPosition();
                 // Delta du mouvement
                 Point delta = new Point(
-                    nouvPosition.getX() - oldPos.getX(),
-                    nouvPosition.getY() - oldPos.getY()
+                        nouvPosition.getX() - oldPos.getX(),
+                        nouvPosition.getY() - oldPos.getY()
                 );
 
                 // Vérifie si la position est valide
@@ -355,13 +362,13 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         //double facteurY = nouvPosition.getY() - this.position.getY();
         this.position = nouvPosition;
         //mettreAJourMurs();
-        for(PieceItem item : itemsList){
-            
-            if(item instanceof Thermostat th){
+        for (PieceItem item : itemsList) {
+
+            if (item instanceof Thermostat th) {
                 th.positionnerSurMur(th.getMur(), this);
-            }else if(item instanceof ElementChauffant ec){
+            } else if (item instanceof ElementChauffant ec) {
                 ec.positionnerSurMur(ec.getMur(), this);
-            }else{
+            } else {
                 //item.translater(new Point(facteurX, facteurY));
             }
         }
@@ -370,8 +377,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public List<PieceItem> getItemsList() {
         return this.itemsList;
     }
-   
-    
+
     public Graphe getGraphe() {
         throw new UnsupportedOperationException("Méthode non implémentée !");
     }
@@ -428,20 +434,23 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     }
 
-
     public PieceItem trouverItemSurPoint(Point p) {
-        List<PieceItem> items = getItemsList(); 
-        for (int i = items.size() - 1; i >= 0; i--) { 
+        List<PieceItem> items = getItemsList();
+        for (int i = items.size() - 1; i >= 0; i--) {
             PieceItem item = items.get(i);
-            if (item.contientLePoint(p)) { 
+            if (item.contientLePoint(p)) {
                 return item;
             }
         }
-        return null; 
+        return null;
     }
-    
-    public void setMurs(List<Mur> murs){
+
+    public void setMurs(List<Mur> murs) {
         this.murs = murs;
     }
 
+    
+
 }
+
+

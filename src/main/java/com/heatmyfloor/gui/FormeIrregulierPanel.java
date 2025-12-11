@@ -23,35 +23,55 @@ public class FormeIrregulierPanel extends JPanel {
     private Consumer<List<Point>> onFormeTerminee;
 
     public FormeIrregulierPanel() {
+        this(null, true);
+    }
+
+    /**
+     * Constructeur avec points initiaux, sans interaction utilisateur
+     */
+    public FormeIrregulierPanel(List<Point> pointsInitiaux) {
+        this(pointsInitiaux, false);
+    }
+
+    private FormeIrregulierPanel(List<Point> pointsInitiaux, boolean modeDessinInitial) {
+
+        if (pointsInitiaux != null) {
+            this.points.addAll(pointsInitiaux);
+        }
+        this.modeDessin = modeDessinInitial;
 
         setBackground(Color.WHITE);
-        MouseAdapter ma = new MouseAdapter() {
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && points.size() > 2) {
-                    modeDessin = false;
-                    repaint();
-                    if (onFormeTerminee != null) {
-                        onFormeTerminee.accept(points);
+        if (modeDessinInitial) {
+            MouseAdapter ma = new MouseAdapter() {
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2 && points.size() > 2) {
+                        modeDessin = false;
+                        repaint();
+                        if (onFormeTerminee != null) {
+                            onFormeTerminee.accept(points);
+                        }
+                    } else if (modeDessin) {
+                        points.add(e.getPoint());
+                        repaint();
                     }
-                } else if (modeDessin) {
-                    points.add(e.getPoint());
-                    repaint();
                 }
-            }
 
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                if (modeDessin) {
-                    pointActuel = e.getPoint();
-                    repaint();
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    if (modeDessin) {
+                        pointActuel = e.getPoint();
+                        repaint();
+                    }
                 }
-            }
-        };
+            };
 
-        addMouseListener(ma);
-        addMouseMotionListener(ma);
+            addMouseListener(ma);
+            addMouseMotionListener(ma);
+        }
+
     }
 
     public void activerModeDessin(boolean actif) {
@@ -86,7 +106,7 @@ public class FormeIrregulierPanel extends JPanel {
             }
 
             if (modeDessin) {
-                g2.setColor(Color.BLUE);
+                g2.setColor(Color.ORANGE);
                 g2.drawPolyline(polygon.xpoints, polygon.ypoints, points.size());
 
                 if (pointActuel != null) {
@@ -95,12 +115,12 @@ public class FormeIrregulierPanel extends JPanel {
                     g2.drawLine(dernier.x, dernier.y, pointActuel.x, pointActuel.y);
                 }
             } else {
-                g2.setColor(new Color(255, 232, 200, 120));  // bleu semi-transparent
+                g2.setColor(new Color(255, 232, 200, 120));  
                 g2.fillPolygon(polygon);
 
-                g2.setColor(Color.BLACK);
+                g2.setColor(Color.ORANGE);
                 g2.drawPolygon(polygon);
-
+                
             }
         }
 
