@@ -467,16 +467,17 @@ public class MainWindow extends javax.swing.JFrame {
                     } 
 
                     props.afficherProprietesItemSelectionne();
+                    props.afficherMurItemSelectionne();
                     panelPosition.afficherCoordItemSelectionne();
                     panelPosition.afficherAngleItemSelectionne();
                     SwingUtilities.invokeLater(() -> {
-                        props.afficherProprietesDrainSelectionne();
-                    }); 
+                    props.afficherProprietesDrainSelectionne();
+                     });
                     currentCanvas.repaint();
                 }
             }
-        }
-        );
+        });
+        
 
         // --- Survol souris ---
         currentCanvas.addMouseMotionListener(
@@ -600,6 +601,7 @@ public class MainWindow extends javax.swing.JFrame {
                         props.afficherMurItemSelectionne();
                         props.updateUndoRedoButtons();
                         props.afficherProprietesItemSelectionne();
+                        props.grapheListener();
                         props.afficherProprietesDrainSelectionne();
                         panelPosition.afficherAngleItemSelectionne();
                         panelPosition.afficherCoordItemSelectionne();

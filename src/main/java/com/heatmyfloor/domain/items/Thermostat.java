@@ -16,7 +16,7 @@ import com.heatmyfloor.domain.piece.PieceItem;
  */
 public class Thermostat extends PieceItem {
     private Mur mur;
-    private double distanceAvecFil = Util.enPixels(3.0);
+    private double distanceAvecFil = Util.enPixels(0.0);
     //Constructeur
     
     public Thermostat(double largeur, double hauteur, Point pos){

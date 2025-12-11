@@ -153,7 +153,10 @@ public class MeubleAvecDrain extends PieceItem {
     
     @Override
     public double getDistanceAvecFil(){
-        return this.distanceAvecFil;
+        if(this.type != type.TOILETTE){
+            return this.distanceAvecFil;
+        }
+        return 6.0;
     }
     
     
