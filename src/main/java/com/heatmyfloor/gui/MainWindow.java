@@ -463,7 +463,7 @@ public class MainWindow extends javax.swing.JFrame {
                         dragOffsetX = pWorld.getX() - sel.getPosition().getX();
                         dragOffsetY = pWorld.getY() - sel.getPosition().getY();
 
-                    }
+                    } 
 
                     props.afficherProprietesItemSelectionne();
                     panelPosition.afficherCoordItemSelectionne();
