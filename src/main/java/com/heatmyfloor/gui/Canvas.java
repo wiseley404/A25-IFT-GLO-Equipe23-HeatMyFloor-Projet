@@ -10,6 +10,7 @@ import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.PointMapper;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
 import java.util.function.Consumer;
+import java.util.List;
 
 public class Canvas extends JPanel implements Serializable {
 
@@ -184,9 +185,10 @@ public class Canvas extends JPanel implements Serializable {
         add(dessinPanel);
         revalidate();
         repaint();
-        PieceIrreguliere pir = (PieceIrreguliere) mainWindow.controllerActif.getPiece();
         dessinPanel.setOnFormeTerminee(points -> {
-            pir.setSommets(PointMapper.toDomainList(points));
+            List<Point> sommets = com.heatmyfloor.domain.PointMapper.toDomainList(points);
+            mainWindow.controllerActif.setPiece(new PieceIrreguliere(sommets));
+            dessinPanel.activerModeDessin(false);
         });
     }
 
@@ -206,15 +208,17 @@ public class Canvas extends JPanel implements Serializable {
         revalidate();
         repaint();
 
-        dessinPanel.getPoints().clear();
-        for (com.heatmyfloor.domain.Point p : pir.getSommets()) {
-            dessinPanel.getPoints().add(com.heatmyfloor.domain.PointMapper.toAwt(new Point((int) p.getX(), (int) p.getY())));
-        }
+            dessinPanel.getPoints().clear();
+            for (com.heatmyfloor.domain.Point p : pir.getSommets()) {
+                dessinPanel.getPoints().add(com.heatmyfloor.domain.PointMapper.toAwt(new Point((int) p.getX(), (int) p.getY())));
+            }
 
         dessinPanel.setOnFormeTerminee(points -> {
-            pir.setSommets(com.heatmyfloor.domain.PointMapper.toDomainList(points));
+            List<Point> sommets = com.heatmyfloor.domain.PointMapper.toDomainList(points);
+            mainWindow.controllerActif.setPiece(new PieceIrreguliere(sommets));
+            dessinPanel.activerModeDessin(false);
             repaint();
         });
     }
 
-}
+} 

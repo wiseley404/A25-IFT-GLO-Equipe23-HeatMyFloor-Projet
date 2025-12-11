@@ -49,6 +49,9 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public abstract boolean contientLaForme(Shape itemRotation);
 
     public abstract void mettreAJourMurs();
+    
+    @Override 
+    public abstract List<Point> getSommets();
 
     private List<Point> sommets;
     
@@ -99,24 +102,10 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     public void positionnerSurMurItemSelectionne(Mur mur) {
         PieceItem item = this.trouverItemSelectionne();
-        Point anciennePosition = item.getPosition();
-        double ancienAngle = item.getAngle();
-
-        if (item instanceof ElementChauffant) {
-            ((ElementChauffant) item).positionnerSurMur(mur, this);
-            if (!this.contientLaForme(item.getRotationForme())) {
-                item.setPosition(anciennePosition);
-                item.setAngle(ancienAngle);
-                ((ElementChauffant) item).setMur(null);
-
-            }
-        } else if (item instanceof Thermostat) {
-            ((Thermostat) item).positionnerSurMur(mur, this);
-            if (!this.contientLaForme(item.getRotationForme())) {
-                item.setPosition(anciennePosition);
-                item.setAngle(ancienAngle);
-                ((Thermostat) item).setMur(null);
-            }
+        if(item instanceof ElementChauffant elem) {
+            elem.positionnerSurMur(mur, this);
+        } else if (item instanceof Thermostat thermo) {
+            thermo.positionnerSurMur(mur, this);
         }
     }
 

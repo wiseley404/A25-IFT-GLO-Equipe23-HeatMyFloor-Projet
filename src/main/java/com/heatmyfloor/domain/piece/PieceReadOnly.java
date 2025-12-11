@@ -5,6 +5,7 @@
 package com.heatmyfloor.domain.piece;
 import com.heatmyfloor.domain.Point;
 import java.awt.Shape;
+import java.util.List;
 /**
  *
  * @author petit
@@ -14,6 +15,7 @@ public interface PieceReadOnly {
     double getHauteur();
     Point getPosition();
     Point getCentre();
+    List<Point> getSommets();
     boolean contientLePoint(Point position);
     boolean contientLaForme(Shape itemRotation);
     Point getExtremiteHautGauche();

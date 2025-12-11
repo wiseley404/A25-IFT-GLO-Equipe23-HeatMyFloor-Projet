@@ -470,7 +470,7 @@ public class MainWindow extends javax.swing.JFrame {
                     panelPosition.afficherAngleItemSelectionne();
                     SwingUtilities.invokeLater(() -> {
                         props.afficherProprietesDrainSelectionne();
-                    });
+                    }); 
                     currentCanvas.repaint();
                 }
             }

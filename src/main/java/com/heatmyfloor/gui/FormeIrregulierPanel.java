@@ -4,6 +4,7 @@
  */
 package com.heatmyfloor.gui;
 
+import com.heatmyfloor.gui.drawer.PieceDrawer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -78,6 +79,39 @@ public class FormeIrregulierPanel extends JPanel {
         modeDessin = actif;
         if (!actif) {
             pointActuel = null;
+        
+        // listeners qui propagent au Canvas parent
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Canvas canvas = (Canvas) getParent();
+                canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
+                    FormeIrregulierPanel.this, e, canvas));
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Canvas canvas = (Canvas) getParent();
+                canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
+                    FormeIrregulierPanel.this, e, canvas));
+            }
+        });
+        
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Canvas canvas = (Canvas) getParent();
+                canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
+                    FormeIrregulierPanel.this, e, canvas));
+            }
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Canvas canvas = (Canvas) getParent();
+                canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
+                    FormeIrregulierPanel.this, e, canvas));
+            }
+        });
+    
         }
         repaint();
     }
@@ -129,7 +163,16 @@ public class FormeIrregulierPanel extends JPanel {
         for (Point p : points) {
             g2.fillOval(p.x - 3, p.y - 3, 6, 6);
         }
+        
+        Canvas canvas = (Canvas) getParent();
+        if (canvas != null && canvas.getMainWindow() != null && canvas.getMainWindow().controllerActif != null) {
+            // Appliquer les transformations du Canvas (zoom et origine)
+            g2.translate(canvas.getOriginePx().getX(), canvas.getOriginePx().getY());
+            g2.scale(canvas.getZoom(), canvas.getZoom());
 
+            PieceDrawer drawer = new PieceDrawer(canvas.getMainWindow());
+            drawer.dessinerPieceItems(g2);
+        }
         g2.dispose();
     }
 

@@ -94,5 +94,13 @@ public class PieceRectangulaire extends Piece {
     public TypePiece getType() {
         return TypePiece.RECTANGULAIRE;
     }
-
+    
+    @Override
+    public List<Point> getSommets(){
+        Point a = new Point(this.getPosition().getX(), this.getPosition().getY());
+        Point b = new Point(this.getPosition().getX()+ this.getLargeur(), this.getPosition().getY());
+        Point c = new Point(this.getPosition().getX(), this.getPosition().getY() + this.getHauteur());
+        Point d = new Point(this.getPosition().getX() + getLargeur(), this.getPosition().getY() + getHauteur());
+    return Arrays.asList(a, b, c, d);
+    }
 }

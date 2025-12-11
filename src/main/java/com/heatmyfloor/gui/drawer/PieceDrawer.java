@@ -9,12 +9,14 @@ import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Controller;
+import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import com.heatmyfloor.gui.MainWindow;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.gui.PositionPanel;
 import com.heatmyfloor.gui.Canvas;
+import com.heatmyfloor.gui.FormeIrregulierPanel;
 import com.heatmyfloor.gui.Proprietes;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -57,9 +59,6 @@ public class PieceDrawer {
             dessinerPieceRectangulaire(g);
             dessinerPieceItems(g);
 
-        } else {
-//            currentCanvas.dessinerFormeIrreguliere();
-            dessinerPieceItems(g);
         }
 
         SwingUtilities.invokeLater(() -> {

@@ -25,7 +25,8 @@ public class PieceIrreguliere extends Piece {
         super(0, 0, new ArrayList<>());
         this.sommets = new ArrayList<>(); 
     }
-
+    
+    @Override
     public List<Point> getSommets(){
         return this.sommets;
     }   
@@ -36,8 +37,11 @@ public class PieceIrreguliere extends Piece {
     }
     
     public static List<Mur> creerMurs(List<Point> sommets){
+        if(sommets == null || sommets.size() < 3){
+            return new ArrayList<>();
+        }
         List<Mur> murs = new ArrayList<>();
-        for (int i=1; i <= sommets.size(); i++){
+        for (int i=1; i < sommets.size(); i++){
             Mur mur = new Mur(sommets.get(i-1), sommets.get(i));
             murs.add(mur);
         }
