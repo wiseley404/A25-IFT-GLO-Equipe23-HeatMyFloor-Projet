@@ -298,9 +298,7 @@ public class BarreOutils extends JPanel {
             for (ButtonCard c : cards) {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
-                    mainWindow.controllerActif.ajouterMeubleAvecDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeAvecDrain.valueOf(nom));
-                    //mainWindow.controllerActif.ajouterDrain(mainWindow.controllerActif.getPiece().getCentre());
-
+                    mainWindow.controllerActif.ajouterMeubleAvecDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeAvecDrain.valueOf(nom));         
                     mainWindow.currentCanvas.repaint();
                     menuItemAvecDrain.setVisible(false);
                 });

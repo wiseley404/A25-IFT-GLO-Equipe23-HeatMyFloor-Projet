@@ -154,7 +154,7 @@ public class PieceDrawer {
             props.afficherProprietesItemSelectionne();
             panelPosition.afficherCoordItemSelectionne();
             panelPosition.afficherAngleItemSelectionne();
-            if (item instanceof MeubleAvecDrain m) {
+            if (item instanceof MeubleAvecDrain) {
                 props.afficherProprietesDrainSelectionne();
             }
         }

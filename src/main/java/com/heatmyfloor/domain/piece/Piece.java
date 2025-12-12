@@ -58,6 +58,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     private List<Point> sommets;
     
+    @Override
     public abstract TypePiece getType();
 
     @Override
@@ -211,16 +212,17 @@ public abstract class Piece implements PieceReadOnly, Serializable {
             Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
 
             if (item.getAngle() == 0) {
-                valide = contientLePoint(p1) && contientLePoint(p2);
+                valide = contientLePoint(p1) || contientLePoint(p2);
                 //Verification de la position de l'item en rotation
             } else {
-                Rectangle2D formeTournee = new Rectangle2D.Double(itemPosition.getX(), itemPosition.getY(),
-                        item.getLargeur(), item.getHauteur());
-                AffineTransform transf = new AffineTransform();
-                double angleRadian = Math.toRadians(item.getAngle());
-                transf.rotate(angleRadian, formeTournee.getCenterX(), formeTournee.getCenterY());
-                Shape itemRotation = transf.createTransformedShape(formeTournee);
-                valide = this.contientLaForme(itemRotation);
+                valide = contientLePoint(p1) || contientLePoint(p2);
+//                Rectangle2D formeTournee = new Rectangle2D.Double(itemPosition.getX(), itemPosition.getY(),
+//                item.getLargeur(), item.getHauteur());
+//                AffineTransform transf = new AffineTransform();
+//                double angleRadian = Math.toRadians(item.getAngle());
+//                transf.rotate(angleRadian, formeTournee.getCenterX(), formeTournee.getCenterY());
+//                Shape itemRotation = transf.createTransformedShape(formeTournee);
+//                valide = this.contientLaForme(itemRotation);
             }
         }
         return valide;
@@ -287,7 +289,7 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         setLargeur(nouvLarg);
         setHauteur(nouvHaut);
         for (PieceItem item : this.itemsList) {
-            item.redimensionner(facteurX, facteurY);
+            //item.redimensionner(facteurX, facteurY); *A verifier avec le prof
             item.translater(facteurX, facteurY);
         }
     }
@@ -362,10 +364,9 @@ public abstract class Piece implements PieceReadOnly, Serializable {
         //double facteurX = nouvPosition.getX() - this.position.getX();
         //double facteurY = nouvPosition.getY() - this.position.getY();
         this.position = nouvPosition;
-        //mettreAJourMurs();
+        mettreAJourMurs();
         for (PieceItem item : itemsList) {
-
-            if (item instanceof Thermostat th) {
+            if(item instanceof Thermostat th) {
                 th.positionnerSurMur(th.getMur(), this);
             } else if (item instanceof ElementChauffant ec) {
                 ec.positionnerSurMur(ec.getMur(), this);

@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.ArrayList;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.Piece;
+import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import com.heatmyfloor.domain.piece.PieceItem;
+import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -85,10 +87,23 @@ public class Graphe implements Serializable{
         
         double distanceFilAvecMur = piece.getMurs().getFirst().getDistanceAvecFil();
         
-        double xMin = piece.getPosition().getX() + distanceFilAvecMur;
-        double xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
-        double yMin = piece.getPosition().getY() + distanceFilAvecMur;
-        double yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
+        double xMin;
+        double xMax;
+        double yMin;
+        double yMax;
+        if(piece instanceof PieceRectangulaire){
+            xMin = piece.getPosition().getX() + distanceFilAvecMur;
+            xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
+            yMin = piece.getPosition().getY() + distanceFilAvecMur;
+            yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
+        }else if(piece instanceof PieceIrreguliere){
+                        xMin = piece.getPosition().getX() + distanceFilAvecMur;
+            xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
+            yMin = piece.getPosition().getY() + distanceFilAvecMur;
+            yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
+        }else{
+            return intersectionsValide;
+        }
         
         double distance = this.distanceIntersection + rayonIntersection;
         for(double y = yMin; y < yMax; y+= distance){

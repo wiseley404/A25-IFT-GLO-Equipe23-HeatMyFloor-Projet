@@ -39,28 +39,29 @@ public class MeubleAvecDrain extends PieceItem {
     @Override
     public void translater(double facteurX, double facteurY) {
         super.translater(facteurX, facteurY);
-        // repositionner drain pour qu’il reste centré
-        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
-        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
+        // repositionner drain *A Revoir
+        double nouvX = this.drain.getPosition().getX()*facteurX;
+        double nouvY = this.drain.getPosition().getY()*facteurY;
         repositionnerDrain(new Point(nouvX, nouvY)); 
     }
     
     @Override
     public void translater(Point delta) {
         super.translater(delta);
-        // repositionner drain pour qu’il reste centré
-        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
-        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
+        // repositionner drain
+        double nouvX = this.drain.getPosition().getX() + delta.getX();
+        double nouvY = this.drain.getPosition().getY() + delta.getY();
         repositionnerDrain(new Point(nouvX, nouvY)); 
     }
     
     @Override
     public void setPosition(Point nouvPosition){
+        Point anciennePosition = this.getPosition();
+        // repositionner drain
+        double deltaX = nouvPosition.getX() - anciennePosition.getX();
+        double deltaY = nouvPosition.getY() - anciennePosition.getY();
         super.setPosition(nouvPosition);
-        // repositionner drain pour qu’il reste centré
-        double nouvX = this.getItemForme().getCenterX() - drain.getDiametre() / 2;
-        double nouvY = this.getItemForme().getCenterY() - drain.getDiametre() / 2;
-        repositionnerDrain(new Point(nouvX, nouvY)); 
+        this.drain.translater(new Point(deltaX, deltaY));
     }
     
     public Drain trouverDrain(UUID idDrain){    

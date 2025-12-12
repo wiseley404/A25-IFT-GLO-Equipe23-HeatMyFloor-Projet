@@ -173,6 +173,12 @@ public class Canvas extends JPanel implements Serializable {
             remove(dessinPanel);
             dessinPanel = null;
         }
+        mainWindow.props.afficherProprietesItemSelectionne();
+        mainWindow.props.afficherMurItemSelectionne();
+        mainWindow.props.afficherProprietesPiece();
+        mainWindow.props.afficherProprietesDrainSelectionne();
+        mainWindow.panelPosition.afficherCoordItemSelectionne();
+        mainWindow.panelPosition.afficherAngleItemSelectionne();
     }
 
     void dessinerFormeIrreguliere() {
@@ -188,6 +194,8 @@ public class Canvas extends JPanel implements Serializable {
         dessinPanel.setOnFormeTerminee(points -> {
             List<Point> sommets = com.heatmyfloor.domain.PointMapper.toDomainList(points);
             mainWindow.controllerActif.setPiece(new PieceIrreguliere(sommets));
+            mainWindow.props.afficherProprietesPiece();
+            mainWindow.panelPosition.afficherCoordItemSelectionne();
             dessinPanel.activerModeDessin(false);
         });
     }
@@ -217,8 +225,14 @@ public class Canvas extends JPanel implements Serializable {
             List<Point> sommets = com.heatmyfloor.domain.PointMapper.toDomainList(points);
             mainWindow.controllerActif.setPiece(new PieceIrreguliere(sommets));
             dessinPanel.activerModeDessin(false);
+            mainWindow.props.afficherProprietesPiece();
+            mainWindow.panelPosition.afficherCoordItemSelectionne();
             repaint();
         });
+    }
+    
+    public FormeIrregulierPanel getDessinPanel(){
+        return this.dessinPanel;
     }
 
 } 

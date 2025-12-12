@@ -15,10 +15,12 @@ public class PieceIrreguliere extends Piece {
     
     public PieceIrreguliere(List<Point> sommets){
         super(
-              getContour(sommets).getHeight(), 
-              getContour(sommets).getWidth(),
+              getContour(sommets).getWidth(), 
+              getContour(sommets).getHeight(),
               creerMurs(sommets));
         this.sommets = sommets;
+        Rectangle2D contour = getContour(sommets);
+        super.setPosition(new Point(contour.getX(), contour.getY()));
     }
     
     public PieceIrreguliere(){
@@ -30,6 +32,13 @@ public class PieceIrreguliere extends Piece {
     public List<Point> getSommets(){
         return this.sommets;
     }   
+    
+    @Override
+    public Point getPosition(){
+        double x = getForme().getBounds2D().getX();
+        double y = getForme().getBounds2D().getY();
+        return new Point(x, y);
+    }
     
     @Override
     public void mettreAJourMurs(){
@@ -54,8 +63,55 @@ public class PieceIrreguliere extends Piece {
         return getForme(this.sommets);
     }
     
+    @Override
+    public void redimensionner(double nouvLarg, double nouvHaut){
+        if(this.sommets == null || this.sommets.isEmpty())return;
+        
+        Rectangle2D contourPiece = getContour(this.sommets);
+        
+        if(super.getLargeur() == 0 || super.getHauteur() == 0) return;
+        double facteurX = nouvLarg / super.getLargeur();
+        double facteurY = nouvHaut / super.getHauteur();
+        
+        double posX = contourPiece.getX();
+        double posY = contourPiece.getY();
+        
+        for(Point s : this.sommets){
+            double deltaX = s.getX() - posX;
+            double deltaY = s.getY() - posY;
+            
+            double nouvDeltaX = deltaX * facteurX;
+            double nouvDeltaY = deltaY * facteurY;
+            
+            s.setX(posX + nouvDeltaX);
+            s.setY(posY + nouvDeltaY);
+        }
+        super.setLargeur(nouvLarg);
+        super.setHauteur(nouvHaut);
+        for(PieceItem item : super.getItemsList()){
+            item.translater(facteurX, facteurY);
+        }
+    }
+    
+    @Override
+    public void setPosition(Point nouvPosition){
+        Point anciennePosition = super.getPosition();
+        double deltaX = nouvPosition.getX() - anciennePosition.getX();
+        double deltaY = nouvPosition.getY() - anciennePosition.getY();
+
+        for(Point s : this.sommets){
+            s.setX(s.getX() + deltaX);
+            s.setY(s.getY() + deltaY);
+        }
+        super.setPosition(nouvPosition);
+    }
+    
     public static Path2D getForme(List<Point> sommets){
         Path2D polygone = new Path2D.Double();
+        
+        if(sommets == null || sommets.size() < 3){
+            return polygone;
+        }
         boolean sommetDepart = true;
         for(Point sommet: sommets){
             if(sommetDepart){

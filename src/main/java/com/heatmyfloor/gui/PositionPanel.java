@@ -3,6 +3,7 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.PointMapper;
 import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.DrainReadOnly;

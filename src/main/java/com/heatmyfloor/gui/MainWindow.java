@@ -450,14 +450,14 @@ public class MainWindow extends javax.swing.JFrame {
                 if (sel != null) {
                     if (sel instanceof MeubleAvecDrain meuble) {
                         Drain drain = meuble.getDrain();
-                        if (drain != null) {
+                        if (drain.contientLePoint(pWorld)) {
                             // Offset relatif au drain
                             dragOffsetX = pWorld.getX() - drain.getPosition().getX();
                             dragOffsetY = pWorld.getY() - drain.getPosition().getY();
                         } else {
                             // Offset relatif au meuble
-                            dragOffsetX = pWorld.getX() - sel.getPosition().getX();
-                            dragOffsetY = pWorld.getY() - sel.getPosition().getY();
+                            dragOffsetX = pWorld.getX() - meuble.getPosition().getX();
+                            dragOffsetY = pWorld.getY() - meuble.getPosition().getY();
                         }
                     } else {
                         // Item classique
@@ -465,16 +465,28 @@ public class MainWindow extends javax.swing.JFrame {
                         dragOffsetY = pWorld.getY() - sel.getPosition().getY();
 
                     } 
-
-                    props.afficherProprietesItemSelectionne();
-                    props.afficherMurItemSelectionne();
-                    panelPosition.afficherCoordItemSelectionne();
-                    panelPosition.afficherAngleItemSelectionne();
-                    SwingUtilities.invokeLater(() -> {
-                    props.afficherProprietesDrainSelectionne();
-                     });
-                    currentCanvas.repaint();
-                }
+                }else{
+                    //Cas ou le drain est en dehors du meuble
+                    List<PieceItemReadOnly> items = controllerActif.getItemsList();
+                    for(PieceItemReadOnly item : items){
+                        if(item instanceof MeubleAvecDrain meuble){
+                            Drain drain = meuble.getDrain();
+                            if(drain.contientLePoint(pWorld)){
+                                dragOffsetX = pWorld.getX() - drain.getPosition().getX();
+                                dragOffsetY = pWorld.getY() - drain.getPosition().getY();
+                            }
+                        }
+                    }
+                } 
+                props.afficherProprietesItemSelectionne();
+                props.afficherMurItemSelectionne();
+                panelPosition.afficherCoordItemSelectionne();
+                panelPosition.afficherAngleItemSelectionne();
+                SwingUtilities.invokeLater(() -> {
+                props.afficherProprietesDrainSelectionne();
+                 });
+                currentCanvas.repaint();
+                
             }
         });
         
@@ -510,15 +522,24 @@ public class MainWindow extends javax.swing.JFrame {
             public void mouseDragged(MouseEvent e
             ) {
                 PieceItemReadOnly selObj = controllerActif.trouverItemSelectionne();
-                if (selObj == null) {
-                    return;
-                }
-
                 Point pWorld = toWorld(currentCanvas, e);
                 double targetX = pWorld.getX() - dragOffsetX;
                 double targetY = pWorld.getY() - dragOffsetY;
-
-                if (selObj instanceof MeubleAvecDrain meuble) {
+                
+                if (selObj == null) {
+                    //cas ou le drain est en dehors du meuble
+                    List<PieceItemReadOnly> items = controllerActif.getItemsList();
+                    for(PieceItemReadOnly item : items){
+                        if(item instanceof MeubleAvecDrain meuble){
+                            Drain drain = meuble.getDrain();
+                            if(drain.contientLePoint(pWorld)){
+                                double dx = targetX - drain.getPosition().getX();
+                                double dy = targetY - drain.getPosition().getY();
+                                meuble.deplacerDrain(new Point(dx, dy));
+                            }
+                        }
+                    }
+                }else if (selObj instanceof MeubleAvecDrain meuble) {
                     Drain drain = meuble.getDrain();
                     if (drain.contientLePoint(pWorld)) {
                         double dx = targetX - drain.getPosition().getX();

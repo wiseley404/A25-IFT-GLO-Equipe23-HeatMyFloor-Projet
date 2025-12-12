@@ -4,6 +4,12 @@
  */
 package com.heatmyfloor.gui;
 
+import com.heatmyfloor.domain.PointMapper;
+import com.heatmyfloor.domain.graphe.Graphe;
+import com.heatmyfloor.domain.graphe.Intersection;
+import com.heatmyfloor.domain.piece.Piece;
+import com.heatmyfloor.domain.piece.PieceIrreguliere;
+import com.heatmyfloor.domain.piece.PieceReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 import javax.swing.*;
 import java.awt.*;
@@ -133,15 +139,39 @@ public class FormeIrregulierPanel extends JPanel {
         g2.setStroke(new BasicStroke(2));
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (points.size() > 2) {
+        Canvas canvas = (Canvas) getParent();
+        if(canvas != null){
+            g2.translate(canvas.getOriginePx().getX(), canvas.getOriginePx().getY());
+            g2.scale(canvas.getZoom(), canvas.getZoom());
+        }
+        List<java.awt.Point> pointsADessiner;
+        if(modeDessin){
+            pointsADessiner = this.points;
+        }else{
+            pointsADessiner = new ArrayList<>();
+            if(canvas != null && canvas.getMainWindow() != null){
+                PieceReadOnly piece = canvas.getMainWindow().controllerActif.getPiece();
+                if(piece instanceof PieceIrreguliere pieceIrreg){
+                    for(Point sommet : PointMapper.toAwtList(pieceIrreg.getSommets())){
+                        pointsADessiner.add(sommet);
+                    }
+                }
+            }
+            if(pointsADessiner.isEmpty()){
+                pointsADessiner =  this.points;
+            }
+        }
+      
+        
+        if (pointsADessiner.size() > 2) {
             Polygon polygon = new Polygon();
-            for (Point p : points) {
+            for (Point p : pointsADessiner) {
                 polygon.addPoint(p.x, p.y);
             }
 
             if (modeDessin) {
                 g2.setColor(Color.ORANGE);
-                g2.drawPolyline(polygon.xpoints, polygon.ypoints, points.size());
+                g2.drawPolyline(polygon.xpoints, polygon.ypoints, pointsADessiner.size());
 
                 if (pointActuel != null) {
                     Point dernier = points.get(points.size() - 1);
@@ -154,24 +184,32 @@ public class FormeIrregulierPanel extends JPanel {
 
                 g2.setColor(Color.ORANGE);
                 g2.drawPolygon(polygon);
-                
+                 System.out.println("Me voici");
             }
         }
 
         // Dessine les points rouges
-        g2.setColor(Color.RED);
-        for (Point p : points) {
+        g2.setColor(Color.ORANGE);
+        for (Point p : pointsADessiner) {
             g2.fillOval(p.x - 3, p.y - 3, 6, 6);
         }
         
-        Canvas canvas = (Canvas) getParent();
         if (canvas != null && canvas.getMainWindow() != null && canvas.getMainWindow().controllerActif != null) {
-            // Appliquer les transformations du Canvas (zoom et origine)
-            g2.translate(canvas.getOriginePx().getX(), canvas.getOriginePx().getY());
-            g2.scale(canvas.getZoom(), canvas.getZoom());
-
             PieceDrawer drawer = new PieceDrawer(canvas.getMainWindow());
             drawer.dessinerPieceItems(g2);
+        }
+        
+        PieceReadOnly piece = canvas.getMainWindow().controllerActif.getPiece();
+        Graphe graphe = piece.getGraphe();
+        if(graphe != null){
+            List<Intersection> intersectionsValide = graphe.ListIntersectionsValide((Piece)piece);
+            for(Intersection intersect : intersectionsValide){
+                com.heatmyfloor.domain.Point point = intersect.getCoordonees();
+                int x = (int) point.getX();
+                int y = (int) point.getY();
+                int rayon = (int) graphe.getRayonIntersection();
+                g2.fillOval(x, y, rayon*2, rayon*2);
+            }
         }
         g2.dispose();
     }

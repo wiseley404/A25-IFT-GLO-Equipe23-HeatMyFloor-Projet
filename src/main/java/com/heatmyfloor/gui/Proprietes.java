@@ -196,9 +196,9 @@ public class Proprietes extends JPanel {
            }
 
             SwingUtilities.invokeLater(() -> {
-                   mainWindow.currentCanvas.revalidate();
-                   mainWindow.currentCanvas.repaint();
-                   mainWindow.currentCanvas.requestFocusInWindow();
+                    mainWindow.currentCanvas.revalidate();
+                    mainWindow.currentCanvas.repaint();
+                    mainWindow.currentCanvas.requestFocusInWindow();
             });  
         }); 
 
