@@ -6,6 +6,7 @@ package com.heatmyfloor.domain.graphe;
 import java.util.List;
 import java.util.ArrayList;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.Thermostat;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import com.heatmyfloor.domain.piece.PieceItem;
@@ -14,6 +15,12 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
 /**
  *
  * @author petit
@@ -24,6 +31,8 @@ public class Graphe implements Serializable{
     private double distanceIntersection;
     private double rayonIntersection = 5;
     private List<Fil> aretes;
+    private Piece piece;
+    
     
     public Graphe(double distanceIntersection){
 //    this.cheminActuel = new Chemin(aretes);
@@ -46,6 +55,7 @@ public class Graphe implements Serializable{
             return false;
         }
         for(PieceItem item : items){
+            if (!(item instanceof Thermostat)){
             double distance = item.getDistanceAvecFil();
             double posXMin = item.getPosition().getX() - distance ;
             double posYMin = item.getPosition().getY() - distance ;
@@ -75,7 +85,7 @@ public class Graphe implements Serializable{
             if(espaceInterditeTournee.intersects(intersectionContour)){
                 return false;
             }
-        }
+        }}
         return true;
     }
     
@@ -115,8 +125,10 @@ public class Graphe implements Serializable{
             }       
         }
         this.intersections = intersectionsValide;
+        this.piece = piece;
         return intersectionsValide;
     } 
+   
     
     
     public void ajouterIntersection(Intersection i){}
@@ -126,8 +138,174 @@ public class Graphe implements Serializable{
     public void translater(Point delta){}
     
     public Chemin genererChemin(double longFilTotal){
-        return null;
+        List <Intersection> listes = new ArrayList <>(intersections);
+        List <Point> pointsChemin = new ArrayList <>();
+        boolean trouve = false;
+        Thermostat thermostat = null;
+        Point pointdepart = null;
+        double d = distanceIntersection;
+        Point prochain = null;
+        for(PieceItem pieceItem : piece.getItemsList()){
+            if (pieceItem instanceof Thermostat th){
+                trouve = true;
+                thermostat = th;
+                break;
+            }
+        }
+        if (trouve && thermostat!= null ){
+            for(Intersection intersection : intersections ){
+                Point pts = intersection.getCoordonees();
+                if (thermostat.contientLePoint(pts)){
+                    pointdepart = pts;
+                    pointsChemin.add(pointdepart);
+                    listes.removeIf(i ->
+                        i.getCoordonees().getX() == pts.getX() &&
+                        i.getCoordonees().getY() == pts.getY()
+                    );
+                    break;
+                }
+            }
+            while (!listes.isEmpty()){
+                Point voisinGauche = new Point(pointdepart.getX()-d, pointdepart.getY());
+                Point voisinDroite = new Point(pointdepart.getX()+d, pointdepart.getY());
+                Point voisinHaut = new Point(pointdepart.getX(), pointdepart.getY()+d);
+                Point voisinBas = new Point(pointdepart.getX(), pointdepart.getY()-d);
+
+                Random rand = new Random();
+
+
+                Point[] points = { voisinGauche, voisinDroite, voisinHaut, voisinBas };
+
+            //  Point choisi;
+              /*  do{
+                   choisi = points[rand.nextInt(points.length)];
+                }
+                while(!estIntersectionValide(new Intersection(choisi), piece));*/
+              
+                    Point choisi = null;
+                      int essais = 0;
+                      while (essais < 20) {
+                          Point cand = points[rand.nextInt(points.length)];
+                          if (estIntersectionValide(new Intersection(cand), piece)) {
+                              choisi = cand;
+                              break;
+                          }
+                          essais++;
+                      }
+                      if (choisi == null) break;
+
+                pointsChemin.add(choisi);
+
+                pointdepart = choisi;
+                Point depart = pointdepart;
+                listes.removeIf(i ->
+                    i.getCoordonees().getX() == depart.getX() &&
+                    i.getCoordonees().getY() == depart.getY()
+                );
+
+            }
+            
+            List <Fil> arretes = new ArrayList <>();
+            for(int i = 1; i < pointsChemin.size(); i++){
+                Intersection p1 = new Intersection(pointsChemin.get(i-1));
+                Intersection p2 = new Intersection(pointsChemin.get(i));
+                Fil fil = new Fil(p1, p2);
+                arretes.add(fil);
+            }
+            
+    
+            Chemin chemin = new Chemin(arretes);
+            cheminActuel = chemin;
+          
     }
+        return cheminActuel;
+    }
+    
+    
+  /*public Chemin genererChemin(double longFilTotal) {
+
+   
+    List<Intersection> valides = ListIntersectionsValide((Piece) piece); 
+  
+
+    if (valides == null || valides.isEmpty()) return new Chemin();
+
+ 
+    valides.sort((a, b) -> {
+        int cy = Double.compare(a.getCoordonees().getY(), b.getCoordonees().getY());
+        if (cy != 0) return cy;
+        return Double.compare(a.getCoordonees().getX(), b.getCoordonees().getX());
+    });
+
+    Chemin chemin = new Chemin();
+    double longueur = 0;
+
+  
+    double d = distanceIntersection;
+
+    double eps = d * 0.25;
+
+    List<List<Intersection>> rangees = new ArrayList<>();
+    List<Intersection> current = new ArrayList<>();
+    double yRef = valides.get(0).getCoordonees().getY();
+
+    for (Intersection it : valides) {
+        double y = it.getCoordonees().getY();
+        if (Math.abs(y - yRef) <= eps) {
+            current.add(it);
+        } else {
+            rangees.add(current);
+            current = new ArrayList<>();
+            current.add(it);
+            yRef = y;
+        }
+    }
+    rangees.add(current);
+
+    
+    boolean gaucheVersDroite = true;
+    Intersection prev = null;
+
+    for (List<Intersection> row : rangees) {
+        row.sort((a, b) -> Double.compare(a.getCoordonees().getX(), b.getCoordonees().getX()));
+        if (!gaucheVersDroite) {
+            java.util.Collections.reverse(row);
+        }
+
+        for (Intersection it : row) {
+            if (prev != null) {
+                Fil f = new Fil(prev, it);
+                double seg = f.calculerLongueur();
+                if (longueur + seg > longFilTotal) {
+                    this.cheminActuel = chemin;
+                    return chemin;
+                }
+                chemin.ajouterFil(f);
+                longueur += seg;
+            }
+            prev = it;
+        }
+        gaucheVersDroite = !gaucheVersDroite;
+    }
+
+    this.cheminActuel = chemin; 
+    return chemin;
+}
+
+private String keyOf(Point p) {
+   
+    double x = Math.round(p.getX() * 1000.0) / 1000.0;
+    double y = Math.round(p.getY() * 1000.0) / 1000.0;
+    return x + ";" + y;
+}
+*/
+    public Chemin getCheminActuel() {
+        return cheminActuel;
+    }
+
+
+
+
     
     public Chemin modifierChemin(){
         return null;

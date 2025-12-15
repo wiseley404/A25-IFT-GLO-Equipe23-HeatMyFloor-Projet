@@ -6,14 +6,19 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import com.heatmyfloor.domain.Util;
+import com.heatmyfloor.domain.graphe.Chemin;
 import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.items.ElementChauffant;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.Thermostat;
+import com.heatmyfloor.domain.piece.Controller;
 import com.heatmyfloor.domain.piece.MurReadOnly;
+import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
+import com.heatmyfloor.domain.piece.PieceReadOnly;
 import java.util.HashMap;
 import java.util.Map;
+
 
 
 
@@ -21,7 +26,12 @@ import java.util.Map;
  *
  * @author tatow
  */
+
 public class Proprietes extends JPanel {
+    
+    private final MainWindow mainWindow;
+    private final Controller controller;
+    
     private JTextField largeurPiece;
     private JTextField hauteurPiece;
     private JTextField distanceIntersections;
@@ -29,20 +39,26 @@ public class Proprietes extends JPanel {
     private JTextField hauteurItem;
     private JTextField distanceFils;
     private JTextField longueurFil;
-    private MainWindow mainWindow;
+   // private MainWindow mainWindow;
     private JTextField diametreDrain;
     private JTextField PositionX;
     private JTextField PositionY;
+    
     
     private JButton grapheButton;
     private JButton undo;
     private JButton redo;
     private Map<String, MurReadOnly> mursMap = new HashMap();;
     private JComboBox<String> murItem;
+    
 
 
     public Proprietes(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+        this.controller = mainWindow.controllerActif;
+        System.out.println("Proprietes() mainWindow=" + mainWindow);
+System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif);
+
         setPreferredSize(new Dimension(300, 0));
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(230, 230, 230)));
@@ -439,8 +455,64 @@ public class Proprietes extends JPanel {
         s.addRow("Distance Fils :", distanceFils);
         s.addRow("Longueur       :", longueurFil);
         s.addSpacer(8);
-        s.addFull(button("Générer un chemin"));
-        return s;
+        //s.addFull(button("Générer un chemin"));
+        //return s;
+        JButton btnGenererChemin = button("Générer un chemin");
+
+    btnGenererChemin.addActionListener(e -> {
+
+    mainWindow.tabsErreur.clearMessages();
+
+    if (mainWindow.controllerActif == null) {
+        mainWindow.tabsErreur.addErrorMessage("Aucune pièce active.");
+        return;
+    }
+
+    PieceReadOnly pieceRO = mainWindow.controllerActif.getPiece();
+    if (!(pieceRO instanceof Piece piece)) {
+        mainWindow.tabsErreur.addErrorMessage("Pièce invalide.");
+        return;
+    }
+
+    Graphe g = piece.getGraphe();
+    if (g == null) {
+        mainWindow.tabsErreur.addErrorMessage("Génère d'abord le graphe (Membrane).");
+        return;
+    }
+
+
+    double longueurPx;
+    double distanceFilsPx;
+
+    try {
+        longueurPx = Util.enPixels(longueurFil.getText());     // ex: 10' 0"  |  20"  |  5' 6"
+        distanceFilsPx = Util.enPixels(distanceFils.getText()); // ex: 3"  |  2" 1/2
+    } catch (IllegalArgumentException ex) {
+        mainWindow.tabsErreur.addErrorMessage(ex.getMessage());
+        return;
+    }
+
+    if (longueurPx <= 0) {
+        mainWindow.tabsErreur.addErrorMessage("La longueur doit être > 0.");
+        return;
+    }
+    if (distanceFilsPx <= 0) {
+        mainWindow.tabsErreur.addErrorMessage("La distance entre fils doit être > 0.");
+        return;
+    }
+
+    Chemin ch = g.genererChemin(longueurPx);
+    if (ch == null || ch.getAretes().isEmpty()) {
+        mainWindow.tabsErreur.addErrorMessage("Aucun chemin trouvé avec ces valeurs.");
+        return;
+    }
+
+    mainWindow.currentCanvas.repaint();
+});
+
+
+    s.addFull(btnGenererChemin);
+    return s;
     }
 
     private JTextField text(String value) {

@@ -33,6 +33,8 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
 import javax.swing.SwingUtilities;
+import com.heatmyfloor.domain.graphe.Chemin;
+import com.heatmyfloor.domain.graphe.Fil;
 
 /**
  *
@@ -92,7 +94,22 @@ public class PieceDrawer {
                 int rayon = (int) graphe.getRayonIntersection();
                 g2.fillOval(x, y, rayon*2, rayon*2);
             }
+            Chemin ch = graphe.getCheminActuel();
+                if (ch != null && !ch.getAretes().isEmpty()) {
+                    g2.setColor(Color.RED);
+                    g2.setStroke(new BasicStroke(2f));
+                    for (Fil f : ch.getAretes()) {
+                        Point a = f.getDepart().getCoordonees();
+                        Point b = f.getArrivee().getCoordonees();
+                        g2.drawLine((int)a.getX(), (int)a.getY(), (int)b.getX(), (int)b.getY());
+                    }
         }
+
+        }
+        
+       
+
+
 
         props.afficherProprietesPiece();
 
