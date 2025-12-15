@@ -19,24 +19,24 @@ import java.io.Serializable;
  * @author petit
  */
 public class Graphe implements Serializable{
+    private Piece piece;
     private List<Intersection> intersections;
     private Chemin cheminActuel;
     private double distanceIntersection;
-    private double rayonIntersection = 5;
+    private double rayonIntersection;
+    private Point offsetTranslation = new Point(0, 0);
     private List<Fil> aretes;
     
-    public Graphe(double distanceIntersection){
-//    this.cheminActuel = new Chemin(aretes);
-    this.distanceIntersection = distanceIntersection;
-    this.intersections = new ArrayList<> ();
+    public Graphe(double distanceIntersection, double rayonIntersection, Piece piece){
+    //    this.cheminActuel = new Chemin(aretes);
+        this.distanceIntersection = distanceIntersection;
+        this.rayonIntersection = rayonIntersection;
+        this.piece = piece;
+        this.intersections = new ArrayList<>();
     
     }
     
     public Graphe(){}
-    
-    public Graphe generer(double distanceIntersection,Piece p){
-        return null;
-    }
     
     public boolean estIntersectionValide(Intersection intersection, Piece piece){
         Point position = intersection.getCoordonees();
@@ -80,7 +80,7 @@ public class Graphe implements Serializable{
     }
     
     
-    public List<Intersection> ListIntersectionsValide(Piece piece){
+    public List<Intersection> getListIntersectionsValide(Piece piece){
         
         List<Intersection> intersectionsValide = new ArrayList<>();
         if(this.distanceIntersection <= 0) return intersectionsValide;
@@ -92,12 +92,12 @@ public class Graphe implements Serializable{
         double yMin;
         double yMax;
         if(piece instanceof PieceRectangulaire){
-            xMin = piece.getPosition().getX() + distanceFilAvecMur;
-            xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
-            yMin = piece.getPosition().getY() + distanceFilAvecMur;
-            yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
+            xMin = piece.getPosition().getX() + distanceFilAvecMur + offsetTranslation.getX();
+            xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur - (2*this.rayonIntersection);
+            yMin = piece.getPosition().getY() + distanceFilAvecMur + offsetTranslation.getY();
+            yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur - (2*this.rayonIntersection);
         }else if(piece instanceof PieceIrreguliere){
-                        xMin = piece.getPosition().getX() + distanceFilAvecMur;
+            xMin = piece.getPosition().getX() + distanceFilAvecMur;
             xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
             yMin = piece.getPosition().getY() + distanceFilAvecMur;
             yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
@@ -108,7 +108,7 @@ public class Graphe implements Serializable{
         double distance = this.distanceIntersection + rayonIntersection;
         for(double y = yMin; y < yMax; y+= distance){
             for(double x = xMin; x < xMax; x += distance){
-                 Intersection intersect = new Intersection(new Point(x, y));
+                 Intersection intersect = new Intersection(new Point(x , y ));
                  if(this.estIntersectionValide(intersect, piece)){
                      intersectionsValide.add(intersect);
                  }
@@ -117,13 +117,16 @@ public class Graphe implements Serializable{
         this.intersections = intersectionsValide;
         return intersectionsValide;
     } 
-    
+
     
     public void ajouterIntersection(Intersection i){}
     
     public void supprimerIntersection(Intersection i){}
     
-    public void translater(Point delta){}
+    public void translater(Point delta){
+        this.offsetTranslation = delta;
+    }
+    
     
     public Chemin genererChemin(double longFilTotal){
         return null;

@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.items.Drain;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
@@ -66,7 +67,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem HelpMenuItem;
     private javax.swing.JToggleButton selectionButton;
     private javax.swing.JMenuBar topMenuBar;
-
+    
     private BarreOutils barreOutils;
     private JTabbedPane tabs;
     private int i = 1;
@@ -100,7 +101,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     //Conversion coordonnées (Zoom)
-    private com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
+    public com.heatmyfloor.domain.Point toWorld(Canvas c, java.awt.event.MouseEvent e) {
         double zx = c.getZoom();
         var o = c.getOriginePx();
         return new com.heatmyfloor.domain.Point(
@@ -160,6 +161,8 @@ public class MainWindow extends javax.swing.JFrame {
         barreOutils.onThermostatClicked();
         barreOutils.onElementChauffant();
         barreOutils.onZonesClicked();
+        barreOutils.onVueDessinClicked();
+        barreOutils.onVueImageClicked();
 
         barreOutils.onIrregularButtonClick(() -> {
 
@@ -176,99 +179,13 @@ public class MainWindow extends javax.swing.JFrame {
                 UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun projet ouvert.");
             }
         });
-
-        barreOutils.onEnregistrerProjetClick(() -> {
-
-            Path fichierSauvegarde = null;
-
-            enregistrerProjet(fichierSauvegarde);
-
-        });
-
-        barreOutils.onExportPngClick(() -> {
-            Path fichierSauvegarde;
-            fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
-            if (fichierSauvegarde == null) {
-
-                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
-                return;
-            }
-
-            try {
-                controllerActif.exporterProjetPng(fichierSauvegarde);
-                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
-            } catch (RuntimeException e) {
-                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
-            }
-
-        });
-
-        barreOutils.onExportPngClick(() -> {
-            Path fichierSauvegarde;
-            fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
-            if (fichierSauvegarde == null) {
-
-                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
-                return;
-            }
-
-            try {
-                controllerActif.exporterProjetPng(fichierSauvegarde);
-                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
-            } catch (RuntimeException e) {
-                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
-            }
-
-        });
-
-        barreOutils.onOuvrirProjetClick(() -> {
-
-            Path fichier;
-            fichier = UiUtils.choisirFichierJson(this);
-            if (fichier == null) {
-
-                UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun fichier Json nà été sélectionné.");
-                return;
-            }
-
-            try {
-
-                controllerActif = new Controller();
-                controllerActif.ouvrirProjet(fichier);
-
-                Canvas canvas = new Canvas();
-                canvas.setMainWindow(this);
-                currentCanvas = canvas;
-                controllers.put(currentCanvas, controllerActif);
-
-                tabs.addTab(controllerActif.GetProjetNom(), currentCanvas);
-                tabs.setSelectedComponent(currentCanvas);
-                int idx = tabs.indexOfComponent(currentCanvas);
-                tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
-                tabs.setSelectedIndex(idx);
-
-                SwingUtilities.invokeLater(() -> {
-                    currentCanvas.repaint();
-                });
-                props.afficherProprietesPiece();
-                sourisListener();
-                suppressionListener();
-
-                UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
-            } catch (RuntimeException e) {
-                UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
-            }
-
-        });
+        
+        barreOutils.onOuvrirProjetClick(()-> ouvrirProjet());    
+        barreOutils.onEnregistrerProjetClick(()-> enregistrerProjet()); 
+        barreOutils.onExportPngClick(()-> exporterProjet());
 
         JPanel center = new JPanel(new BorderLayout());
         props = new Proprietes(this);
-        props.dimensionItemListener();
-        props.dimensionPieceListener();
-        props.grapheListener();
-        props.updateUndoRedoButtons();
-        props.diametreDrainListener();
-        props.positionDrainListener();
         center.add(props, BorderLayout.WEST);
         center.add(tabs, BorderLayout.CENTER);
 
@@ -276,8 +193,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         JPanel bottom = new JPanel(new BorderLayout());
         panelPosition = new PositionPanel(this);
-        panelPosition.positionListener();
-        panelPosition.angleListener();
         bottom.add(panelPosition, BorderLayout.CENTER);
         bottom.add(tabsErreur, BorderLayout.EAST);
         mainPanel.add(bottom, BorderLayout.SOUTH);
@@ -342,6 +257,68 @@ public class MainWindow extends javax.swing.JFrame {
         tabListener();
         pack();
     }
+    
+    private void ouvrirProjet(){
+        Path fichier;
+        fichier = UiUtils.choisirFichierJson(this);
+        if (fichier == null) {
+
+            UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun fichier Json n'a été sélectionné.");
+            return;
+        }
+
+        try {
+
+            controllerActif = new Controller();
+            controllerActif.ouvrirProjet(fichier);
+
+            Canvas canvas = new Canvas();
+            canvas.setMainWindow(this);
+            currentCanvas = canvas;
+            controllers.put(currentCanvas, controllerActif);
+
+            tabs.addTab(controllerActif.GetProjetNom(), currentCanvas);
+            tabs.setSelectedComponent(currentCanvas);
+            int idx = tabs.indexOfComponent(currentCanvas);
+            tabs.setTabComponentAt(idx, new ClosableTabHeader(tabs, this::closeTabAt, this::renameTabAt));
+            tabs.setSelectedIndex(idx);
+
+            SwingUtilities.invokeLater(() -> {
+                currentCanvas.repaint();
+            });
+            props.afficherProprietesPiece();
+            sourisListener();
+            suppressionListener();
+
+            UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+        } catch (RuntimeException e) {
+            UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
+        }
+    }
+    
+    private void enregistrerProjet(){
+        Path fichierSauvegarde = null;
+
+        enregistrerProjet(fichierSauvegarde);
+
+    }
+    
+    private void exporterProjet(){
+        Path fichierSauvegarde;
+        fichierSauvegarde = UiUtils.choisirDossierSauvegarde(this);
+        if (fichierSauvegarde == null) {
+
+            UiUtils.showToastTopRight(this, ToastType.ERROR, "Aucun dossier de sauvegarde sélectionné.");
+            return;
+        }
+
+        try {
+            controllerActif.exporterProjetPng(fichierSauvegarde);
+            UiUtils.showToastTopRight(this, ToastType.SUCCESS, "La sauvegarde a réussi");
+        } catch (RuntimeException e) {
+            UiUtils.showToastTopRight(this, ToastType.ERROR, e.getMessage());
+        }
+    }
 
     private void addNewProjet() {
         addNewProjet(null);
@@ -392,9 +369,16 @@ public class MainWindow extends javax.swing.JFrame {
             panelPosition.afficherCoordItemSelectionne();
             currentCanvas.repaint();
         });
-
+        props.dimensionItemListener();
+        props.dimensionPieceListener();
+        props.grapheListener();
+        props.updateUndoRedoButtons();
+        props.diametreDrainListener();
+        props.positionDrainListener();
         props.afficherProprietesPiece();
         props.updateUndoRedoButtons();
+        panelPosition.positionListener();
+        panelPosition.angleListener();
         sourisListener();
 
         currentCanvas.addKeyListener(new KeyAdapter() {
@@ -436,6 +420,31 @@ public class MainWindow extends javax.swing.JFrame {
         props.updateUndoRedoButtons();
     }
 
+    public void updateSourisPosition(MouseEvent e, Canvas canvas){
+        Point pWorld = toWorld(canvas, e);
+        //Position souris sur Canvas
+        double xCanvas = pWorld.getX();
+        double yCanvas = pWorld.getY();
+        panelPosition.sourisLabelXCanvas.setText(Util.formatImperial(Util.enPouces(xCanvas)));
+        panelPosition.sourisLabelYCanvas.setText(Util.formatImperial(Util.enPouces(yCanvas)));
+
+        //Position souris dans Piece + inversion Axe 0,0
+        PieceReadOnly piece = controllerActif.getPiece();
+        if(piece.contientLePoint(pWorld)){
+            double xPiece = piece.getPosition().getX();
+            double yPiece = piece.getPosition().getY();
+            double hauteurPiece = piece.getHauteur();
+
+            double xRelatif = xCanvas - xPiece;
+            double yRelatif = (yPiece + hauteurPiece) - pWorld.getY();
+            panelPosition.sourisLabelXPiece.setText(Util.formatImperial(Util.enPouces(xRelatif)));
+            panelPosition.sourisLabelYPiece.setText(Util.formatImperial(Util.enPouces(yRelatif)));
+        }else{
+            panelPosition.sourisLabelXPiece.setText("");
+            panelPosition.sourisLabelYPiece.setText("");
+        }
+    }
+    
     public void sourisListener() {
 
         // --- Sélection au clic ---
@@ -497,8 +506,9 @@ public class MainWindow extends javax.swing.JFrame {
             @Override
             public void mouseMoved(MouseEvent e
             ) {
-                Point pWorld = toWorld(currentCanvas, e);
+                updateSourisPosition(e, currentCanvas);
 
+                Point pWorld = toWorld(currentCanvas, e);
                 List<PieceItemReadOnly> items = controllerActif.getItemsList();
                 PieceItemReadOnly ancienItemSurvole = currentCanvas.getItemSurvole();
                 PieceItemReadOnly itemSurvole = null;
@@ -571,12 +581,17 @@ public class MainWindow extends javax.swing.JFrame {
             public void keyPressed(KeyEvent e) {
 
                 PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
+                double x;
+                double y;
                 if (sel == null) {
-                    return;
+                    e.consume();
+                    // Pour la Translation du graphe
+                    x = 0;
+                    y = 0;
+                }else{
+                    x = sel.getPosition().getX();
+                    y = sel.getPosition().getY();
                 }
-
-                double x = sel.getPosition().getX();
-                double y = sel.getPosition().getY();
 
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_UP:
@@ -598,8 +613,12 @@ public class MainWindow extends javax.swing.JFrame {
                         return;
 
                 }
-
-                panelPosition.moveSelectedTo(x, y);
+                if(sel == null){
+                    Point delta = new Point(x, y);
+                    controllerActif.appliquerGrapheTranslation(delta);
+                }else{
+                    panelPosition.moveSelectedTo(x, y);
+                }           
                 panelPosition.afficherAngleItemSelectionne();
                 currentCanvas.repaint();
 
@@ -755,13 +774,17 @@ public class MainWindow extends javax.swing.JFrame {
         newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(newItem);
         newItem.addActionListener(e -> handleNewProject());
-
+        
+        openItem.addActionListener(e -> ouvrirProjet());
         openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(openItem);
         fileMenu.addSeparator();
 
+        saveItem.addActionListener(e -> enregistrerProjet());
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         fileMenu.add(saveItem);
+        
+        exportItem.addActionListener(e -> exporterProjet());
         fileMenu.add(exportItem);
         fileMenu.addSeparator();
         quitMenuItem.setText("Quitter");

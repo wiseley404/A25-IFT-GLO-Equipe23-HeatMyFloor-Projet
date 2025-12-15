@@ -27,6 +27,8 @@ public class BarreOutils extends JPanel {
     private ButtonCard btnThermostat;
     private ButtonCard btnElementChauffant;
     private ButtonCard btnMenuZones;
+    private ButtonCard vueDessin;
+    private ButtonCard vueImage;
 
     private FormeIrregulierPanel dessinPanel;
     public ButtonCard btnZoomIn;
@@ -35,7 +37,11 @@ public class BarreOutils extends JPanel {
 
     public void setZoomPercent(double zoomFactor) {
         if (valeurZoom != null) {
-            valeurZoom.setText(String.format("%.0f %%", zoomFactor * 100.0));
+            if(zoomFactor > 0.01){
+                valeurZoom.setText(String.format("%.0f %%", zoomFactor * 100.0));
+            }else{
+                valeurZoom.setText(String.format("%.2e %%", zoomFactor * 100.0));
+            }    
         }
     }
 
@@ -134,9 +140,11 @@ public class BarreOutils extends JPanel {
         addSep(ribbon, gc, col++);
 
         //Affichage
+        vueDessin = card("Vue Dessin", "/Icons/VueDessin.png");
+        vueImage = card("Vue Image", "/Icons/VueImage.png");
         addGroup(ribbon, gc, col++, makeGroup("Affichage",
-                card("Vue 2D", "/Icons/2D.png"),
-                card("Vue 3D", "/Icons/3D.png")
+                vueDessin,
+                vueImage
         ), 2);
         addSep(ribbon, gc, col++);
 
@@ -218,12 +226,7 @@ public class BarreOutils extends JPanel {
         btnZoom.addActionListener(e -> zoomListener());
         btnDezoom.addActionListener(e -> dezoomListener());
 
-        JScrollPane scroller = new JScrollPane(
-                ribbon,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
-        );
-        add(scroller, BorderLayout.CENTER);
+        add(ribbon, BorderLayout.CENTER);
 
     }
 
@@ -373,6 +376,20 @@ public class BarreOutils extends JPanel {
     public void onOuvrirProjetClick(Runnable r) {
         btnOuvrir.setOnClick(e -> r.run());
 
+    }
+    
+    public void onVueDessinClicked(){
+        vueDessin.setOnClick(e -> {
+            mainWindow.currentCanvas.setModeRealiste(false);
+            mainWindow.currentCanvas.repaint();
+        });
+    }
+    
+    public void onVueImageClicked(){
+        vueImage.setOnClick(e -> {
+            mainWindow.currentCanvas.setModeRealiste(true);
+            mainWindow.currentCanvas.repaint();
+        });
     }
 
 }

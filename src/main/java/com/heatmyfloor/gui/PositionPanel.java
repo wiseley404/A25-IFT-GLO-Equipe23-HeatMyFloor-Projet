@@ -3,16 +3,14 @@ package com.heatmyfloor.gui;
 import javax.swing.*;
 import java.awt.*;
 import com.heatmyfloor.domain.Point;
-import com.heatmyfloor.domain.PointMapper;
-import com.heatmyfloor.domain.Util;
-import com.heatmyfloor.domain.items.Drain;
-import com.heatmyfloor.domain.items.DrainReadOnly;
-import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceItem;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
 import java.awt.event.ActionListener;
 import com.heatmyfloor.domain.Util;
+import com.heatmyfloor.domain.items.ElementChauffant;
+import com.heatmyfloor.domain.items.Thermostat;
+import com.heatmyfloor.domain.piece.Piece;
 /**
  *
  * @author tatow
@@ -24,6 +22,11 @@ public class PositionPanel extends JPanel {
     private JTextField degRotation;
     private JButton rotationButton;
     private MainWindow mainWindow;
+    
+    public JLabel sourisLabelXPiece;
+    public JLabel sourisLabelYPiece;
+    public JLabel sourisLabelXCanvas;
+    public JLabel sourisLabelYCanvas;
 
     public PositionPanel(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -32,28 +35,30 @@ public class PositionPanel extends JPanel {
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(230, 230, 230)));
         setPreferredSize(new Dimension(800, 120));
         setBackground(Color.white);
-        JPanel inner = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
+        JPanel inner = new JPanel();
+        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
         inner.setOpaque(false);
-
+        
+        JPanel rangeeHaut = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
+        rangeeHaut.setOpaque(false);
         JPanel coords = new JPanel();
         coords.setLayout(new BoxLayout(coords, BoxLayout.Y_AXIS));
         coords.setBorder(BorderFactory.createTitledBorder("Position"));
         JPanel xy = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
 
-        xPosition = new JTextField("", 6);
+        xPosition = new JTextField("", 7);
         xPosition.setMargin(new Insets(2, 2, 2, 4));
         xy.add(new JLabel("X :"));
         xy.add(xPosition);
-        yPosition = new JTextField("", 6);
+        yPosition = new JTextField("", 7);
         yPosition.setMargin(new Insets(2, 2, 2, 4));
         xy.add(new JLabel("Y :"));
         xy.add(yPosition);
         coords.add(xy);
 
-        inner.add(coords);
+        rangeeHaut.add(coords);
 
-               JPanel trans = new JPanel(new GridBagLayout());
-
+        JPanel trans = new JPanel(new GridBagLayout());
         trans.setBorder(BorderFactory.createTitledBorder("Translation"));
 
         // Boutons Alignement
@@ -88,7 +93,7 @@ public class PositionPanel extends JPanel {
         gbc.gridx = 1; gbc.gridy = 1;  trans.add(BM, gbc);
         gbc.gridx = 2; gbc.gridy = 1; trans.add(BD, gbc);
  
-        inner.add(trans);
+        rangeeHaut.add(trans);
  
 
         JPanel rot = new JPanel();
@@ -118,8 +123,41 @@ public class PositionPanel extends JPanel {
 
         rotChamp.add(rotationButton);
         rot.add(rotChamp);
-        inner.add(rot);
+        rangeeHaut.add(rot);
         
+        inner.add(rangeeHaut);
+        
+        //Position souris
+        JPanel sourisPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        sourisPanel.setOpaque(false);
+        sourisPanel.add(new JLabel("Souris 🖰"));
+        sourisPanel.add(Box.createHorizontalStrut(10));
+        sourisPanel.add(new JLabel("Pièce"));
+        sourisPanel.add(new JLabel("x : "));
+        sourisLabelXPiece = new JLabel("");
+        sourisLabelXPiece.setPreferredSize(new Dimension(80, 20));
+        sourisPanel.add(sourisLabelXPiece);
+        
+        sourisPanel.add(Box.createHorizontalStrut(20));
+        sourisPanel.add(new JLabel("y : "));
+        sourisLabelYPiece = new JLabel("");
+        sourisLabelYPiece.setPreferredSize(new Dimension(80, 20));
+        sourisPanel.add(sourisLabelYPiece);
+        sourisPanel.add(Box.createHorizontalStrut(50));
+        
+        sourisPanel.add(new JLabel("Canvas"));
+        sourisPanel.add(new JLabel("x : "));
+        sourisLabelXCanvas = new JLabel("");
+        sourisPanel.add(sourisLabelXCanvas);
+        sourisLabelXCanvas.setPreferredSize(new Dimension(80, 20));
+               
+        sourisPanel.add(Box.createHorizontalStrut(20));
+        sourisPanel.add(new JLabel("y : "));
+        sourisLabelYCanvas = new JLabel("");
+        sourisLabelYCanvas.setPreferredSize(new Dimension(80, 20));
+        sourisPanel.add(sourisLabelYCanvas);
+       
+        inner.add(sourisPanel);   
         add(inner, BorderLayout.CENTER);
 
         HG.addActionListener(e -> {
@@ -224,15 +262,21 @@ public class PositionPanel extends JPanel {
     }
 
     public void afficherCoordItemSelectionne() {
+        double xPiece = mainWindow.controllerActif.getPiece().getPosition().getX();
+        double yPiece = mainWindow.controllerActif.getPiece().getPosition().getY();
+        double hauteurPiece = mainWindow.controllerActif.getPiece().getHauteur();
+        
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
             double xItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getX();
             double yItem = mainWindow.controllerActif.trouverItemSelectionne().getPosition().getY();
-            xPosition.setText(Util.formatImperial(Util.enPouces(xItem)));
-            yPosition.setText(Util.formatImperial(Util.enPouces(yItem)));
+            double hauteurItem = mainWindow.controllerActif.trouverItemSelectionne().getHauteur();
+            
+            double xRelatif = xItem - xPiece;
+            double yRelatif = (yPiece + hauteurPiece) - (yItem + hauteurItem);
+            xPosition.setText(Util.formatImperial(Util.enPouces(xRelatif)));
+            yPosition.setText(Util.formatImperial(Util.enPouces(yRelatif)));
         } else {
             if(mainWindow.controllerActif.getPiece() != null){
-                double xPiece = mainWindow.controllerActif.getPiece().getPosition().getX();
-                double yPiece = mainWindow.controllerActif.getPiece().getPosition().getY();
                 xPosition.setText(Util.formatImperial(Util.enPouces(xPiece)));
                 yPosition.setText(Util.formatImperial(Util.enPouces(yPiece))); 
             }
@@ -242,7 +286,7 @@ public class PositionPanel extends JPanel {
     
     public void afficherAngleItemSelectionne() {
         if (mainWindow.controllerActif.trouverItemSelectionne() != null) {
-            degRotation.setText(String.valueOf(mainWindow.controllerActif.trouverItemSelectionne().getAngle() + "°"));
+            degRotation.setText(String.format("%.2f°", mainWindow.controllerActif.trouverItemSelectionne().getAngle()));
         } else {
             degRotation.setText("");
 
@@ -282,19 +326,33 @@ public class PositionPanel extends JPanel {
     }
 
     public void positionListener() {
+        if(mainWindow.controllerActif == null) return;
+    
         ActionListener apply = (e -> {
             if (xPosition == null || yPosition == null)return;
+            PieceItemReadOnly item = mainWindow.controllerActif.trouverItemSelectionne();         
             try{
                 double x = Util.enPixels(xPosition.getText());
                 double y = Util.enPixels(yPosition.getText());
-                moveSelectedTo(x, y);
+                if(item != null){
+                    double hauteurItem = item.getHauteur();
+                    double xPiece = mainWindow.controllerActif.getPiece().getPosition().getX();
+                    double yPiece = mainWindow.controllerActif.getPiece().getPosition().getY();
+                    double hauteurPiece = mainWindow.controllerActif.getPiece().getHauteur();
+                    
+                    double xAbsolu = x + xPiece;
+                    double yAbsolu = yPiece + hauteurPiece - y - hauteurItem;
+                    moveSelectedTo(xAbsolu, yAbsolu);
+                }else{
+                    moveSelectedTo(x, y);
+                }
+                
             }catch(IllegalArgumentException error){
-                //mainWindow.tabsErreur.clearMessages();
                 mainWindow.tabsErreur.addErrorMessage(error.getMessage());
             }
             
             SwingUtilities.invokeLater(() -> {
-                mainWindow.currentCanvas.repaint();//maj l'affichage
+                mainWindow.currentCanvas.repaint();
                 mainWindow.currentCanvas.requestFocusInWindow();
             });
         });
@@ -306,6 +364,14 @@ public class PositionPanel extends JPanel {
     public void moveSelectedTo(double x, double y) {
 
         Point p = new Point(x, y);
+        PieceItemReadOnly item = mainWindow.controllerActif.trouverItemSelectionne();
+        PieceReadOnly piece = mainWindow.controllerActif.getPiece();
+        if(item instanceof Thermostat thermo && thermo.getMur() != null){
+            p = thermo.getMur().projetterPositionItemSurMur(p, thermo, (Piece)piece);
+        }else if(item instanceof ElementChauffant elem && elem.getMur() != null){
+            p = elem.getMur().projetterPositionItemSurMur(p, elem, (Piece)piece);
+        }
+        
         if (mainWindow.controllerActif.trouverItemSelectionne() == null) {
             mainWindow.controllerActif.repositionnerPiece(p);
 

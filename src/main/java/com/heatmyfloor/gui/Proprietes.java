@@ -25,6 +25,7 @@ public class Proprietes extends JPanel {
     private JTextField largeurPiece;
     private JTextField hauteurPiece;
     private JTextField distanceIntersections;
+    private JTextField diametreIntersections;
     private JTextField largeurItem;
     private JTextField hauteurItem;
     private JTextField distanceFils;
@@ -93,6 +94,7 @@ public class Proprietes extends JPanel {
         bar.setBorder(new EmptyBorder(8, 12, 8, 12));
 
         JLabel title = new JLabel("Propriétés");
+        title.setPreferredSize(new Dimension(200, 25));
         title.setFont(title.getFont().deriveFont(Font.BOLD, 14f));
         
         //Boutons UNDO-REDO + PARAMETRES UNITE VALEURS NUMERIQUES
@@ -227,7 +229,9 @@ public class Proprietes extends JPanel {
     private JComponent sectionMembrane() {
         SectionPanel s = new SectionPanel("Membrane");
         distanceIntersections = text("");
-        s.addRow("Intersections :", distanceIntersections);
+        diametreIntersections = text("");
+        s.addRow("Distance    :", distanceIntersections);
+        s.addRow("Diamètre    : ", diametreIntersections);
         s.addSpacer(8);
         grapheButton = button("Générer un Graphe");
         s.addFull(grapheButton);
@@ -237,7 +241,8 @@ public class Proprietes extends JPanel {
     public  void grapheListener(){
         ActionListener listener = (e -> {
             double distance = Util.enPixels(this.distanceIntersections.getText());
-            mainWindow.controllerActif.configurerGraphe(new Graphe(distance)); 
+            double diametre = Util.enPixels(diametreIntersections.getText());
+            mainWindow.controllerActif.genererGraphe(distance, (diametre/2)); 
             SwingUtilities.invokeLater(() -> {
                 mainWindow.currentCanvas.revalidate();
                 mainWindow.currentCanvas.repaint();
@@ -262,7 +267,11 @@ public class Proprietes extends JPanel {
         return s;
     }
     
-        public void afficherMurItemSelectionne(){
+    public void afficherMurItemSelectionne(){
+        ActionListener[] listeners = murItem.getActionListeners();
+        for(ActionListener listener : listeners){
+            murItem.removeActionListener(listener);
+        }
         murItem.removeAllItems();
         mursMap.clear();
         
@@ -300,6 +309,10 @@ public class Proprietes extends JPanel {
         }else{
             murItem.setEnabled(false);
         }
+        
+        for(ActionListener listener : listeners){
+            murItem.addActionListener(listener);
+        }
     }
     
     public void positionnerSurMurItemSelectionne(){
@@ -333,13 +346,24 @@ public class Proprietes extends JPanel {
     }
     
     public void afficherProprietesDrainSelectionne() { 
-       PieceItemReadOnly item =  mainWindow.controllerActif.trouverItemSelectionne();
-        if(item != null && item instanceof MeubleAvecDrain m){    
-           double diametre =  Util.enPouces(m.getDrain().getDiametre());
-           double positionX = Util.enPouces(m.getDrain().getPosition().getX());
-           double positionY = Util.enPouces(m.getDrain().getPosition().getY());
+       PieceItemReadOnly item =  mainWindow.controllerActif.trouverItemSelectionne(); 
+        if(item != null && item instanceof MeubleAvecDrain m){   
+           double meublePosX = m.getPosition().getX();
+           double meublePosY = m.getPosition().getY();  
+           double meubleHauteur = m.getHauteur();
+           
+           double drainPosX = m.getDrain().getPosition().getX();
+           double drainPosY = m.getDrain().getPosition().getY();
+           double diametre =  m.getDrain().getDiametre();
+           
+           // Position Drain relatif au meuble
+           double xRelatif = drainPosX - meublePosX;
+           double yRelatif = (meublePosY + meubleHauteur) - (drainPosY + diametre);
+           
+           double positionX = Util.enPouces(xRelatif);
+           double positionY = Util.enPouces(yRelatif);
        
-           diametreDrain.setText(Util.formatImperial(diametre));
+           diametreDrain.setText(Util.formatImperial(Util.enPouces(diametre)));
            PositionX.setText(Util.formatImperial(positionX)); 
            PositionY.setText(Util.formatImperial(positionY));
         }else{
@@ -394,13 +418,25 @@ public class Proprietes extends JPanel {
     public void positionDrainListener(){
         ActionListener apply = (e  -> {
             if(PositionX == null || PositionY == null)return;
-            try{
-                double posX = Util.enPixels(PositionX.getText());
-                double posY = Util.enPixels(PositionY.getText());
-                moveSelectedTo(posX, posY);
-            }catch (IllegalArgumentException error){
-                mainWindow.tabsErreur.addErrorMessage(error.getMessage());
-            }        
+            PieceItemReadOnly item = mainWindow.controllerActif.trouverItemSelectionne();
+            if(item instanceof MeubleAvecDrain m){
+                double xItem = item.getPosition().getX();
+                double yItem = item.getPosition().getY();
+                double hauteurItem = item.getHauteur();
+                double diamDrain = m.getDrain().getDiametre();
+
+                try{
+                    double posX = Util.enPixels(PositionX.getText());
+                    double posY = Util.enPixels(PositionY.getText());
+                    
+                    double xAbsolu = xItem + posX;
+                    double yAbsolu = yItem + hauteurItem - posY - diamDrain;
+                    moveSelectedTo(xAbsolu, yAbsolu);
+                }catch (IllegalArgumentException error){
+                    mainWindow.tabsErreur.addErrorMessage(error.getMessage());
+                }
+            }
+        
             SwingUtilities.invokeLater(() -> {
                 mainWindow.currentCanvas.repaint();
                 mainWindow.currentCanvas.requestFocusInWindow();

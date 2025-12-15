@@ -147,7 +147,6 @@ public class Controller {
             .collect(Collectors.toList());
     }
     public PieceItem trouverItemSurPoint(Point p){
-        this.historique.sauvegarder(piece);
         return this.piece.trouverItemSurPoint(p);
     }
 
@@ -160,10 +159,7 @@ public class Controller {
         this.piece = piece;
     }
     
-    public void configurerGraphe(Graphe graphe){
-        this.piece.setGraphe(graphe);
-    }
-
+    
     public void annulerModif() {
         Piece anciennePiece = this.historique.annuler(piece);
         if (anciennePiece != null) {
@@ -180,7 +176,6 @@ public class Controller {
 
 
     public boolean estPositionDrainValide(double x, double y) {
-        this.historique.sauvegarder(piece);
         return this.piece.estPositionDrainValide(x, y);
     }
     
@@ -200,14 +195,14 @@ public class Controller {
         this.piece.deplacerDrain(delta);
     }
 
-    public void genererGraphe(double distIntersections) {
+    public void genererGraphe(double distIntersections, double rayonIntersections) {
         this.historique.sauvegarder(piece);
-        //Appelez votre methode en dessous
+        this.piece.setGraphe(new Graphe(distIntersections, rayonIntersections, this.piece));
     }
 
     public void appliquerGrapheTranslation(Point delta) {
         this.historique.sauvegarder(piece);
-        //Appelez votre methode en dessous
+        this.piece.getGraphe().translater(delta);
     }
 
     public void genererChemin(double longFilTotal) {

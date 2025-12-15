@@ -20,12 +20,13 @@ public class Mur implements Serializable, MurReadOnly {
         this.fin = fin;
         this.debut = debut;
         this.id = UUID.randomUUID();
+        //3" en pixels
         this.distanceAvecFil = Util.enPixels(3);
     }
 
     public Mur() {
         this.id = UUID.randomUUID();
-        this.distanceAvecFil = 3;
+        this.distanceAvecFil = Util.enPixels(3);
     }
 
     public void positionnerItem(PieceItem item, Piece piece) {
@@ -69,7 +70,67 @@ public class Mur implements Serializable, MurReadOnly {
         item.setPosition(new Point(px, py));
         item.setAngle(this.getAngle());
     }
-
+    
+    
+    public Point projetterPositionItemSurMur(Point nouvPosition, PieceItem item, Piece piece){
+        double largeur = item.getLargeur();
+        double hauteur = item.getHauteur();
+        
+        double centreX = nouvPosition.getX() + largeur / 2;
+        double centreY = nouvPosition.getY() + hauteur / 2;
+        
+        // Mur
+        Point p1 = this.debut;
+        Point p2 = this.fin;
+        
+        // Directions
+        double dx = p2.getX() - p1.getX();
+        double dy = p2.getY() - p1.getY();
+        double len = Math.sqrt(dx*dx + dy* dy);
+        dx /= len;
+        dy /= len;
+        
+        // Projection
+        double vx = centreX - p1.getX();
+        double vy = centreY - p1.getY();
+        double proj = vx*dx + vy*dy;
+        
+        double tol = largeur*2;
+        proj = Math.max(-tol, Math.min(len + tol, proj));
+        
+        double projX = p1.getX() + proj*dx;
+        double projY = p1.getY() + proj*dy;
+        
+        
+        // Normale
+        double nx = -dy;
+        double ny = dx;
+            System.out.println("Mur de (" + p1 + ") à (" + p2 + ")");
+    System.out.println("Direction mur: dx=" + dx + ", dy=" + dy);
+    System.out.println("Projection: " + proj + " / longueur: " + len);
+    System.out.println("Point projeté: (" + projX + ", " + projY + ")");
+    System.out.println("Normale: nx=" + nx + ", ny=" + ny);
+        // Test direction
+        double px = projX + nx*5;
+        double py = projY + ny*5;
+        if(!piece.contientLePoint(new Point(px, py))){
+            nx = -nx;
+            ny = -ny;
+        }
+        
+        // Centre Item apres projection
+        double nouvCentreX = projX + nx*(hauteur / 2);
+        double nouvCentreY = projY + ny*(hauteur / 2);
+        
+        // Nouvelle position sur Mur
+        return new Point(
+                nouvCentreX - largeur / 2,
+                nouvCentreY - hauteur / 2
+        );
+        
+    }
+    
+    
     public void setPosition(Point debut, Point fin) {
         this.debut = debut;
         this.fin = fin;

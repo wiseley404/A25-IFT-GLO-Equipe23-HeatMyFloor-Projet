@@ -25,6 +25,12 @@ public class Util {
         raw = raw.trim();
 
         double totalInches = 0.0;
+        boolean estNegatif = false;
+        
+        if(raw.startsWith("-")){
+            estNegatif = true;
+            raw = raw.substring(1).trim();
+        }
 
         String rest = raw;
         rest = rest.replaceAll("[\\u2018\\u2019\\u2032`’]", "'");
@@ -71,6 +77,10 @@ public class Util {
 
         }
         
+        if(estNegatif){
+            totalInches = - totalInches;
+        }
+        
         return roundTo32nd(totalInches)*PIXEL_PAR_POUCE;
     }
 
@@ -90,6 +100,8 @@ public class Util {
     
     
     public static String formatImperial(double inches) {
+        boolean estNegatif = inches < 0;
+        inches = Math.abs(inches);
         inches = roundTo32nd(inches);
 
         int feet = (int) (inches / 12.0);
@@ -121,8 +133,9 @@ public class Util {
         if (num > 0) {
             sb.append(num).append("/").append(den);
         }
-
-        return sb.toString().trim();
+        
+        String result = sb.toString().trim();
+        return estNegatif ? "-" + result : result;
     }
         
         

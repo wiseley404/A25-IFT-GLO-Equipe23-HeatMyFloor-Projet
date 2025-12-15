@@ -7,9 +7,7 @@ import java.io.Serializable;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.gui.drawer.PieceDrawer;
 import com.heatmyfloor.domain.Point;
-import com.heatmyfloor.domain.PointMapper;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
-import java.util.function.Consumer;
 import java.util.List;
 
 public class Canvas extends JPanel implements Serializable {
@@ -18,6 +16,7 @@ public class Canvas extends JPanel implements Serializable {
     private FormeIrregulierPanel dessinPanel;
     private PieceItemReadOnly itemSurvole;
     public PieceDrawer dessinateurPiece;
+    private boolean modeRealiste;
 
     // Zoom
     private double zoom = 1.0;
@@ -233,6 +232,14 @@ public class Canvas extends JPanel implements Serializable {
     
     public FormeIrregulierPanel getDessinPanel(){
         return this.dessinPanel;
+    }
+    
+    public boolean getModeRealiste(){
+        return this.modeRealiste;
+    }
+    
+    public void setModeRealiste(boolean modeRealiste){
+        this.modeRealiste = modeRealiste;
     }
 
 } 

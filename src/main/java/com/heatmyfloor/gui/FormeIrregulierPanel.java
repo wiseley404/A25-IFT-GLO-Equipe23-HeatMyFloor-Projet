@@ -5,6 +5,7 @@
 package com.heatmyfloor.gui;
 
 import com.heatmyfloor.domain.PointMapper;
+import com.heatmyfloor.domain.Util;
 import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.graphe.Intersection;
 import com.heatmyfloor.domain.piece.Piece;
@@ -71,10 +72,13 @@ public class FormeIrregulierPanel extends JPanel {
                     if (modeDessin) {
                         pointActuel = e.getPoint();
                         repaint();
+                        
+                        Canvas canvas = (Canvas) getParent();
+                        canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
+                        com.heatmyfloor.gui.FormeIrregulierPanel.this, e, canvas));
                     }
                 }
             };
-
             addMouseListener(ma);
             addMouseMotionListener(ma);
         }
@@ -184,7 +188,6 @@ public class FormeIrregulierPanel extends JPanel {
 
                 g2.setColor(Color.ORANGE);
                 g2.drawPolygon(polygon);
-                 System.out.println("Me voici");
             }
         }
 
@@ -202,7 +205,7 @@ public class FormeIrregulierPanel extends JPanel {
         PieceReadOnly piece = canvas.getMainWindow().controllerActif.getPiece();
         Graphe graphe = piece.getGraphe();
         if(graphe != null){
-            List<Intersection> intersectionsValide = graphe.ListIntersectionsValide((Piece)piece);
+            List<Intersection> intersectionsValide = graphe.getListIntersectionsValide((Piece)piece);
             for(Intersection intersect : intersectionsValide){
                 com.heatmyfloor.domain.Point point = intersect.getCoordonees();
                 int x = (int) point.getX();

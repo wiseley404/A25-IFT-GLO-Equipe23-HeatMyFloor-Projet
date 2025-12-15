@@ -20,7 +20,7 @@ public class MeubleSansDrain extends PieceItem {
 
     //Constructeur
     public MeubleSansDrain(double largeur, double hauteur, Point pos, TypeSansDrain type) {
-        super(largeur, hauteur, pos, type.getImage());
+        super(largeur, hauteur, pos, type.getImage(true));
         this.distanceAvecFil = Util.enPixels(3.0);
         this.type = type;
     }
@@ -37,6 +37,11 @@ public class MeubleSansDrain extends PieceItem {
 
     public TypeSansDrain getType() {
         return this.type;
+    }
+    
+    @Override
+    public String getImage(boolean modeRealiste){
+        return type.getImage(modeRealiste);
     }
 
 }

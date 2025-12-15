@@ -184,9 +184,12 @@ public abstract class PieceItem implements PieceItemReadOnly, Serializable{
         return this.angle;
     }
     
+    public String getImage(){
+        return getImage(true);
+    }
     
     @Override
-    public String getImage(){
+    public String getImage(boolean modeRealiste){
         return this.image;
     }
 

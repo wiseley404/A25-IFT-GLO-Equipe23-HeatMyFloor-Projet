@@ -206,25 +206,14 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public boolean estPositionItemValide(Point itemPosition) {
         boolean valide = false;
         PieceItem item = this.trouverItemSelectionne();
-
         if (item != null && itemPosition != null) {
             Point p1 = itemPosition;
             Point p2 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY() + item.getHauteur());
-
-            if (item.getAngle() == 0) {
-                valide = contientLePoint(p1) || contientLePoint(p2);
-                //Verification de la position de l'item en rotation
-            } else {
-                valide = contientLePoint(p1) || contientLePoint(p2);
-//                Rectangle2D formeTournee = new Rectangle2D.Double(itemPosition.getX(), itemPosition.getY(),
-//                item.getLargeur(), item.getHauteur());
-//                AffineTransform transf = new AffineTransform();
-//                double angleRadian = Math.toRadians(item.getAngle());
-//                transf.rotate(angleRadian, formeTournee.getCenterX(), formeTournee.getCenterY());
-//                Shape itemRotation = transf.createTransformedShape(formeTournee);
-//                valide = this.contientLaForme(itemRotation);
-            }
+            Point p3 = new Point(itemPosition.getX(), itemPosition.getY() + item.getHauteur());
+            Point p4 = new Point(itemPosition.getX() + item.getLargeur(), itemPosition.getY());
+            valide = contientLePoint(p1) || contientLePoint(p2) || contientLePoint(p3) || contientLePoint(p4);
         }
+
         return valide;
     }
 
@@ -286,12 +275,32 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     public void redimensionner(double nouvLarg, double nouvHaut) {
         double facteurX = nouvLarg / this.largeur;
         double facteurY = nouvHaut / this.hauteur;
+        
         setLargeur(nouvLarg);
         setHauteur(nouvHaut);
+        mettreAJourMurs();
+        
+        Point posPiece = this.position;
+       
         for (PieceItem item : this.itemsList) {
-            //item.redimensionner(facteurX, facteurY); *A verifier avec le prof
-            item.translater(facteurX, facteurY);
+            double xRelatif = item.getPosition().getX() - posPiece.getX();
+            double yRelatif = item.getPosition().getY() - posPiece.getY();
+            
+            double nouvXRelatif = xRelatif*facteurX;
+            double nouvYRelatif = yRelatif*facteurY;
+            
+            double xAbsolu = nouvXRelatif + posPiece.getX();
+            double yAbsolu = nouvYRelatif + posPiece.getY();
+            item.setPosition(new Point(xAbsolu, yAbsolu));
+            if (item instanceof Thermostat thermo && thermo.getMur() != null){
+                Point nouvPosition = thermo.getMur().projetterPositionItemSurMur(thermo.getPosition(), thermo, this);
+                thermo.setPosition(nouvPosition);
+            }else if(item instanceof ElementChauffant elem && elem.getMur() != null){
+                Point nouvPosition = elem.getMur().projetterPositionItemSurMur(elem.getPosition(), elem, this);
+                elem.setPosition(nouvPosition);
+            }
         }
+
     }
 
     public void redimensionnerItemSelectionne(double nouvLarg, double nouvHauteur) {
@@ -361,17 +370,24 @@ public abstract class Piece implements PieceReadOnly, Serializable {
     }
 
     public void setPosition(Point nouvPosition) {
-        //double facteurX = nouvPosition.getX() - this.position.getX();
-        //double facteurY = nouvPosition.getY() - this.position.getY();
+        Point anciennePos = this.position;
         this.position = nouvPosition;
         mettreAJourMurs();
+        
+        double deltaX = nouvPosition.getX() - anciennePos.getX();
+        double deltaY = nouvPosition.getY() - anciennePos.getY();
         for (PieceItem item : itemsList) {
-            if(item instanceof Thermostat th) {
-                th.positionnerSurMur(th.getMur(), this);
-            } else if (item instanceof ElementChauffant ec) {
-                ec.positionnerSurMur(ec.getMur(), this);
-            } else {
-                //item.translater(new Point(facteurX, facteurY));
+            item.translater(new Point(deltaX, deltaY));
+            Point nouvPos = new Point(
+                item.getPosition().getX() + deltaX,
+                item.getPosition().getY() + deltaY
+            );
+            if(item instanceof Thermostat th && th.getMur() != null){
+                Point projPos = th.getMur().projetterPositionItemSurMur(nouvPos, th, this);
+                th.setPosition(projPos);
+            } else if (item instanceof ElementChauffant elem && elem.getMur() != null){
+                Point projPos = elem.getMur().projetterPositionItemSurMur(nouvPos, elem, this);
+                elem.setPosition(projPos);
             }
         }
     }

@@ -27,6 +27,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.List;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -84,7 +85,7 @@ public class PieceDrawer {
 
         Graphe graphe = controller.getPiece().getGraphe();
         if(graphe != null){
-            List<Intersection> intersectionsValide = graphe.ListIntersectionsValide((Piece)controller.getPiece());
+            List<Intersection> intersectionsValide = graphe.getListIntersectionsValide((Piece)controller.getPiece());
             for(Intersection intersect : intersectionsValide){
                 Point point = intersect.getCoordonees();
                 int x = (int) point.getX();
@@ -92,6 +93,7 @@ public class PieceDrawer {
                 int rayon = (int) graphe.getRayonIntersection();
                 g2.fillOval(x, y, rayon*2, rayon*2);
             }
+
         }
 
         props.afficherProprietesPiece();
@@ -125,7 +127,7 @@ public class PieceDrawer {
             }
 
             BufferedImage itemImage = null;
-            URL imageUrl = getClass().getResource(item.getImage());
+            URL imageUrl = getClass().getResource(item.getImage(currentCanvas.getModeRealiste()));
             if (imageUrl != null) {
                 try {
                     itemImage = ImageIO.read(imageUrl);
@@ -135,6 +137,9 @@ public class PieceDrawer {
             }
 
             if (itemImage != null) {
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.drawImage(itemImage, (int) item.getPosition().getX(),
                         (int) item.getPosition().getY(),
                         (int) item.getLargeur(),

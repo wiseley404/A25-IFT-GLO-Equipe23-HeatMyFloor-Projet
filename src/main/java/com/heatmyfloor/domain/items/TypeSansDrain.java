@@ -10,17 +10,19 @@ package com.heatmyfloor.domain.items;
  */
 public enum TypeSansDrain {
     
-    PLACARD("/images/placard.png"),
-    ARMOIRE("/images/armoire.png");
+    PLACARD("/images/placard_dessin.png", "/images/placard_realiste.png"),
+    ARMOIRE("/images/armoire_dessin.png", "/images/armoire_realiste.png");
     
-    private final String image;
+    private final String imageDessin;
+    private final String imageRealiste;
     
-    TypeSansDrain(String image){
-        this.image = image;
+    TypeSansDrain(String imageDessin, String imageRealiste){
+        this.imageDessin = imageDessin;
+        this.imageRealiste = imageRealiste;
     }
     
-    public String getImage(){
-        return this.image;
+    public String getImage(boolean modeRealiste){
+        return modeRealiste? imageRealiste : imageDessin;
     }
     
 }

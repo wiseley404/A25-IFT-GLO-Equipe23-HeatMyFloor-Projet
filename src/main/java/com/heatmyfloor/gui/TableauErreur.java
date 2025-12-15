@@ -20,6 +20,7 @@ public final class TableauErreur extends JPanel {
         JPanel title = new JPanel(new FlowLayout(FlowLayout.LEFT));
         title.setOpaque(false);
         JLabel titleLabel = new JLabel("Messages d'erreur");
+        titleLabel.setPreferredSize(new Dimension(200, 25));
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14f));
         title.add(titleLabel);
         add(title, BorderLayout.NORTH);
@@ -49,6 +50,7 @@ public final class TableauErreur extends JPanel {
     public void addErrorMessage(String text) {
         JLabel label = new JLabel("⚠ " + text);
         label.setForeground(new Color(180, 0, 0)); // rouge foncé
+        label.setMaximumSize(new Dimension(Integer.MAX_VALUE, label.getPreferredSize().height));
         label.setFont(label.getFont().deriveFont(13f));
         messages.add(label);
         messagesPanel.add(label);
