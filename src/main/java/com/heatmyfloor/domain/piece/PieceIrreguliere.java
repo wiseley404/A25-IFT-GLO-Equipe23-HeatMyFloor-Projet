@@ -1,6 +1,8 @@
 package com.heatmyfloor.domain.piece;
 
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.ElementChauffant;
+import com.heatmyfloor.domain.items.Thermostat;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -67,14 +69,16 @@ public class PieceIrreguliere extends Piece {
     public void redimensionner(double nouvLarg, double nouvHaut){
         if(this.sommets == null || this.sommets.isEmpty())return;
         
-        Rectangle2D contourPiece = getContour(this.sommets);
+        Rectangle2D ancienContourPiece = getContour(this.sommets);
+        double ancienneLargeur = ancienContourPiece.getWidth();
+        double ancienneHauteur = ancienContourPiece.getHeight();
+        if(ancienneLargeur == 0 || ancienneHauteur == 0) return;
         
-        if(super.getLargeur() == 0 || super.getHauteur() == 0) return;
-        double facteurX = nouvLarg / super.getLargeur();
-        double facteurY = nouvHaut / super.getHauteur();
+        double facteurX = nouvLarg / ancienneLargeur;
+        double facteurY = nouvHaut / ancienneHauteur;
         
-        double posX = contourPiece.getX();
-        double posY = contourPiece.getY();
+        double posX = ancienContourPiece.getX();
+        double posY = ancienContourPiece.getY();
         
         for(Point s : this.sommets){
             double deltaX = s.getX() - posX;
@@ -86,12 +90,34 @@ public class PieceIrreguliere extends Piece {
             s.setX(posX + nouvDeltaX);
             s.setY(posY + nouvDeltaY);
         }
+        
+        mettreAJourMurs();
+        Point posPiece = super.getPosition();
+        
+        for(PieceItem item : super.getItemsList()){
+            double xRelatif = item.getPosition().getX() - posPiece.getX();
+            double yRelatif = item.getPosition().getY() - posPiece.getY();
+            
+            double nouvXRelatif = xRelatif*facteurX;
+            double nouvYRelatif = yRelatif*facteurY;
+            
+            double xAbsolu = nouvXRelatif + posPiece.getX();
+            double yAbsolu = nouvYRelatif + posPiece.getY();
+            item.setPosition(new Point(xAbsolu, yAbsolu));
+            
+            if (item instanceof Thermostat thermo && thermo.getMur() != null){
+                Point nouvPosition = thermo.getMur().projetterPositionItemSurMur(thermo.getPosition(), thermo, this);
+                thermo.setPosition(nouvPosition);
+            }else if(item instanceof ElementChauffant elem && elem.getMur() != null){
+                Point nouvPosition = elem.getMur().projetterPositionItemSurMur(elem.getPosition(), elem, this);
+                elem.setPosition(nouvPosition);
+            }
+        }
         super.setLargeur(nouvLarg);
         super.setHauteur(nouvHaut);
-        for(PieceItem item : super.getItemsList()){
-            item.translater(facteurX, facteurY);
-        }
     }
+    
+    
     
     @Override
     public void setPosition(Point nouvPosition){
@@ -105,6 +131,8 @@ public class PieceIrreguliere extends Piece {
         }
         super.setPosition(nouvPosition);
     }
+    
+
     
     public static Path2D getForme(List<Point> sommets){
         Path2D polygone = new Path2D.Double();

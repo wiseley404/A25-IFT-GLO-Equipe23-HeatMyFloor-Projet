@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class GenerateurChemin implements Serializable{
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4523369905546364818L;
     private static final double PIXEL_PAR_POUCE = 4.5;
     private static final double LONGUEUR_MAX_SEGMENT_POUCES = 10 * 12; 
     private static final double LONGUEUR_MAX_SEGMENT = LONGUEUR_MAX_SEGMENT_POUCES * PIXEL_PAR_POUCE;

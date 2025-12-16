@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @author petit
  */
 public class Graphe implements Serializable{
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4523369905546364818L;
     private Piece piece;
     private List<Intersection> intersections;
     private Chemin cheminActuel;
