@@ -4,6 +4,7 @@
  */
 package com.heatmyfloor.domain;
 import java.io.Serializable;
+import java.util.Objects;
 /**
  *
  * @author petit
@@ -42,5 +43,18 @@ public class Point implements Serializable {
 
         return "(" + x + " , " + y + ")";
     }
-
+    
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+        Point autre = (Point) obj;
+        return Double.compare(this.x, autre.x) == 0 &&
+                Double.compare(this.y, autre.y) == 0;
+    }
+    
+    @Override
+    public int hashCode(){
+        return Objects.hash(x, y);
+    }
 }

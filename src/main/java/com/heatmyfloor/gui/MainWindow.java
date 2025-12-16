@@ -83,6 +83,8 @@ public class MainWindow extends javax.swing.JFrame {
     private double dragOffsetX = 0;
     private double dragOffsetY = 0;
     private final int STEP = 5;
+    private double lastTargetX, lastTargetY;
+    private boolean drainDeplace = false;
 
     public MainWindow() {
         barreOutils = new BarreOutils(this);
@@ -134,14 +136,13 @@ public class MainWindow extends javax.swing.JFrame {
                 Component comp = sp.getViewport().getView();
                 if (comp instanceof Canvas canvas) {
                     controllerActif = controllers.get(canvas);
-                    controllerActif.setPiece(new PieceRectangulaire(1000, 500));
+                    //controllerActif.ajouterPiece(new PieceRectangulaire(1000, 500));
                     currentCanvas = canvas;
 
-                    double largeur = controllerActif.getPiece().getLargeur();
-                    double hauteur = controllerActif.getPiece().getHauteur();
-                    double x = (currentCanvas.getWidth() - largeur) / 2;
-                    double y = (currentCanvas.getHeight() - hauteur) / 2;
-                    controllerActif.centrerPiece(new Point(x, y));
+                    double x = (currentCanvas.getWidth() - 1000) / 2;
+                    double y = (currentCanvas.getHeight() - 500) / 2;
+                    //controllerActif.centrerPiece(new Point(x, y));
+                    controllerActif.setPiece(new PieceRectangulaire(1000, 500), new Point(x, y));
                     panelPosition.afficherCoordItemSelectionne();
 
                     currentCanvas.nettoyerModeDessin();
@@ -376,7 +377,8 @@ public class MainWindow extends javax.swing.JFrame {
         props.diametreDrainListener();
         props.positionDrainListener();
         props.afficherProprietesPiece();
-        props.updateUndoRedoButtons();
+        props.undoListener();
+        props.redoListener();
         panelPosition.positionListener();
         panelPosition.angleListener();
         sourisListener();
@@ -457,6 +459,8 @@ public class MainWindow extends javax.swing.JFrame {
                 controllerActif.changerStatutSelection(pWorld);
                 PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
                 if (sel != null) {
+                    lastTargetX = sel.getPosition().getX();
+                    lastTargetY = sel.getPosition().getY();
                     if (sel instanceof MeubleAvecDrain meuble) {
                         Drain drain = meuble.getDrain();
                         if (drain.contientLePoint(pWorld)) {
@@ -469,6 +473,7 @@ public class MainWindow extends javax.swing.JFrame {
                             dragOffsetY = pWorld.getY() - meuble.getPosition().getY();
                         }
                     } else {
+                        
                         // Item classique
                         dragOffsetX = pWorld.getX() - sel.getPosition().getX();
                         dragOffsetY = pWorld.getY() - sel.getPosition().getY();
@@ -487,6 +492,8 @@ public class MainWindow extends javax.swing.JFrame {
                         }
                     }
                 } 
+
+                drainDeplace = false;
                 props.afficherProprietesItemSelectionne();
                 props.afficherMurItemSelectionne();
                 panelPosition.afficherCoordItemSelectionne();
@@ -499,7 +506,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         
-
+        
         // --- Survol souris ---
         currentCanvas.addMouseMotionListener(
                 new MouseMotionAdapter() {
@@ -526,7 +533,8 @@ public class MainWindow extends javax.swing.JFrame {
                     currentCanvas.repaint();
                 }
             }
-
+            
+            
             // --- Drag pour déplacer meuble ou drain ---
             @Override
             public void mouseDragged(MouseEvent e
@@ -535,7 +543,9 @@ public class MainWindow extends javax.swing.JFrame {
                 Point pWorld = toWorld(currentCanvas, e);
                 double targetX = pWorld.getX() - dragOffsetX;
                 double targetY = pWorld.getY() - dragOffsetY;
-                
+                lastTargetX = targetX;
+                lastTargetY = targetY;
+                drainDeplace = false;
                 if (selObj == null) {
                     //cas ou le drain est en dehors du meuble
                     List<PieceItemReadOnly> items = controllerActif.getItemsList();
@@ -546,6 +556,7 @@ public class MainWindow extends javax.swing.JFrame {
                                 double dx = targetX - drain.getPosition().getX();
                                 double dy = targetY - drain.getPosition().getY();
                                 meuble.deplacerDrain(new Point(dx, dy));
+                                drainDeplace = true;
                             }
                         }
                     }
@@ -555,20 +566,36 @@ public class MainWindow extends javax.swing.JFrame {
                         double dx = targetX - drain.getPosition().getX();
                         double dy = targetY - drain.getPosition().getY();
                         meuble.deplacerDrain(new Point(dx, dy));
+                        drainDeplace = true;
                     } else {
                         // Déplacement du meuble entier
-                        panelPosition.moveSelectedTo(targetX, targetY);
+                        controllerActif.deplacerItemSelectionneEnDrag(new Point(targetX, targetY));
                     }
-                } else {
-                    panelPosition.moveSelectedTo(targetX, targetY);
+                }else{
+                     controllerActif.deplacerItemSelectionneEnDrag(new Point(targetX, targetY));
                 }
 
                 panelPosition.afficherCoordItemSelectionne();
                 props.afficherProprietesDrainSelectionne();
                 currentCanvas.repaint();
-            }
-        }
-        );
+        }  
+     
+           });
+        
+        currentCanvas.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseReleased(MouseEvent e){
+                if(!drainDeplace){
+                    PieceItemReadOnly item = controllerActif.trouverItemSelectionne();
+                    if(item != null){
+                        panelPosition.moveSelectedTo(lastTargetX, lastTargetY);
+                    } 
+                }
+                drainDeplace = false;
+             } 
+        });
+        
+ 
     }
 
     public void clavierListener() {
@@ -581,46 +608,63 @@ public class MainWindow extends javax.swing.JFrame {
             public void keyPressed(KeyEvent e) {
 
                 PieceItemReadOnly sel = controllerActif.trouverItemSelectionne();
-                double x;
-                double y;
                 if (sel == null) {
-                    e.consume();
+                    
                     // Pour la Translation du graphe
-                    x = 0;
-                    y = 0;
-                }else{
-                    x = sel.getPosition().getX();
-                    y = sel.getPosition().getY();
-                }
+                    double deltaX = 0;
+                    double deltaY = 0;
+                    
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_UP:
+                            deltaY -= STEP;
+                            break;
 
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        y -= STEP;
-                        break;
+                        case KeyEvent.VK_DOWN:
+                            deltaY += STEP;
+                            break;
 
-                    case KeyEvent.VK_DOWN:
-                        y += STEP;
-                        break;
+                        case KeyEvent.VK_LEFT:
+                            deltaX -= STEP;
+                            break;
 
-                    case KeyEvent.VK_LEFT:
-                        x -= STEP;
-                        break;
-
-                    case KeyEvent.VK_RIGHT:
-                        x += STEP;
-                        break;
-                    default:
-                        return;
-
-                }
-                if(sel == null){
-                    Point delta = new Point(x, y);
+                        case KeyEvent.VK_RIGHT:
+                            deltaX += STEP;
+                            break;
+                        default:
+                            return;
+                    }
+                    Point delta = new Point(deltaX, deltaY);
                     controllerActif.appliquerGrapheTranslation(delta);
+                    e.consume();
                 }else{
-                    panelPosition.moveSelectedTo(x, y);
-                }           
-                panelPosition.afficherAngleItemSelectionne();
-                currentCanvas.repaint();
+                    double x = sel.getPosition().getX();
+                    double y = sel.getPosition().getY();
+
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_UP:
+                            y -= STEP;
+                            break;
+
+                        case KeyEvent.VK_DOWN:
+                            y += STEP;
+                            break;
+
+                        case KeyEvent.VK_LEFT:
+                            x -= STEP;
+                            break;
+
+                        case KeyEvent.VK_RIGHT:
+                            x += STEP;
+                            break;
+                        default:
+                            return;
+
+                    }
+
+                    panelPosition.moveSelectedTo(x, y);   
+                    panelPosition.afficherAngleItemSelectionne();
+                    currentCanvas.repaint();
+                }
 
             }
 

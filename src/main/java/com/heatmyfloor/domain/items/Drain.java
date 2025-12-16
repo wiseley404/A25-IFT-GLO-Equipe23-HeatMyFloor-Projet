@@ -23,16 +23,17 @@ public class Drain implements DrainReadOnly, Serializable {
     private Point position;
     private  double distanceAvecFil;
     private boolean estSelectionne;
-    
+    private MeubleAvecDrain meuble;
     
     //Constructeur
     
-    public Drain(double diam, Point pos){
+    public Drain(double diam, Point pos, MeubleAvecDrain meuble){
         this.id = UUID.randomUUID();
         this.diametre = diam;
         this.position = pos;
         this.distanceAvecFil = Util.enPixels(6.0);
         this.estSelectionne = true;
+        this.meuble = meuble;
     }
     
     
@@ -97,7 +98,10 @@ public class Drain implements DrainReadOnly, Serializable {
 
     @Override
     public double getDistanceAvecFil() {
-        return this.distanceAvecFil;
+        if(meuble.getType() != TypeAvecDrain.TOILETTE){
+            return this.distanceAvecFil;
+        }
+        return Util.enPixels(10);
     }
     
     @Override
@@ -123,7 +127,9 @@ public class Drain implements DrainReadOnly, Serializable {
          this.distanceAvecFil = distanceAvecFil;
     }
     
-    
+    public MeubleAvecDrain getMeuble(){
+        return this.meuble;
+    }
 
 
     

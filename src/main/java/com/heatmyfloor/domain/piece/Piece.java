@@ -271,6 +271,23 @@ public abstract class Piece implements PieceReadOnly, Serializable {
             }
         }
     }
+    
+    public void deplacerItemSelectionneEnDrag(Point position) {
+        PieceItem item = trouverItemSelectionne();
+        if (item == null) return;
+
+        Point p = position;
+        if (item instanceof Thermostat thermo && thermo.getMur() != null) {
+            p = thermo.getMur().projetterPositionItemSurMur(p, thermo, this);
+        } else if (item instanceof ElementChauffant elem && elem.getMur() != null) {
+            p = elem.getMur().projetterPositionItemSurMur(p, elem, this);
+        }
+        if (!estPositionItemValide(p)) {
+        return;
+    }
+
+        item.setPosition(p);
+    }
 
     public void redimensionner(double nouvLarg, double nouvHaut) {
         double facteurX = nouvLarg / this.largeur;
@@ -310,12 +327,12 @@ public abstract class Piece implements PieceReadOnly, Serializable {
 
     }
 
-    public void genererGraphe(double distIntersections) {
-
+    public void genererGraphe(double distIntersections, double rayonIntersections) {
+        setGraphe(new Graphe(distIntersections, rayonIntersections, this));
     }
 
     public void appliquerGrapheTranslation(Point delta) {
-
+        this.graphe.translater(delta);
     }
 
     public PieceItem trouverItemSelectionne() {

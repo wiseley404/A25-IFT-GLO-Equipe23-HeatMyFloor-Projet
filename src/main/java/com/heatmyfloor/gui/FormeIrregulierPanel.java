@@ -6,6 +6,7 @@ package com.heatmyfloor.gui;
 
 import com.heatmyfloor.domain.PointMapper;
 import com.heatmyfloor.domain.Util;
+import com.heatmyfloor.domain.graphe.Chemin;
 import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.graphe.Intersection;
 import com.heatmyfloor.domain.piece.Piece;
@@ -197,11 +198,6 @@ public class FormeIrregulierPanel extends JPanel {
             g2.fillOval(p.x - 3, p.y - 3, 6, 6);
         }
         
-        if (canvas != null && canvas.getMainWindow() != null && canvas.getMainWindow().controllerActif != null) {
-            PieceDrawer drawer = new PieceDrawer(canvas.getMainWindow());
-            drawer.dessinerPieceItems(g2);
-        }
-        
         PieceReadOnly piece = canvas.getMainWindow().controllerActif.getPiece();
         Graphe graphe = piece.getGraphe();
         if(graphe != null){
@@ -213,6 +209,32 @@ public class FormeIrregulierPanel extends JPanel {
                 int rayon = (int) graphe.getRayonIntersection();
                 g2.fillOval(x, y, rayon*2, rayon*2);
             }
+        } 
+                Chemin ch = graphe.getCheminActuel();
+        if (ch != null && ch.getParcours().size() > 1) {
+
+            g2.setColor(Color.RED);
+            g2.setStroke(new BasicStroke(2f));
+
+            double r = graphe.getRayonIntersection();
+            double offset = graphe.getRayonIntersection() * 0.8;
+            List<Intersection> pts = ch.getParcours();
+
+            for (int i = 1; i < pts.size(); i++) {
+                com.heatmyfloor.domain.Point a = pts.get(i - 1).getCoordonees();
+                com.heatmyfloor.domain.Point b = pts.get(i).getCoordonees();
+
+                int ax = (int) (a.getX() + r);
+                int ay = (int) (a.getY() + r + offset);
+                int bx = (int) (b.getX() + r);
+                int by = (int) (b.getY() + r + offset);
+
+                g2.drawLine(ax, ay, bx, by);
+            }
+        }
+        if (canvas.getMainWindow().controllerActif != null) {
+            PieceDrawer drawer = new PieceDrawer(canvas.getMainWindow());
+            drawer.dessinerPieceItems(g2);
         }
         g2.dispose();
     }

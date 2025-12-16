@@ -24,11 +24,12 @@ public class MeubleAvecDrain extends PieceItem {
     
     //Constructeur   
     public MeubleAvecDrain(double largeur, double hauteur, Point pos, TypeAvecDrain type){
-        super(largeur, hauteur, pos, type.getImage(true));
+        super(largeur, hauteur, pos, type.getImage());
         this.drain = new Drain(20.0,
                 new Point(pos.getX() + (largeur/2) - 10,
                           pos.getY() + (hauteur/2) - 10
-                )
+                ),
+                this
         );    
         this.distanceAvecFil = Util.enPixels(3.0);
         this.type = type;
@@ -161,11 +162,6 @@ public class MeubleAvecDrain extends PieceItem {
     
     public TypeAvecDrain getType(){
         return this.type;
-    }
-    
-    @Override
-    public String getImage(boolean modeRealiste){
-        return type.getImage(modeRealiste);
     }
     
 }

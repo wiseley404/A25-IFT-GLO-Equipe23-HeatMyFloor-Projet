@@ -45,11 +45,9 @@ public class Mur implements Serializable, MurReadOnly {
         dx /= len;
         dy /= len;
 
-        // Normale pour positionner de facon perpendiculaire au mur
+        // Normale 
         double nx = -dy;
         double ny = dx;
-
-        // Test pour voir si la normale va vers l'interieur de la piece
         Point centreMur = this.getCentre();
         double pX = centreMur.getX() + nx * 5;
         double pY = centreMur.getY() + ny * 5;
@@ -75,7 +73,6 @@ public class Mur implements Serializable, MurReadOnly {
     public Point projetterPositionItemSurMur(Point nouvPosition, PieceItem item, Piece piece){
         double largeur = item.getLargeur();
         double hauteur = item.getHauteur();
-        
         double centreX = nouvPosition.getX() + largeur / 2;
         double centreY = nouvPosition.getY() + hauteur / 2;
         
@@ -96,33 +93,23 @@ public class Mur implements Serializable, MurReadOnly {
         double proj = vx*dx + vy*dy;
         
         double tol = largeur*2;
-        proj = Math.max(-tol, Math.min(len + tol, proj));
-        
+        proj = Math.max(-tol, Math.min(len + tol, proj));      
         double projX = p1.getX() + proj*dx;
         double projY = p1.getY() + proj*dy;
-        
-        
+ 
         // Normale
         double nx = -dy;
         double ny = dx;
-            System.out.println("Mur de (" + p1 + ") à (" + p2 + ")");
-    System.out.println("Direction mur: dx=" + dx + ", dy=" + dy);
-    System.out.println("Projection: " + proj + " / longueur: " + len);
-    System.out.println("Point projeté: (" + projX + ", " + projY + ")");
-    System.out.println("Normale: nx=" + nx + ", ny=" + ny);
-        // Test direction
         double px = projX + nx*5;
         double py = projY + ny*5;
+        
         if(!piece.contientLePoint(new Point(px, py))){
             nx = -nx;
             ny = -ny;
         }
-        
-        // Centre Item apres projection
         double nouvCentreX = projX + nx*(hauteur / 2);
         double nouvCentreY = projY + ny*(hauteur / 2);
         
-        // Nouvelle position sur Mur
         return new Point(
                 nouvCentreX - largeur / 2,
                 nouvCentreY - hauteur / 2

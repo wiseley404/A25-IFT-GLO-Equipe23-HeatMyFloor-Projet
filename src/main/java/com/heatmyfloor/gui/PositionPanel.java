@@ -374,10 +374,20 @@ public class PositionPanel extends JPanel {
         
         if (mainWindow.controllerActif.trouverItemSelectionne() == null) {
             mainWindow.controllerActif.repositionnerPiece(p);
+            new Thread(() -> {
+                mainWindow.props.regenererCheminAuto();
+                SwingUtilities.invokeLater(() -> mainWindow.currentCanvas.repaint());
+            }).start();
 
         } else if (mainWindow.controllerActif.estPositionValide(p)) {
             mainWindow.tabsErreur.clearMessages();
             mainWindow.controllerActif.deplacerItemSelectionne(p);
+            new Thread(() -> {
+                mainWindow.props.regenererCheminAuto();
+                SwingUtilities.invokeLater(() -> mainWindow.currentCanvas.repaint());
+            }).start();
+            
+            
         } else {
             mainWindow.tabsErreur.clearMessages();
             mainWindow.tabsErreur.addErrorMessage("Déplacement refusé : le meuble dépasse les limites de la pièce.");

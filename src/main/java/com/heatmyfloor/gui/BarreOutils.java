@@ -266,7 +266,10 @@ public class BarreOutils extends JPanel {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterMeubleSansDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeSansDrain.valueOf(nom));
-                    mainWindow.currentCanvas.repaint();
+                new Thread(() -> {
+                    mainWindow.props.regenererCheminAuto();
+                    SwingUtilities.invokeLater(() -> mainWindow.currentCanvas.repaint());
+                }).start();
                     menuItemSansDrain.setVisible(false);
                 });
             }
@@ -302,7 +305,10 @@ public class BarreOutils extends JPanel {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterMeubleAvecDrain(mainWindow.controllerActif.getPiece().getCentre(), TypeAvecDrain.valueOf(nom));         
-                    mainWindow.currentCanvas.repaint();
+                new Thread(() -> {
+                    mainWindow.props.regenererCheminAuto();
+                    SwingUtilities.invokeLater(() -> mainWindow.currentCanvas.repaint());
+                }).start();
                     menuItemAvecDrain.setVisible(false);
                 });
             }
@@ -315,7 +321,10 @@ public class BarreOutils extends JPanel {
             mainWindow.controllerActif.ajouterThermostat(position);
             mainWindow.props.afficherProprietesItemSelectionne();
             mainWindow.props.afficherMurItemSelectionne();
-            mainWindow.currentCanvas.repaint();
+            new Thread(() -> {
+                mainWindow.props.regenererCheminAuto();
+                SwingUtilities.invokeLater(() -> mainWindow.currentCanvas.repaint());
+                }).start();
         });
     }
 
@@ -325,10 +334,13 @@ public class BarreOutils extends JPanel {
             mainWindow.controllerActif.ajouterElementChauffant(position);
             mainWindow.props.afficherProprietesItemSelectionne();
             mainWindow.props.afficherMurItemSelectionne();
-            mainWindow.currentCanvas.repaint();
-            SwingUtilities.invokeLater(() -> {
-                mainWindow.currentCanvas.requestFocusInWindow();
-            });
+            new Thread(() -> {
+                mainWindow.props.regenererCheminAuto();
+                SwingUtilities.invokeLater(() -> {
+                    mainWindow.currentCanvas.repaint();
+                    mainWindow.currentCanvas.requestFocusInWindow();
+                });
+            }).start();
         });
     }
 
@@ -357,7 +369,10 @@ public class BarreOutils extends JPanel {
                 c.setOnClick(event -> {
                     String nom = event.getActionCommand().toUpperCase();
                     mainWindow.controllerActif.ajouterZone(mainWindow.controllerActif.getPiece().getCentre(), Zone.TypeZone.valueOf(nom));
-                    mainWindow.currentCanvas.repaint();
+                new Thread(() -> {
+                    mainWindow.props.regenererCheminAuto();
+                    SwingUtilities.invokeLater(() -> mainWindow.currentCanvas.repaint());
+                }).start();
                     menuItemZones.setVisible(false);
                 });
             }

@@ -14,8 +14,10 @@ import com.heatmyfloor.domain.items.Thermostat;
 import com.heatmyfloor.domain.piece.Controller;
 import com.heatmyfloor.domain.piece.MurReadOnly;
 import com.heatmyfloor.domain.piece.Piece;
+import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import com.heatmyfloor.domain.piece.PieceItemReadOnly;
 import com.heatmyfloor.domain.piece.PieceReadOnly;
+import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,9 +59,6 @@ public class Proprietes extends JPanel {
     public Proprietes(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         this.controller = mainWindow.controllerActif;
-        System.out.println("Proprietes() mainWindow=" + mainWindow);
-System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif);
-
         setPreferredSize(new Dimension(300, 0));
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(230, 230, 230)));
@@ -152,9 +151,19 @@ System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif)
          return bar;
     }
 
-    
+    private void afficherPieceCourante(){
+        Canvas canvas = mainWindow.currentCanvas;
+        canvas.nettoyerModeDessin();
+        PieceReadOnly piece = mainWindow.controllerActif.getPiece();
+
+        if(piece instanceof PieceIrreguliere pieceIrreg){
+            mainWindow.currentCanvas.nettoyerModeDessin();
+            mainWindow.currentCanvas.dessinerFormeIrreguliere(pieceIrreg);
+        }
+    }
     public void undoListener(){
         mainWindow.controllerActif.annulerModif();
+        afficherPieceCourante();
         mainWindow.currentCanvas.repaint();
         afficherProprietesItemSelectionne();
         mainWindow.panelPosition.afficherAngleItemSelectionne();
@@ -164,6 +173,7 @@ System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif)
     
     public void redoListener(){
         mainWindow.controllerActif.retablirModif();
+        afficherPieceCourante();
         mainWindow.currentCanvas.repaint();
         afficherProprietesItemSelectionne();
         mainWindow.panelPosition.afficherAngleItemSelectionne();
@@ -521,8 +531,8 @@ System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif)
     double distanceFilsPx;
 
     try {
-        longueurPx = Util.enPixels(longueurFil.getText());     // ex: 10' 0"  |  20"  |  5' 6"
-        distanceFilsPx = Util.enPixels(distanceFils.getText()); // ex: 3"  |  2" 1/2
+        longueurPx = Util.enPixels(longueurFil.getText());   
+        distanceFilsPx = Util.enPixels(distanceFils.getText());
     } catch (IllegalArgumentException ex) {
         mainWindow.tabsErreur.addErrorMessage(ex.getMessage());
         return;
@@ -536,12 +546,20 @@ System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif)
         mainWindow.tabsErreur.addErrorMessage("La distance entre fils doit être > 0.");
         return;
     }
+    new Thread(() -> {
+        Chemin ch = g.genererChemin(longueurPx, distanceFilsPx);
 
-    Chemin ch = g.genererChemin(longueurPx);
-    if (ch == null || ch.getAretes().isEmpty()) {
-        mainWindow.tabsErreur.addErrorMessage("Aucun chemin trouvé avec ces valeurs.");
-        return;
-    }
+        SwingUtilities.invokeLater(() -> {
+            if (ch == null) {
+                mainWindow.tabsErreur.addErrorMessage("Aucun chemin trouvé avec ces valeurs.");
+            }else{
+                mainWindow.tabsErreur.clearMessages();
+            }
+            mainWindow.currentCanvas.repaint();
+        });
+    }).start();
+
+
 
     mainWindow.currentCanvas.repaint();
 });
@@ -550,7 +568,20 @@ System.out.println("Proprietes() controllerActif=" + mainWindow.controllerActif)
     s.addFull(btnGenererChemin);
     return s;
     }
+    
+    public void regenererCheminAuto() {
+        Graphe g = mainWindow.controllerActif.getPiece().getGraphe();
+        if (g == null) return;
 
+        // Utiliser les dernières valeurs saisies par l'utilisateur
+        double longueurPx = Util.enPixels(longueurFil.getText());
+        double distanceFilsPx = Util.enPixels(distanceFils.getText());
+
+        Chemin ch = g.genererChemin(longueurPx, distanceFilsPx);
+
+        mainWindow.currentCanvas.repaint();
+    }
+    
     private JTextField text(String value) {
         JTextField tf = new JTextField(value, 10);
         tf.setMargin(new Insets(4, 6, 4, 6));

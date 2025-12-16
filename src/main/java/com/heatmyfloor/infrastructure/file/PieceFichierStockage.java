@@ -19,7 +19,6 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -214,7 +213,7 @@ public class PieceFichierStockage implements PieceStockage {
             g.setColor(new Color(255, 240, 200));
             g.fill(poly);
 
-            g.setColor(Color.BLACK);
+            g.setColor(Color.ORANGE);
             g.setStroke(new BasicStroke(3));
             g.draw(poly);
 
@@ -227,7 +226,7 @@ public class PieceFichierStockage implements PieceStockage {
             g.setColor(new Color(255, 240, 200));
             g.fillRect((int) x, (int) y, (int) w, (int) h);
 
-            g.setColor(Color.BLACK);
+            g.setColor(Color.ORANGE);
             g.setStroke(new BasicStroke(3));
             g.drawRect((int) x, (int) y, (int) w, (int) h);
         }

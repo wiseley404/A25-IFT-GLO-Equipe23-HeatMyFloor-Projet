@@ -6,7 +6,12 @@ package com.heatmyfloor.domain.graphe;
 import java.util.List;
 import java.util.ArrayList;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.items.Thermostat;
+import com.heatmyfloor.domain.items.Zone;
+import com.heatmyfloor.domain.items.Zone.TypeZone;
+import com.heatmyfloor.domain.piece.Mur;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import com.heatmyfloor.domain.piece.PieceItem;
@@ -15,35 +20,29 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 /**
  *
  * @author petit
  */
 public class Graphe implements Serializable{
+    private static final long serialVersionUID = 1L;
     private Piece piece;
     private List<Intersection> intersections;
     private Chemin cheminActuel;
-    private double distanceIntersection;
+    public double distanceIntersection;
     private double rayonIntersection;
     private Point offsetTranslation = new Point(0, 0);
     private List<Fil> aretes;
-    
+    private transient GenerateurChemin generateurChemin;
     
     public Graphe(double distanceIntersection, double rayonIntersection, Piece piece){
-    //    this.cheminActuel = new Chemin(aretes);
         this.distanceIntersection = distanceIntersection;
         this.rayonIntersection = rayonIntersection;
         this.piece = piece;
         this.intersections = new ArrayList<>();
-    
+        this.generateurChemin = new GenerateurChemin(this);
     }
-    
+
     public Graphe(){}
     
     public boolean estIntersectionValide(Intersection intersection, Piece piece){
@@ -53,39 +52,78 @@ public class Graphe implements Serializable{
         if (!piece.contientLePoint(position)){
             return false;
         }
-        for(PieceItem item : items){
-            if (!(item instanceof Thermostat)){
-            double distance = item.getDistanceAvecFil();
-            double posXMin = item.getPosition().getX() - distance ;
-            double posYMin = item.getPosition().getY() - distance ;
-
-            double largeur = item.getLargeur() + 2*distance;
-            double hauteur = item.getHauteur() + 2*distance;
-            Rectangle2D espaceInterdite = new Rectangle2D.Double(posXMin ,
-                                                                 posYMin ,
-                                                                 largeur,
-                                                                 hauteur
-                                        );
-            //Avec rotation
-            double centreX = item.getCentre().getX();
-            double centreY = item.getCentre().getY();
-            double angleRad = Math.toRadians(item.getAngle());
-            
-            AffineTransform transf = new AffineTransform();
-            transf.rotate(angleRad, centreX, centreY);
-            Shape espaceInterditeTournee = transf.createTransformedShape(espaceInterdite);
-            
-            Rectangle2D intersectionContour = new Rectangle2D.Double(position.getX(),
-                                                                position.getY(),
-                                                                2*rayonIntersection,
-                                                                2*rayonIntersection
-                                              );
-
-            if(espaceInterditeTournee.intersects(intersectionContour)){
+        
+        double distanceMinMur = piece.getMurs().getFirst().getDistanceAvecFil();
+        for (Mur mur : piece.getMurs()) {
+            double dist = calculerDistancePointAvecMur(position, mur);
+            if (dist < distanceMinMur) {
                 return false;
             }
-        }}
+        }
+        
+        for(PieceItem item : items){
+            if (!(item instanceof Thermostat) && !(item instanceof Zone zone && zone.getType() == TypeZone.TAMPON)){
+                if (item instanceof MeubleAvecDrain) {
+                    MeubleAvecDrain meubleAvecDrain = (MeubleAvecDrain) item;
+                    Drain drain = meubleAvecDrain.getDrain();
+                    if(estTropProcheDuDrain(drain, position)){
+                        return false;
+                    }
+                }
+                
+                double distance = item.getDistanceAvecFil();
+                double posXMin = item.getPosition().getX() - distance ;
+                double posYMin = item.getPosition().getY() - distance ;
+
+                double largeur = item.getLargeur() + 2*distance;
+                double hauteur = item.getHauteur() + 2*distance;
+                Rectangle2D espaceInterdite = new Rectangle2D.Double(posXMin ,
+                                                                     posYMin ,
+                                                                     largeur,
+                                                                     hauteur
+                                            );
+                //Avec rotation
+                double centreX = item.getCentre().getX();
+                double centreY = item.getCentre().getY();
+                double angleRad = Math.toRadians(item.getAngle());
+
+                AffineTransform transf = new AffineTransform();
+                transf.rotate(angleRad, centreX, centreY);
+                Shape espaceInterditeTournee = transf.createTransformedShape(espaceInterdite);
+
+                Rectangle2D intersectionContour = new Rectangle2D.Double(position.getX(),
+                                                                    position.getY(),
+                                                                    2*rayonIntersection,
+                                                                    2*rayonIntersection
+                                                  );
+
+                if(espaceInterditeTournee.intersects(intersectionContour)){
+                    return false;
+                }
+            }
+        }
         return true;
+    }
+   
+    private boolean estTropProcheDuDrain(Drain drain, Point position) {
+        if (drain == null) {
+            return false;
+        }
+        double distanceDrainFil = drain.getDistanceAvecFil();
+
+        double interCentreX = position.getX() + this.rayonIntersection;
+        double interCentreY = position.getY() + this.rayonIntersection;
+        double drainCentreX = drain.getPosition().getX() + drain.getDiametre() / 2.0;
+        double drainCentreY = drain.getPosition().getY() + drain.getDiametre() / 2.0;
+
+        double distanceCentres = Math.sqrt(
+            Math.pow(interCentreX - drainCentreX, 2) + 
+            Math.pow(interCentreY - drainCentreY, 2)
+        );
+        double rayonDrain = drain.getDiametre() / 2.0;
+        double distanceBords = distanceCentres - rayonDrain - this.rayonIntersection;
+
+        return distanceBords < distanceDrainFil;
     }
     
     
@@ -106,10 +144,10 @@ public class Graphe implements Serializable{
             yMin = piece.getPosition().getY() + distanceFilAvecMur + offsetTranslation.getY();
             yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur - (2*this.rayonIntersection);
         }else if(piece instanceof PieceIrreguliere){
-            xMin = piece.getPosition().getX() + distanceFilAvecMur;
-            xMax = piece.getPosition().getX() + piece.getLargeur() - distanceFilAvecMur;
-            yMin = piece.getPosition().getY() + distanceFilAvecMur;
-            yMax = piece.getPosition().getY() + piece.getHauteur() - distanceFilAvecMur;
+            xMin = piece.getPosition().getX() + offsetTranslation.getX();
+            xMax = piece.getPosition().getX() + piece.getLargeur();
+            yMin = piece.getPosition().getY() + offsetTranslation.getY();
+            yMax = piece.getPosition().getY() + piece.getHauteur();
         }else{
             return intersectionsValide;
         }
@@ -118,194 +156,122 @@ public class Graphe implements Serializable{
         for(double y = yMin; y < yMax; y+= distance){
             for(double x = xMin; x < xMax; x += distance){
                  Intersection intersect = new Intersection(new Point(x , y ));
-                 if(this.estIntersectionValide(intersect, piece)){
-                     intersectionsValide.add(intersect);
+                 if(piece instanceof PieceIrreguliere){
+                     if(estIntersectionValideIrreguliere(intersect, (PieceIrreguliere) piece)){
+                         intersectionsValide.add(intersect);
+                     }
+                 }else{
+                    if(this.estIntersectionValide(intersect, piece)){
+                        intersectionsValide.add(intersect);
+                    }
                  }
+
             }       
         }
         this.intersections = intersectionsValide;
         this.piece = piece;
         return intersectionsValide;
     } 
+
+    private boolean estIntersectionValideIrreguliere(Intersection intersect, 
+                                                      PieceIrreguliere piece) {
+        
+            Point p = intersect.getCoordonees();
+            double distanceMinMur = piece.getMurs().getFirst().getDistanceAvecFil();
+
+            if (!piece.contientLePoint(p)) {
+                return false;
+            }
+            for (Mur mur : piece.getMurs()) {
+                double distanceAuMur = calculerDistancePointAvecMur(p, mur);
+                if (distanceAuMur < distanceMinMur) {
+                    return false;
+                }
+            }
+            return estIntersectionValide(intersect, piece);
+        }
+
+    
+    private double calculerDistancePointAvecMur(Point p, Mur mur) {
+        double centreX = p.getX() + this.rayonIntersection;
+        double centreY = p.getY() + this.rayonIntersection;
+
+        double x1 = mur.getDebut().getX();
+        double y1 = mur.getDebut().getY();
+        double x2 = mur.getFin().getX();
+        double y2 = mur.getFin().getY();
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double longueurCarree = dx * dx + dy * dy;
+
+        if (longueurCarree == 0) {
+            return Math.sqrt((centreX - x1) * (centreX - x1) + (centreY - y1) * (centreY - y1)) 
+               - this.rayonIntersection;
+        }
+        
+        double t = ((centreX - x1) * dx + (centreY - y1) * dy) / longueurCarree;
+        t = Math.max(0, Math.min(1, t));
+        double projX = x1 + t * dx;
+        double projY = y1 + t * dy;
+        double distanceCentre = Math.sqrt((centreX - projX) * (centreX - projX) + 
+                                      (centreY - projY) * (centreY - projY));
+        return distanceCentre - this.rayonIntersection;
+    }
+
     
     public void ajouterIntersection(Intersection i){}
     
     public void supprimerIntersection(Intersection i){}
     
     public void translater(Point delta){
-        this.offsetTranslation = delta;
-    }
-    
-    
-    public Chemin genererChemin(double longFilTotal){
-        List <Intersection> listes = new ArrayList <>(intersections);
-        List <Point> pointsChemin = new ArrayList <>();
-        boolean trouve = false;
-        Thermostat thermostat = null;
-        Point pointdepart = null;
-        double d = distanceIntersection;
-        Point prochain = null;
-        for(PieceItem pieceItem : piece.getItemsList()){
-            if (pieceItem instanceof Thermostat th){
-                trouve = true;
-                thermostat = th;
-                break;
-            }
-        }
-        if (trouve && thermostat!= null ){
-            for(Intersection intersection : intersections ){
-                Point pts = intersection.getCoordonees();
-                if (thermostat.contientLePoint(pts)){
-                    pointdepart = pts;
-                    pointsChemin.add(pointdepart);
-                    listes.removeIf(i ->
-                        i.getCoordonees().getX() == pts.getX() &&
-                        i.getCoordonees().getY() == pts.getY()
-                    );
-                    break;
-                }
-            }
-            while (!listes.isEmpty()){
-                Point voisinGauche = new Point(pointdepart.getX()-d, pointdepart.getY());
-                Point voisinDroite = new Point(pointdepart.getX()+d, pointdepart.getY());
-                Point voisinHaut = new Point(pointdepart.getX(), pointdepart.getY()+d);
-                Point voisinBas = new Point(pointdepart.getX(), pointdepart.getY()-d);
-
-                Random rand = new Random();
-
-
-                Point[] points = { voisinGauche, voisinDroite, voisinHaut, voisinBas };
-
-            //  Point choisi;
-              /*  do{
-                   choisi = points[rand.nextInt(points.length)];
-                }
-                while(!estIntersectionValide(new Intersection(choisi), piece));*/
-              
-                    Point choisi = null;
-                      int essais = 0;
-                      while (essais < 20) {
-                          Point cand = points[rand.nextInt(points.length)];
-                          if (estIntersectionValide(new Intersection(cand), piece)) {
-                              choisi = cand;
-                              break;
-                          }
-                          essais++;
-                      }
-                      if (choisi == null) break;
-
-                pointsChemin.add(choisi);
-
-                pointdepart = choisi;
-                Point depart = pointdepart;
-                listes.removeIf(i ->
-                    i.getCoordonees().getX() == depart.getX() &&
-                    i.getCoordonees().getY() == depart.getY()
-                );
-
-            }
-            
-            List <Fil> arretes = new ArrayList <>();
-            for(int i = 1; i < pointsChemin.size(); i++){
-                Intersection p1 = new Intersection(pointsChemin.get(i-1));
-                Intersection p2 = new Intersection(pointsChemin.get(i));
-                Fil fil = new Fil(p1, p2);
-                arretes.add(fil);
-            }
-            
-    
-            Chemin chemin = new Chemin(arretes);
-            cheminActuel = chemin;
-          
-    }
-        return cheminActuel;
-    }
-    
-    
-  /*public Chemin genererChemin(double longFilTotal) {
-
-   
-    List<Intersection> valides = ListIntersectionsValide((Piece) piece); 
-  
-
-    if (valides == null || valides.isEmpty()) return new Chemin();
-
- 
-    valides.sort((a, b) -> {
-        int cy = Double.compare(a.getCoordonees().getY(), b.getCoordonees().getY());
-        if (cy != 0) return cy;
-        return Double.compare(a.getCoordonees().getX(), b.getCoordonees().getX());
-    });
-
-    Chemin chemin = new Chemin();
-    double longueur = 0;
-
-  
-    double d = distanceIntersection;
-
-    double eps = d * 0.25;
-
-    List<List<Intersection>> rangees = new ArrayList<>();
-    List<Intersection> current = new ArrayList<>();
-    double yRef = valides.get(0).getCoordonees().getY();
-
-    for (Intersection it : valides) {
-        double y = it.getCoordonees().getY();
-        if (Math.abs(y - yRef) <= eps) {
-            current.add(it);
-        } else {
-            rangees.add(current);
-            current = new ArrayList<>();
-            current.add(it);
-            yRef = y;
+        Point nouvelOffset = new Point(
+           this.offsetTranslation.getX() + delta.getX(),
+           this.offsetTranslation.getY() + delta.getY()
+        );
+        this.offsetTranslation = nouvelOffset;
+        if (piece != null) {
+            getListIntersectionsValide(piece);
         }
     }
-    rangees.add(current);
-
     
-    boolean gaucheVersDroite = true;
-    Intersection prev = null;
+    public Chemin genererChemin(double longueurFilMax, double distFil) {
+        List<Intersection> intersectionsValides = getListIntersectionsValide(piece);
 
-    for (List<Intersection> row : rangees) {
-        row.sort((a, b) -> Double.compare(a.getCoordonees().getX(), b.getCoordonees().getX()));
-        if (!gaucheVersDroite) {
-            java.util.Collections.reverse(row);
+        if (intersectionsValides.isEmpty()) {
+            return null;
         }
-
-        for (Intersection it : row) {
-            if (prev != null) {
-                Fil f = new Fil(prev, it);
-                double seg = f.calculerLongueur();
-                if (longueur + seg > longFilTotal) {
-                    this.cheminActuel = chemin;
-                    return chemin;
-                }
-                chemin.ajouterFil(f);
-                longueur += seg;
-            }
-            prev = it;
+        Chemin chemin = generateurChemin.genererChemin(longueurFilMax, distFil, piece);
+        if (chemin == null) {
+            return null;
         }
-        gaucheVersDroite = !gaucheVersDroite;
+        if (!this.generateurChemin.validerChemin(chemin)) {
+            return null;
+        }
+        this.cheminActuel = chemin;
+        return chemin;
     }
+    
+    
+    public boolean modifierDirectionFil(int indexIntersection, Intersection nouvelleIntersection) {
+        if (cheminActuel == null) {
+            return false;
+        }
+        boolean reussi = generateurChemin.modifierDirection(
+                cheminActuel, indexIntersection, nouvelleIntersection, piece);
+        if (!reussi) {
+            return false;
+        }
+        if (!this.generateurChemin.validerChemin(cheminActuel)) {
+            return false;
+        }
+        return true;
+    }
+    
 
-    this.cheminActuel = chemin; 
-    return chemin;
-}
-
-private String keyOf(Point p) {
-   
-    double x = Math.round(p.getX() * 1000.0) / 1000.0;
-    double y = Math.round(p.getY() * 1000.0) / 1000.0;
-    return x + ";" + y;
-}
-*/
     public Chemin getCheminActuel() {
         return cheminActuel;
     }
-
-
-
-
     
     public Chemin modifierChemin(){
         return null;

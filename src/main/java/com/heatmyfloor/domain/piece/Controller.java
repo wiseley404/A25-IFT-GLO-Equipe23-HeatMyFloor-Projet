@@ -131,7 +131,11 @@ public class Controller {
         this.historique.sauvegarder(piece);
         this.piece.pivoterItemSelectionne();
     }
-
+    
+    public void ajouterPiece(Piece piece){
+        this.piece = piece;
+    }
+    
     public List<PieceItemReadOnly> getItemsList() {
 
         return this.piece.getItemsList()
@@ -155,10 +159,23 @@ public class Controller {
     }
 
     public void setPiece(Piece piece) {
-        this.historique.sauvegarder(piece);
+        if(this.piece != null){
+            this.historique.sauvegarder(this.piece);
+        }
         this.piece = piece;
     }
-    
+    public void setPiece(Piece piece, Point position) {
+        if(this.piece != null){
+            this.historique.sauvegarder(this.piece);
+        }
+        this.piece = piece;
+        this.piece.setPosition(position);
+    }
+    public void deplacerItemSelectionneEnDrag(Point position) {
+        //pas de sauvegarde
+        piece.deplacerItemSelectionneEnDrag(position);
+
+    }
     
     public void annulerModif() {
         Piece anciennePiece = this.historique.annuler(piece);
@@ -197,12 +214,12 @@ public class Controller {
 
     public void genererGraphe(double distIntersections, double rayonIntersections) {
         this.historique.sauvegarder(piece);
-        this.piece.setGraphe(new Graphe(distIntersections, rayonIntersections, this.piece));
+        this.piece.genererGraphe(distIntersections, rayonIntersections);
     }
 
     public void appliquerGrapheTranslation(Point delta) {
         this.historique.sauvegarder(piece);
-        this.piece.getGraphe().translater(delta);
+        this.piece.appliquerGrapheTranslation(delta);
     }
 
     public void genererChemin(double longFilTotal) {

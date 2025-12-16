@@ -8,7 +8,6 @@ import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.graphe.Graphe;
 import com.heatmyfloor.domain.graphe.Intersection;
 import com.heatmyfloor.domain.items.Drain;
-import com.heatmyfloor.domain.items.DrainReadOnly;
 import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Controller;
 import com.heatmyfloor.domain.piece.Piece;
@@ -18,7 +17,6 @@ import com.heatmyfloor.domain.piece.PieceReadOnly;
 import com.heatmyfloor.domain.piece.PieceRectangulaire;
 import com.heatmyfloor.gui.PositionPanel;
 import com.heatmyfloor.gui.Canvas;
-import com.heatmyfloor.gui.FormeIrregulierPanel;
 import com.heatmyfloor.gui.Proprietes;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -36,6 +34,12 @@ import java.net.URL;
 import javax.swing.SwingUtilities;
 import com.heatmyfloor.domain.graphe.Chemin;
 import com.heatmyfloor.domain.graphe.Fil;
+import com.heatmyfloor.domain.items.ElementChauffant;
+import com.heatmyfloor.domain.items.MeubleSansDrain;
+import com.heatmyfloor.domain.items.Thermostat;
+import com.heatmyfloor.domain.items.Zone;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
 /**
  *
@@ -58,14 +62,12 @@ public class PieceDrawer {
     }
 
     public void dessiner(Graphics g) {
-
         PieceReadOnly piece = controller.getPiece();
         if (piece instanceof PieceRectangulaire) {
             dessinerPieceRectangulaire(g);
             dessinerPieceItems(g);
 
         }
-
         SwingUtilities.invokeLater(() -> {
             currentCanvas.requestFocusInWindow();
         });
@@ -96,16 +98,29 @@ public class PieceDrawer {
                 g2.fillOval(x, y, rayon*2, rayon*2);
             }
 
-            Chemin ch = graphe.getCheminActuel();
-                if (ch != null && !ch.getAretes().isEmpty()) {
-                    g2.setColor(Color.RED);
-                    g2.setStroke(new BasicStroke(2f));
-                    for (Fil f : ch.getAretes()) {
-                        Point a = f.getDepart().getCoordonees();
-                        Point b = f.getArrivee().getCoordonees();
-                        g2.drawLine((int)a.getX(), (int)a.getY(), (int)b.getX(), (int)b.getY());
-                    }
-                }
+        Chemin ch = graphe.getCheminActuel();
+        if (ch != null && ch.getParcours().size() > 1) {
+
+            g2.setColor(Color.RED);
+            g2.setStroke(new BasicStroke(2f));
+
+            double r = graphe.getRayonIntersection();
+            double offset = graphe.getRayonIntersection() * 0.8;
+            List<Intersection> pts = ch.getParcours();
+
+            for (int i = 1; i < pts.size(); i++) {
+                Point a = pts.get(i - 1).getCoordonees();
+                Point b = pts.get(i).getCoordonees();
+
+                int ax = (int) (a.getX() + r);
+                int ay = (int) (a.getY() + r + offset);
+                int bx = (int) (b.getX() + r);
+                int by = (int) (b.getY() + r + offset);
+
+                g2.drawLine(ax, ay, bx, by);
+            }
+        }
+
         }
         props.afficherProprietesPiece();
 
@@ -136,27 +151,31 @@ public class PieceDrawer {
                 g2.setColor(Color.BLUE);
                 g2.draw(contourAvecPadding);
             }
-
-            BufferedImage itemImage = null;
-            URL imageUrl = getClass().getResource(item.getImage(currentCanvas.getModeRealiste()));
-            if (imageUrl != null) {
-                try {
-                    itemImage = ImageIO.read(imageUrl);
-                } catch (IOException e) {
-                    throw new RuntimeException("Echec du chargement de l'image", e);
+            if(currentCanvas.getModeRealiste()){
+                BufferedImage itemImage = null;
+                URL imageUrl = getClass().getResource(item.getImage());
+                if (imageUrl != null) {
+                    try {
+                        itemImage = ImageIO.read(imageUrl);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Echec du chargement de l'image", e);
+                    }
                 }
+
+                if (itemImage != null) {
+                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.drawImage(itemImage, (int) item.getPosition().getX(),
+                            (int) item.getPosition().getY(),
+                            (int) item.getLargeur(),
+                            (int) item.getHauteur(),
+                            null);
+                }
+            }else{
+                dessinerItemSchema(g2, item);
             }
 
-            if (itemImage != null) {
-                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.drawImage(itemImage, (int) item.getPosition().getX(),
-                        (int) item.getPosition().getY(),
-                        (int) item.getLargeur(),
-                        (int) item.getHauteur(),
-                        null);
-            }
 
             if (item instanceof MeubleAvecDrain meuble) {
                 dessinerDrains(g2, meuble);
@@ -209,10 +228,58 @@ public class PieceDrawer {
         Drain d = meuble.getDrain();
         g2.setColor(new Color(255, 232, 200, 120));
         g2.fill(d.getForme());
-
-        g2.setColor(Color.ORANGE);
+        if(currentCanvas.getModeRealiste()){
+            g2.setColor(Color.ORANGE);
+        }else{
+            g2.setColor(new Color(101, 67, 33));
+        }
+        
         g2.setStroke(new BasicStroke(1f));
         g2.draw(d.getForme());
     }
+    
+    public void dessinerItemSchema(Graphics2D g, PieceItemReadOnly item) {
+        double x = item.getPosition().getX();
+        double y = item.getPosition().getY();
+        double largeur = item.getLargeur();
+        double hauteur = item.getHauteur();
 
+        // Dessiner rectangle
+        g.setColor(new Color(101, 67, 33));
+        g.drawRect((int)x, (int)y, (int)largeur, (int)hauteur);
+
+
+        String nom;
+        if (item instanceof Thermostat) {
+            nom = "THERMOSTAT";
+        } else if (item instanceof ElementChauffant) {
+            nom = "ELEMENT CHAUFFANT";
+        } else if (item instanceof MeubleAvecDrain) {
+            nom = ((MeubleAvecDrain) item).getType().name();
+        } else if (item instanceof MeubleSansDrain) {
+            nom = ((MeubleSansDrain) item).getType().name();
+        } else if (item instanceof Zone) {
+            nom = "ZONE " + ((Zone) item).getType().name();
+        } else {
+            nom = "ITEM";
+        }
+
+        int tailleFonte = 12;
+        Font font = new Font("Arial", Font.PLAIN, tailleFonte);
+        g.setFont(font);
+        FontMetrics fm = g.getFontMetrics();
+
+        while (fm.stringWidth(nom) > largeur - 10 && tailleFonte > 6) {
+            tailleFonte--;
+            font = new Font("Arial", Font.PLAIN, tailleFonte);
+            g.setFont(font);
+            fm = g.getFontMetrics();
+        }
+
+        int largeurTexte = fm.stringWidth(nom);
+        int textX = (int)(x + (largeur - largeurTexte) / 2);
+        int textY = (int)(y + fm.getAscent() + 5);
+
+        g.drawString(nom, textX, textY);
+    }
 }

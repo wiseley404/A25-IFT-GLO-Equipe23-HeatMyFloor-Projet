@@ -5,13 +5,12 @@
 package com.heatmyfloor.domain.items;
 import com.heatmyfloor.domain.Point;
 import com.heatmyfloor.domain.piece.PieceItem;
-import com.heatmyfloor.domain.piece.TypePiece;
 /**
  *
  * @author petit
  */
 public class Zone extends PieceItem{
-
+    private TypeZone type;
    
     
     public enum TypeZone{
@@ -31,5 +30,10 @@ public class Zone extends PieceItem{
     
     public Zone(double largeur, double hauteur, Point position, TypeZone type){
         super(largeur, hauteur, position, type.getImage());
+        this.type = type;
+    }
+    
+    public TypeZone getType(){
+        return this.type;
     }
 }

@@ -12,20 +12,18 @@ package com.heatmyfloor.domain.items;
  */
 public enum TypeAvecDrain {
     
-    TOILETTE("/images/toilette_dessin.png", "/images/toilette_realiste"),
-    DOUCHE("/images/douche_dessin.png", "/images/douche_realiste.png"),
-    VANITÉ("/images/vanite_dessin.png", "/images/vanite_realiste.png"),
-    BAIN("/images/bain_dessin.png", "/images/bain_realiste.png");
+    TOILETTE("/images/toilette.png"),
+    DOUCHE("/images/douche.png"),
+    VANITÉ("/images/vanite.png"),
+    BAIN("/images/bain.png");
     
-    private final String imageDessin;
-    private final String imageRealiste;
-    
-    TypeAvecDrain(String imageDessin, String imageRealiste){
-        this.imageDessin = imageDessin;
-        this.imageRealiste = imageRealiste;
+    private final String image;
+
+    TypeAvecDrain(String image){
+        this.image = image;
     }
     
-    public String getImage(boolean modeRealiste){
-        return modeRealiste? this.imageRealiste : this.imageDessin;
+    public String getImage(){
+        return this.image;
     }
 }

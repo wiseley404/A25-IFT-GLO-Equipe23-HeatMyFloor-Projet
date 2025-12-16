@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.heatmyfloor.domain.graphe;
-import com.heatmyfloor.domain.Point;
 import java.io.Serializable;
 /**
  *
