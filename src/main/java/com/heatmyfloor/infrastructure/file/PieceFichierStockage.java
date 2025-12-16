@@ -7,6 +7,11 @@ package com.heatmyfloor.infrastructure.file;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.heatmyfloor.domain.Point;
+import com.heatmyfloor.domain.graphe.Chemin;
+import com.heatmyfloor.domain.graphe.Graphe;
+import com.heatmyfloor.domain.graphe.Intersection;
+import com.heatmyfloor.domain.items.Drain;
+import com.heatmyfloor.domain.items.MeubleAvecDrain;
 import com.heatmyfloor.domain.piece.Piece;
 import com.heatmyfloor.domain.piece.PieceIrreguliere;
 import com.heatmyfloor.domain.piece.PieceItem;
@@ -41,18 +46,17 @@ public class PieceFichierStockage implements PieceStockage {
     public PieceFichierStockage() {
         this.mapper = new ObjectMapper()
                 .enable(SerializationFeature.INDENT_OUTPUT)
-
-            .findAndRegisterModules(); 
+                .findAndRegisterModules();
     }
 
     @Override
     public Piece ouvrirFichier(Path fichierCharge) {
         Piece piece = null;
         try {
-            
+
             FileInputStream fi = new FileInputStream(fichierCharge.toFile());
-            ObjectInputStream in =  new ObjectInputStream(fi);
-            
+            ObjectInputStream in = new ObjectInputStream(fi);
+
             piece = (Piece) in.readObject();
             in.close();
             fi.close();
@@ -72,7 +76,7 @@ public class PieceFichierStockage implements PieceStockage {
     public void saveFichier(Piece piece, Path fichier) {
 
         try {
-            
+
             FileOutputStream fo = new FileOutputStream(fichier.toFile());
             ObjectOutputStream out = new ObjectOutputStream(fo);
             out.writeObject(piece);
@@ -122,6 +126,8 @@ public class PieceFichierStockage implements PieceStockage {
             dessinerPiece(g, piece);
 
             dessinerItems(g, piece);
+
+            dessinerGraphe(g, piece);
 
             g.dispose();
 
@@ -190,6 +196,10 @@ public class PieceFichierStockage implements PieceStockage {
 
                 g.setTransform(old);
 
+                if (item instanceof MeubleAvecDrain mad) {
+                    dessinerDrain(g, mad.getDrain());
+                }
+
             } catch (IOException e) {
                 System.err.println("Impossible de charger l'image pour l'item : " + item);
             }
@@ -229,6 +239,110 @@ public class PieceFichierStockage implements PieceStockage {
             g.setColor(Color.ORANGE);
             g.setStroke(new BasicStroke(3));
             g.drawRect((int) x, (int) y, (int) w, (int) h);
+        }
+    }
+
+    private void dessinerGraphe(Graphics2D g, Piece piece) {
+        Graphe graphe = piece.getGraphe();
+        if (graphe == null) {
+            return;
+        }
+
+        graphe.getListIntersectionsValide(piece);
+
+        g.setColor(new Color(255, 180, 0));
+
+        double r = graphe.getRayonIntersection();
+
+        for (Intersection inter : graphe.getListIntersectionsValide(piece)) {
+            Point p = inter.getCoordonees();
+
+            g.fillOval(
+                    (int) p.getX(),
+                    (int) p.getY(),
+                    (int) (2 * r),
+                    (int) (2 * r)
+            );
+        }
+    }
+
+    private void dessinerChemin(Graphics2D g, Piece piece) {
+        Graphe graphe = piece.getGraphe();
+        if (graphe == null) {
+            return;
+        }
+
+        Chemin chemin = graphe.getCheminActuel();
+        if (chemin == null) {
+            return;
+        }
+
+        double r = graphe.getRayonIntersection();
+
+        g.setColor(Color.RED);
+        g.setStroke(new BasicStroke(2));
+
+        List<Intersection> parcours = chemin.getParcours();
+
+        for (int i = 0; i < parcours.size() - 1; i++) {
+            Point p1 = parcours.get(i).getCoordonees();
+            Point p2 = parcours.get(i + 1).getCoordonees();
+
+            g.drawLine(
+                    (int) (p1.getX() + r),
+                    (int) (p1.getY() + r),
+                    (int) (p2.getX() + r),
+                    (int) (p2.getY() + r)
+            );
+        }
+    }
+
+    public void dessinerDrain(Graphics2D g, Drain drain) {
+
+        if (drain == null) {
+            return;
+        }
+
+        double x = drain.getPosition().getX();
+        double y = drain.getPosition().getY();
+        double d = drain.getDiametre();
+
+        g.setColor(Color.DARK_GRAY);
+        g.fillOval(
+                (int) x,
+                (int) y,
+                (int) d,
+                (int) d
+        );
+
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(2));
+        g.drawOval(
+                (int) x,
+                (int) y,
+                (int) d,
+                (int) d
+        );
+
+        double dist = drain.getDistanceAvecFil();
+        g.setColor(new Color(255, 0, 0, 60));
+        g.setStroke(new BasicStroke(1));
+        g.drawOval(
+                (int) (x - dist),
+                (int) (y - dist),
+                (int) (d + 2 * dist),
+                (int) (d + 2 * dist)
+        );
+
+        if (drain.estSelectionne()) {
+            g.setColor(Color.BLUE);
+            g.setStroke(new BasicStroke(2));
+            g.drawOval(
+                    (int) (x - 4),
+                    (int) (y - 4),
+                    (int) (d + 8),
+                    (int) (d + 8)
+            );
         }
     }
 
