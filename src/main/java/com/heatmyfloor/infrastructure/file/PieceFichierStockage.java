@@ -128,6 +128,7 @@ public class PieceFichierStockage implements PieceStockage {
             dessinerItems(g, piece);
 
             dessinerGraphe(g, piece);
+            dessinerChemin(g, piece);
 
             g.dispose();
 

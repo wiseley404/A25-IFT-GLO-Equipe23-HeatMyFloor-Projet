@@ -56,21 +56,21 @@ public class Controller {
     public void ajouterElementChauffant(Point position) {
         this.historique.sauvegarder(piece);
         this.piece.ajouterItem(new ElementChauffant(150, 50, position));
-        this.piece.positionnerSurMurItemSelectionne((Mur)getMursList().getLast());
+        this.piece.positionnerSurMurItemSelectionne((Mur) getMursList().getLast());
     }
 
     public void ajouterThermostat(Point position) {
         this.historique.sauvegarder(piece);
         this.piece.ajouterItem(new Thermostat(70, 50, position));
-        this.piece.positionnerSurMurItemSelectionne((Mur)getMursList().get(1));
+        this.piece.positionnerSurMurItemSelectionne((Mur) getMursList().get(1));
     }
 
     public void ajouterZone(Point position, TypeZone type) {
         this.historique.sauvegarder(piece);
         this.piece.ajouterItem(new Zone(150, 70, position, type));
     }
-    
-    public void positionnerSurMurItemSelectionne(MurReadOnly mur){
+
+    public void positionnerSurMurItemSelectionne(MurReadOnly mur) {
         this.piece.positionnerSurMurItemSelectionne((Mur) mur);
     }
 
@@ -103,7 +103,7 @@ public class Controller {
     }
 
     public void redimensionnerDrain(double diametre) {
-       this.historique.sauvegarder(piece);
+        this.historique.sauvegarder(piece);
         this.piece.redimensionnerDrain(diametre);
     }
 
@@ -120,7 +120,6 @@ public class Controller {
     public void changerStatutSelection(Point pos) {
         this.piece.changerStatutSelectionItem(pos);
     }
-    
 
     public void changerAngleItemSelectionne(double nouvAngle) {
         this.historique.sauvegarder(piece);
@@ -131,11 +130,11 @@ public class Controller {
         this.historique.sauvegarder(piece);
         this.piece.pivoterItemSelectionne();
     }
-    
-    public void ajouterPiece(Piece piece){
+
+    public void ajouterPiece(Piece piece) {
         this.piece = piece;
     }
-    
+
     public List<PieceItemReadOnly> getItemsList() {
 
         return this.piece.getItemsList()
@@ -143,14 +142,15 @@ public class Controller {
                 .map(pieceItem -> (PieceItemReadOnly) pieceItem)
                 .collect(Collectors.toList());
     }
-    
-    public List<MurReadOnly> getMursList(){
-            return this.piece.getMurs()
-            .stream()
-            .map(mur -> (MurReadOnly) mur)
-            .collect(Collectors.toList());
+
+    public List<MurReadOnly> getMursList() {
+        return this.piece.getMurs()
+                .stream()
+                .map(mur -> (MurReadOnly) mur)
+                .collect(Collectors.toList());
     }
-    public PieceItem trouverItemSurPoint(Point p){
+
+    public PieceItem trouverItemSurPoint(Point p) {
         return this.piece.trouverItemSurPoint(p);
     }
 
@@ -159,24 +159,26 @@ public class Controller {
     }
 
     public void setPiece(Piece piece) {
-        if(this.piece != null){
+        if (this.piece != null) {
             this.historique.sauvegarder(this.piece);
         }
         this.piece = piece;
     }
+
     public void setPiece(Piece piece, Point position) {
-        if(this.piece != null){
+        if (this.piece != null) {
             this.historique.sauvegarder(this.piece);
         }
         this.piece = piece;
         this.piece.setPosition(position);
     }
+
     public void deplacerItemSelectionneEnDrag(Point position) {
         //pas de sauvegarde
         piece.deplacerItemSelectionneEnDrag(position);
 
     }
-    
+
     public void annulerModif() {
         Piece anciennePiece = this.historique.annuler(piece);
         if (anciennePiece != null) {
@@ -191,11 +193,10 @@ public class Controller {
         }
     }
 
-
     public boolean estPositionDrainValide(double x, double y) {
         return this.piece.estPositionDrainValide(x, y);
     }
-    
+
     public void deplacerDrain(double x, double y) {
         this.historique.sauvegarder(piece);
         this.piece.repositionnerDrain(x, y);
@@ -205,7 +206,6 @@ public class Controller {
         this.historique.sauvegarder(piece);
         this.piece.deplacerDrain(delta);
     }
-
 
     public void redimensionnerDrain(Point delta) {
         this.historique.sauvegarder(piece);
@@ -260,11 +260,12 @@ public class Controller {
     }
 
     public void exporterProjetPng(Path fichierExport) {
+        Path allPath = null;
         try {
 
             String nomPropre = this.nom_ptojet.replaceAll("[^a-zA-Z0-9_-]", "_");
             String nomFichier = nomPropre + "__" + UUID.randomUUID() + ".png";
-
+            allPath = this.cheminFichier;
             this.cheminFichier = fichierExport.resolve(nomFichier);
             stockage.exporterFichierPng(piece, cheminFichier, nomPropre);
 
@@ -279,6 +280,8 @@ public class Controller {
 
             this.cheminFichier = fichierExport.resolve(nomFichier);
             stockage.exporterFichierPng(piece, cheminFichier, nomPropre);
+
+            this.cheminFichier = allPath;
 
         } catch (RuntimeException r) {
             throw r;
@@ -337,16 +340,14 @@ public class Controller {
         this.piece = (Piece) data.get("piece");
     }
 
-
-
-    public boolean peutAnnuler(){
+    public boolean peutAnnuler() {
         return historique != null && historique.peutAnnuler();
-        
+
     }
-    
-    public boolean peutRetablir(){
+
+    public boolean peutRetablir() {
         return historique != null && historique.peutRetablir();
-        
-    }  
+
+    }
 
 }
