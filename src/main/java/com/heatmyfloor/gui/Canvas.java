@@ -186,11 +186,15 @@ public class Canvas extends JPanel implements Serializable {
         dessinPanel.setOpaque(false);
         dessinPanel.setBounds(0, 0, getWidth(), getHeight());
         dessinPanel.activerModeDessin(true);
-
-        add(dessinPanel);
+        if(dessinPanel != null){
+            add(dessinPanel);
+        }
         revalidate();
         repaint();
         dessinPanel.setOnFormeTerminee(points -> {
+            if(points == null || points.size() < 3){
+                return;
+            }
             List<Point> sommets = com.heatmyfloor.domain.PointMapper.toDomainList(points);
             mainWindow.controllerActif.ajouterPiece(new PieceIrreguliere(sommets));
             mainWindow.props.afficherProprietesPiece();
@@ -211,7 +215,9 @@ public class Canvas extends JPanel implements Serializable {
         dessinPanel.setOpaque(false);
         dessinPanel.setBounds(0, 0, getWidth(), getHeight());
         dessinPanel.activerModeDessin(false);
-        add(dessinPanel);
+        if(dessinPanel != null){
+            add(dessinPanel);
+        }
         revalidate();
         repaint();
 
@@ -221,6 +227,9 @@ public class Canvas extends JPanel implements Serializable {
             }
 
         dessinPanel.setOnFormeTerminee(points -> {
+            if(points == null || points.size() < 3){
+                return;
+            }
             List<Point> sommets = com.heatmyfloor.domain.PointMapper.toDomainList(points);
             mainWindow.controllerActif.ajouterPiece(new PieceIrreguliere(sommets));
             dessinPanel.activerModeDessin(false);

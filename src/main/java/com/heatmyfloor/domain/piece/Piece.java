@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
  */
 public abstract class Piece implements PieceReadOnly, Serializable {
 
-    private List<PieceItem> itemsList;
+    List<PieceItem> itemsList;
     private Graphe graphe;
     private List<Mur> murs;
     private double largeur;

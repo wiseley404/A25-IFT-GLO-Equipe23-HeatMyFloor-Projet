@@ -30,6 +30,10 @@ public class FormeIrregulierPanel extends JPanel {
     private Point pointActuel = null;
     private boolean modeDessin = false;
     private Consumer<List<Point>> onFormeTerminee;
+    
+    private MouseAdapter maDessin = null;
+    private MouseAdapter maPropagation = null;
+    private MouseMotionAdapter mmaPropagation = null;
 
     public FormeIrregulierPanel() {
         this(null, true);
@@ -52,17 +56,21 @@ public class FormeIrregulierPanel extends JPanel {
         setBackground(Color.WHITE);
 
         if (modeDessinInitial) {
-            MouseAdapter ma = new MouseAdapter() {
+            maDessin = new MouseAdapter() {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2 && points.size() > 2) {
-                        modeDessin = false;
-                        repaint();
-                        if (onFormeTerminee != null) {
-                            onFormeTerminee.accept(points);
+                    if (e.getClickCount() == 2 &&SwingUtilities.isLeftMouseButton(e)) {
+                        if(points.size() >= 3){
+                            modeDessin = false;
+                            repaint();
+                            if (onFormeTerminee != null) {
+                                onFormeTerminee.accept(points);
+                            }
                         }
-                    } else if (modeDessin) {
+                        return;
+                    }
+                    if (modeDessin && SwingUtilities.isLeftMouseButton(e)) {
                         points.add(e.getPoint());
                         repaint();
                     }
@@ -75,13 +83,16 @@ public class FormeIrregulierPanel extends JPanel {
                         repaint();
                         
                         Canvas canvas = (Canvas) getParent();
-                        canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
-                        com.heatmyfloor.gui.FormeIrregulierPanel.this, e, canvas));
+                        if(canvas != null){
+                            canvas.getMainWindow().updateSourisPosition(e, canvas);
+                        }
+//                        canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
+//                        com.heatmyfloor.gui.FormeIrregulierPanel.this, e, canvas));
                     }
                 }
             };
-            addMouseListener(ma);
-            addMouseMotionListener(ma);
+            addMouseListener(maDessin);
+            addMouseMotionListener(maDessin);
         }
 
     }
@@ -90,9 +101,11 @@ public class FormeIrregulierPanel extends JPanel {
         modeDessin = actif;
         if (!actif) {
             pointActuel = null;
+            if(maPropagation != null) removeMouseListener(maPropagation);
+            if(mmaPropagation != null) removeMouseMotionListener(mmaPropagation);
         
         // listeners qui propagent au Canvas parent
-        addMouseListener(new MouseAdapter() {
+            maPropagation = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 Canvas canvas = (Canvas) getParent();
@@ -106,9 +119,9 @@ public class FormeIrregulierPanel extends JPanel {
                 canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
                     FormeIrregulierPanel.this, e, canvas));
             }
-        });
+        };
         
-        addMouseMotionListener(new MouseMotionAdapter() {
+        mmaPropagation = new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 Canvas canvas = (Canvas) getParent();
@@ -121,8 +134,12 @@ public class FormeIrregulierPanel extends JPanel {
                 canvas.dispatchEvent(SwingUtilities.convertMouseEvent(
                     FormeIrregulierPanel.this, e, canvas));
             }
-        });
-    
+        };
+            addMouseListener(maPropagation);
+            addMouseMotionListener(mmaPropagation);
+        }else{
+            if(maPropagation != null) removeMouseListener(maPropagation);
+            if(mmaPropagation != null) removeMouseMotionListener(mmaPropagation);
         }
         repaint();
     }

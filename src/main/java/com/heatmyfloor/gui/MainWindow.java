@@ -286,6 +286,7 @@ public class MainWindow extends javax.swing.JFrame {
 
             SwingUtilities.invokeLater(() -> {
                 currentCanvas.repaint();
+                currentCanvas.getDessinPanel().repaint();
             });
             props.afficherProprietesPiece();
             sourisListener();
