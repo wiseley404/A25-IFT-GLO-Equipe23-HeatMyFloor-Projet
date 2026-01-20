@@ -6,8 +6,7 @@ A Java-based desktop application for modeling and designing heated floor systems
 
 ## 📹 Demo
 
-![Demo]
-
+![Demo](Demo%20Heatmyfloor.gif)
 
 *Full demo video: [https://1drv.ms/v/c/8c0ddc1208bfc810/IQA16OWgem3LRYmcMS83wAz0ASPZcuLVOPl9OH0SHJgrNiQ]*
 
