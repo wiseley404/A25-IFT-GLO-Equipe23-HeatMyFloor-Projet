@@ -171,8 +171,8 @@ This project was developed by:
 
 - **[Petiton Wiseley Paul-Enzer]**
 - **[Wily Tatow]**
-- **[Ouegraogo Aliya Imann]**
-- **[Kemila Bakary]**
+- **[Ouedraogo Aliya Imann]**
+- **[Kémila Bakary]**
 - **[Dongmeza Murielle Christelle]**
 
 ## 📝 License
